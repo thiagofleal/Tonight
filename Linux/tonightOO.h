@@ -124,11 +124,12 @@
 #			undef super_setInterface
 #		endif
 
-#		define super	This->__super
-#		define	super_init(_super)	_super->ctor(self, __construct_args)
+#		define	super					This->__super
+#		define	super_init(_super)		_super->ctor(self, __construct_args)
 #		define	super_delete(_super)	_super->dtor(self)
 #		define	super_getInterface(_super, _int)	(*((struct _super*)This)->__Int_##_int)
 #		define	super_setInterface(_super, _int, _new)	(((struct _super*)This)->__Int_##_int = &_new)
+#		define	cast_super(Class)		(*((struct Class*)This))
 
 /*	delete(obj)	*/
 
