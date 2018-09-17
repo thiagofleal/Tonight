@@ -66,10 +66,10 @@ typedef struct{
 > #### long_retString use exemple
 
 ```C
-long_retString long_retString_test(String str){
+long_retString long_retString_test(string str){
   retString ret;
   Writer write = new Writer(Tonight.std.string.output);
-  write.print(getText(ret), "This is a test: ", str, end);
+  write.print(getText(ret), "This is a test: ", str, $end);
   return ret;
 }
 ```
@@ -80,7 +80,7 @@ This type is used to store a definition of an exception. This type isn't used by
 
 ```C
 struct str_EXCEPTION{
-  const String error_name;
+  const string error_name;
   EXCEPTION *_super;
 };
 ```
@@ -92,7 +92,7 @@ This type is internal used to store exceptions throwed in the application.
 ```C
 typedef struct __struct_exception{
   EXCEPTION exception;
-  String message;
+  string message;
 }_Exception, *Exception;
 ```
 
@@ -123,22 +123,22 @@ struct str_Intern_Object{
 
 The pointer types are showed below.
 
-> ### String
+> ### string
 
 This data type stores a pointer to string of characters. It is defined as a **char** pointer
 
 ```C
-typedef char* String;
+typedef char* string;
 ```
 
-* **Note:** It's important to free the *String* after its use, except when it is allocated statically (with double quotes).
+* **Note:** It's important to free the *string* after its use, except when it is allocated statically (with double quotes).
 
-> #### String use exemples
+> #### string use exemples
 
 ```C
-String hello = "Hello";
-String world = "World";
-String helloWorld = concat(hello, ", ", world, "!", end);
+string hello = "Hello";
+string world = "World";
+string helloWorld = concat(hello, ", ", world, "!", $end);
 /* code */
 free(helloWorld);
 ```
@@ -159,34 +159,34 @@ pointer p = &i;
 pointer mem = new Memory(sizeof(int));
 ```
 
-> ### File
+> ### file
 
 This data type stores a pointer to a file buffer. It is used to handle files. It's defined as a *FILE* pointer;
 
 ```C
-typedef FILE* File;
+typedef FILE* file;
 ```
 
-> #### File use examples
+> #### file use examples
 
 ```C
-File file = new File("file_name.ext", "w");
+file file = new file("file_name.ext", "w");
 Writer write = new Writer(Tonight.std.file.output);
 write.textln(file, "This is a test...");
 ```
 
-> ### Object
+> ### object
 
-This data type stores an object intanced from a class. It is used to handle objects. It's defined as a pointer to an structure *Intern_Object*. To instance an *Object**, use ***new** Object(Class)* and to free, use ***delete**(Object)*.
+This data type stores an object intanced from a class. It is used to handle objects. It's defined as a pointer to an structure *Intern_Object*. To instance an *object**, use ***new** object(Class)* and to free, use ***delete**(object)*.
 
 ```C
-typedef struct str_Intern_Object *Object;
+typedef struct str_Intern_Object *object;
 ```
 
-> #### Object use example
+> #### object use example
 
 ```C
-Object obj = new Object(Test);
+object obj = new Object(Test);
 /* code */
 delete(obj);
 ```
@@ -214,7 +214,7 @@ This data type stores an exception pointer. It is defined as an *_Exception* poi
 ```C
 typedef struct __struct_exception{
   EXCEPTION exception;
-  String message;
+  string message;
 }_Exception, *Exception;
 ```
 
@@ -242,7 +242,7 @@ typedef struct str_Class{
 }*Class_Name;
 ```
 
-A *Class_Name* instance is used only by ***new** Object* function to construct an object.
+A *Class_Name* instance is used only by ***new** object* function to construct an object.
 
 ## Function pointer types
 
@@ -384,22 +384,22 @@ double func_callback(/* arguments list */){
 func(func_callback);
 ```
 
-> ### P_String
+> ### P_string
 
-A pointer to a *String*-returns function, with or without parameters. The main use for this data type is for callback.
+A pointer to a *string*-returns function, with or without parameters. The main use for this data type is for callback.
 
 ```C
-typedef String (*P_String)	(OptionalArgs);
+typedef string (*P_string)	(OptionalArgs);
 ```
 
-> #### P_String use example
+> #### P_string use example
 
 ```C
-void func(P_String callback){
+void func(P_string callback){
   /* code */
 }
 
-String func_callback(/* arguments list */){
+string func_callback(/* arguments list */){
   /* code */
 }
 
@@ -430,22 +430,22 @@ pointer func_callback(/* arguments list */){
 func(func_callback);
 ```
 
-> ### P_Object
+> ### P_object
 
-A pointer to a *Object*-returns function, with or without parameters. The main use for this data type is for callback.
+A pointer to a *object*-returns function, with or without parameters. The main use for this data type is for callback.
 
 ```C
-typedef Object (*P_Object)	(OptionalArgs);
+typedef object (*P_object)	(OptionalArgs);
 ```
 
-> #### P_Object use example
+> #### P_object use example
 
 ```C
-void func(P_Object callback){
+void func(P_object callback){
   /* code */
 }
 
-Object func_callback(/* arguments list */){
+object func_callback(/* arguments list */){
   /* code */
 }
 

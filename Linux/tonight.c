@@ -30,7 +30,7 @@ EXCEPTION TONIGHT GenericException = &___GenericException;
 static EXCEPTION_DEFINE ___AssertException = {"Assert fail", &GenericException};
 static EXCEPTION_DEFINE ___ErrnoException = {"Errno error", &GenericException};
 static EXCEPTION_DEFINE ___MemoryAllocException = {"Memory allocate error", &GenericException};
-static EXCEPTION_DEFINE ___FileOpenException = {"File open error", &GenericException};
+static EXCEPTION_DEFINE ___FileOpenException = {"file open error", &GenericException};
 static EXCEPTION_DEFINE ___InputException = {"Input error", &GenericException};
 static EXCEPTION_DEFINE ___ConvertException = {"Convert error", &GenericException};
 static EXCEPTION_DEFINE ___NotImplementException = {"Not implemented method error", &GenericException};
@@ -183,7 +183,7 @@ bool TONIGHT __function_finally(void){
 	return false;
 }
 
-void TONIGHT THROW(EXCEPTION __exc, String message){
+void TONIGHT THROW(EXCEPTION __exc, string message){
 	if(except.current->inside_try){
 		static _Exception exc;
 		exc.exception = __exc;
@@ -195,11 +195,11 @@ void TONIGHT THROW(EXCEPTION __exc, String message){
 	}
 }
 
-INLINE String TONIGHT Error(Exception exc){
+INLINE string TONIGHT Error(Exception exc){
 	return exc->exception->error_name;
 }
 
-INLINE String TONIGHT Message(Exception exc){
+INLINE string TONIGHT Message(Exception exc){
 	return exc->message;
 }
 
@@ -274,7 +274,7 @@ INLINE void TONIGHT cursor_position(int x, int y){
 	printf("\033[%d;%dH", y, x);
 }
 
-INLINE String TONIGHT __locale(void){
+INLINE string TONIGHT __locale(void){
 	return setlocale(LC_ALL, "");
 }
 
@@ -287,36 +287,36 @@ INLINE static void __initRandom(void){
 	srand((unsigned int)time(NULL));
 }
 
-INLINE String TONIGHT toString(char ARRAY __array){
+INLINE string TONIGHT toString(char ARRAY __array){
 	return strcpy(malloc((strlen(__array) + 1) * sizeof(char)), __array);
 }
 
-String TONIGHT concat(String wrd_1, ...){
+string TONIGHT concat(string wrd_1, ...){
 	va_list va;
 	static char s[1001];
-	String p;
+	string p;
 	*s = 0;
 	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, String))
+	for (p = wrd_1; p; p = va_arg(va, string))
 	strcat(s, p);
 	va_end(va);
 	return toString(s);
 }
 
-retString TONIGHT retConcat(String wrd_1, ...){
+retString TONIGHT retConcat(string wrd_1, ...){
 	va_list va;
-	String p;
+	string p;
 	static retString ret;
 	*ret.Text = 0;
 	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, String))
+	for (p = wrd_1; p; p = va_arg(va, string))
 	strcat(ret.Text, p);
 	va_end(va);
 	return ret;
 }
 
-bool TONIGHT equal(register String const wrd_1, register String const wrd_2){
-	register String s1 = wrd_1, s2 = wrd_2;
+bool TONIGHT equal(register string const wrd_1, register string const wrd_2){
+	register string s1 = wrd_1, s2 = wrd_2;
 	while(*s1 && *s2){
 		if(*s1 != *s2){
 			if(isupper(*s1))
@@ -331,41 +331,41 @@ bool TONIGHT equal(register String const wrd_1, register String const wrd_2){
 	return (bool)*s1 == *s2;
 }
 
-String TONIGHT s_cs(char var){
+string TONIGHT s_cs(char var){
 	register char *s = (char*)calloc(2, sizeof(char));
 	*s = var;
 	return (s);
 }
 
-String TONIGHT s_bs(bool var){
+string TONIGHT s_bs(bool var){
 	return var ? toString("TRUE") : toString("FALSE");
 }
 
-String TONIGHT s_is(int var){
+string TONIGHT s_is(int var){
 	static char s[15];
 	sprintf(s, "%i", var);
 	return toString(s);
 }
 
-String TONIGHT s_fsf(float var, int _decimal){
+string TONIGHT s_fsf(float var, int _decimal){
 	static char s[100];
 	sprintf(s, "%.*f", _decimal, var);
 	return toString(s);
 }
 
-String TONIGHT s_dsf(double var, int _decimal){
+string TONIGHT s_dsf(double var, int _decimal){
 	static char s[100];
 	sprintf(s, "%.*lf", _decimal, var);
 	return toString(s);
 }
 
-String TONIGHT s_ds(double var){
+string TONIGHT s_ds(double var){
 	static char s[100];
 	sprintf(s, "%.10g", var);
 	return toString(s);
 }
 
-INLINE String TONIGHT s_fs(float var){
+INLINE string TONIGHT s_fs(float var){
 	return s_ds((double)var);
 }
 
@@ -423,45 +423,45 @@ INLINE retString TONIGHT fs(float var){
 
 /* Functions to Tonight.std.Console.input */
 
-static char TONIGHT throws __Scanner_nextChar(void){
+static char TONIGHT $throws __Scanner_nextChar(void){
 	if(scanf("%c", &c) != 1)
 		throw(InputException, "Impossible to read a \"char\" from the standard input");
 	return c;
 }
 
-static int TONIGHT throws __Scanner_nextInt(void){
+static int TONIGHT $throws __Scanner_nextInt(void){
 	if(scanf("%i", &i) != 1)
 		throw(InputException, "Impossible to read an \"int\" from the standard input");
 	return i;
 }
 
-static float TONIGHT throws __Scanner_nextFloat(void){
+static float TONIGHT $throws __Scanner_nextFloat(void){
 	if(scanf("%f", &f) != 1)
 		throw(InputException, "Impossible to read a \"float\" from the standard input");
 	return f;
 }
 
-static double TONIGHT throws __Scanner_nextDouble(void){
+static double TONIGHT $throws __Scanner_nextDouble(void){
 	if(scanf("%lf", &d) != 1)
 		throw(InputException, "Impossible to read a \"double\" from the standard input");
 	return d;
 }
 
-static String TONIGHT throws __Scanner_next(void){
+static string TONIGHT $throws __Scanner_next(void){
 	if(scanf("%1000s", str) != 1)
-		throw(InputException, "Impossible to read a \"String\" from the standard input");
+		throw(InputException, "Impossible to read a \"string\" from the standard input");
 	return toString(str);
 }
 
-static String TONIGHT throws __Scanner_nextLine(void){
+static string TONIGHT $throws __Scanner_nextLine(void){
 	if(scanf(" %1000[^\n]s", str) != 1)
-		throw(InputException, "Impossible to read a \"String\" from the standard input");
+		throw(InputException, "Impossible to read a \"string\" from the standard input");
 	return toString(str);
 }
 
-static String TONIGHT __Scanner_Password(int nchar){
+static string TONIGHT __Scanner_Password(int nchar){
 	int i = 0;
-	char* senha = new array.Char(nchar + 1);
+	char* senha = new Array.Char(nchar + 1);
 	while((senha[i] = Tonight.getKey()) != key_ENTER){
 		if(senha[i] != key_BS && i < nchar){
 			printf("*");
@@ -491,196 +491,196 @@ static INLINE void TONIGHT __Scanner_ignoreChar(void){
 }
 
 /* Functions to Tonight.std.file.input */
-static char TONIGHT throws __Scanner_file_nextChar(File _file){
+static char TONIGHT $throws __Scanner_file_nextChar(file _file){
 	if(fscanf(_file, "%c", &c) != 1)
 		throw(InputException, "Impossible to read a \"char\" from the file");
 	return c;
 }
 
-static int TONIGHT throws __Scanner_file_nextInt(File _file){
+static int TONIGHT $throws __Scanner_file_nextInt(file _file){
 	if(fscanf(_file, "%i", &i) != 1)
 		throw(InputException, "Impossible to read an \"int\" from the file");
 	return i;
 }
 
-static float TONIGHT throws __Scanner_file_nextFloat(File _file){
+static float TONIGHT $throws __Scanner_file_nextFloat(file _file){
 	if(fscanf(_file, "%f", &f) != 1)
 		throw(InputException, "Impossible to read a \"float\" from the file");
 	return f;
 }
 
-static double TONIGHT throws __Scanner_file_nextDouble(File _file){
+static double TONIGHT $throws __Scanner_file_nextDouble(file _file){
 	if(fscanf(_file, "%lf", &d) != 1)
 		throw(InputException, "Impossible to read a \"double\" from the file");
 	return d;
 }
 
-static String TONIGHT throws __Scanner_file_next(File _file){
+static string TONIGHT $throws __Scanner_file_next(file _file){
 	if(fscanf(_file, "%1000s", str) != 1)
-		throw(InputException, "Impossible to read a \"String\" from the file");
+		throw(InputException, "Impossible to read a \"string\" from the file");
 	return toString(str);
 }
 
-static String TONIGHT throws __Scanner_file_nextLine(File _file){
+static string TONIGHT $throws __Scanner_file_nextLine(file _file){
 	if(fscanf(_file, " %1000[^\n]s", str) != 1)
-		throw(InputException, "Impossible to read a \"String\" from the file");
+		throw(InputException, "Impossible to read a \"string\" from the file");
 	return toString(str);
 }
 
-static INLINE void TONIGHT __Scanner_file_clear(File _file){
+static INLINE void TONIGHT __Scanner_file_clear(file _file){
 	while(!feof(_file))
 		if(fgetc(_file) == '\n')
 			return;
 }
 
-static INLINE void TONIGHT __Scanner_file_ignore(File _file){
+static INLINE void TONIGHT __Scanner_file_ignore(file _file){
 	fscanf(_file, "%*s");
 }
 
-static INLINE void TONIGHT __Scanner_file_ignoreChar(File _file){
+static INLINE void TONIGHT __Scanner_file_ignoreChar(file _file){
 	fscanf(_file, "%*c");
 }
 
 /* Functions to Tonight.std.string.input */
-static char TONIGHT throws __Scanner_string_nextChar(String str){
+static char TONIGHT $throws __Scanner_string_nextChar(string str){
 	if(sscanf(str, "%c", &c) != 1)
-		throw(InputException, "Impossible to read a \"char\" from the String");
+		throw(InputException, "Impossible to read a \"char\" from the string");
 	return c;
 }
 
-static int TONIGHT throws __Scanner_string_nextInt(String str){
+static int TONIGHT $throws __Scanner_string_nextInt(string str){
 	if(sscanf(str, "%i", &i) != 1)
-		throw(InputException, "Impossible to read an \"int\" from the String");
+		throw(InputException, "Impossible to read an \"int\" from the string");
 	return i;
 }
 
-static float TONIGHT throws __Scanner_string_nextFloat(String str){
+static float TONIGHT $throws __Scanner_string_nextFloat(string str){
 	if(sscanf(str, "%f", &f) != 1)
-		throw(InputException, "Impossible to read a \"float\" from the String");
+		throw(InputException, "Impossible to read a \"float\" from the string");
 	return f;
 }
 
-static double TONIGHT throws __Scanner_string_nextDouble(String str){
+static double TONIGHT $throws __Scanner_string_nextDouble(string str){
 	if(sscanf(str, "%lf", &d) != 1)
-		throw(InputException, "Impossible to read a \"double\" from the String");
+		throw(InputException, "Impossible to read a \"double\" from the string");
 	return d;
 }
 
-static String TONIGHT throws __Scanner_string_next(String s){
+static string TONIGHT $throws __Scanner_string_next(string s){
 	if(sscanf(s, "%1000s", str) != 1)
-		throw(InputException, "Impossible to read a \"String\" from the String");
+		throw(InputException, "Impossible to read a \"string\" from the string");
 	return toString(s);
 }
 
-static String TONIGHT throws __Scanner_string_nextLine(String s){
+static string TONIGHT $throws __Scanner_string_nextLine(string s){
 	if(sscanf(s, " %1000[^\n]s", str) != 1)
-		throw(InputException, "Impossible to read a \"String\" from the String");
+		throw(InputException, "Impossible to read a \"string\" from the string");
 	return toString(s);
 }
 
-static void TONIGHT __Scanner_string_clear(String str){
+static void TONIGHT __Scanner_string_clear(string str){
 	while(*str != '\n')
 		++ str;
 }
 
-static void TONIGHT __Scanner_string_ignore(String str){
+static void TONIGHT __Scanner_string_ignore(string str){
 	sscanf(str, "%*s");
 }
 
-static void TONIGHT __Scanner_string_ignoreChar(String str){
+static void TONIGHT __Scanner_string_ignoreChar(string str){
 	sscanf(str, "%*c");
 }
 
 /* Functions to Tonight.std.object.input */
-static char TONIGHT throws __Scanner_object_nextChar(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
+static char TONIGHT $throws __Scanner_object_nextChar(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
 	char c = __Scanner_string_nextChar(s);
 	free(s);
 	return c;
 }
 
-static int TONIGHT throws __Scanner_object_nextInt(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
+static int TONIGHT $throws __Scanner_object_nextInt(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
 	int i = __Scanner_string_nextInt(s);
 	free(s);
 	return i;
 }
 
-static float TONIGHT throws __Scanner_object_nextFloat(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
+static float TONIGHT $throws __Scanner_object_nextFloat(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
 	float f = __Scanner_string_nextFloat(s);
 	free(s);
 	return f;
 }
 
-static double TONIGHT throws __Scanner_object_nextDouble(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
+static double TONIGHT $throws __Scanner_object_nextDouble(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
 	double d = __Scanner_string_nextDouble(s);
 	free(s);
 	return d;
 }
 
-static String TONIGHT throws __Scanner_object_next(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
-	String str = __Scanner_string_next(s);
+static string TONIGHT $throws __Scanner_object_next(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
+	string str = __Scanner_string_next(s);
 	free(s);
 	return str;
 }
 
-static INLINE String TONIGHT __Scanner_object_nextLine(IScanner iScan, Object obj){
+static INLINE string TONIGHT __Scanner_object_nextLine(IScanner iScan, object obj){
 	return iScan.getString(obj);
 }
 
-static INLINE void TONIGHT  __Scanner_object_clear(IScanner iScan, Object obj){
+static INLINE void TONIGHT  __Scanner_object_clear(IScanner iScan, object obj){
 	iScan.setString(obj, "");
 }
 
-static INLINE void TONIGHT __Scanner_object_ignore(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
+static INLINE void TONIGHT __Scanner_object_ignore(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
 	free(s);
 }
 
-static INLINE void TONIGHT __Scanner_object_ignoreChar(IScanner iScan, Object obj){
-	String s = iScan.getString(obj);
+static INLINE void TONIGHT __Scanner_object_ignoreChar(IScanner iScan, object obj){
+	string s = iScan.getString(obj);
 	iScan.setString(obj, ++s);
 	free(s);
 }
 
 /* Functions to Tonight.std.Console.output */
-static void TONIGHT __Recorder_text(File, String);
-static INLINE void TONIGHT __Recorder_textln(File, String);
+static void TONIGHT __Recorder_text(file, string);
+static INLINE void TONIGHT __Recorder_textln(file, string);
 
-static INLINE void TONIGHT __Screen_text(String txt){
+static INLINE void TONIGHT __Screen_text(string txt){
 	__Recorder_text(stdout, txt);
 }
 
-static INLINE void TONIGHT __Screen_textln(String txt){
+static INLINE void TONIGHT __Screen_textln(string txt){
 	__Recorder_textln(stdout, txt);
 }
 
-static void TONIGHT __Screen_print(String txt, ...){
+static void TONIGHT __Screen_print(string txt, ...){
 	va_list t;
-	register String s;
+	register string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		__Screen_text(s);
 	va_end(t);
 }
 
-static void TONIGHT __Screen_println(String txt, ...){
+static void TONIGHT __Screen_println(string txt, ...){
 	va_list t;
-	register String s;
-	for(s = txt; s; s = va_arg(t, String))
+	register string s;
+	for(s = txt; s; s = va_arg(t, string))
 		__Screen_text(s);
 	va_end(t);
 	putchar('\n');
 }
 
-static void TONIGHT __Screen_printargln(String txt, ...){
+static void TONIGHT __Screen_printargln(string txt, ...){
 	va_list t;
-	register String s;
+	register string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		__Screen_textln(s);
 	va_end(t);
 }
@@ -708,93 +708,93 @@ static void TONIGHT __clearScreen(void){
 }
 
 /* Functions to Tonight.std.file.output */
-static void TONIGHT __Recorder_text(File _file, String txt){
+static void TONIGHT __Recorder_text(file _file, string txt){
 	fprintf(_file, "%s", txt);
 }
 
-static INLINE void TONIGHT __Recorder_textln(File _file, String txt){
+static INLINE void TONIGHT __Recorder_textln(file _file, string txt){
 	fprintf(_file, "%s\n", txt);
 }
 
-static void TONIGHT __Recorder_print(File _file, String txt, ...){
+static void TONIGHT __Recorder_print(file _file, string txt, ...){
 	va_list t;
-	String s;
+	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		fprintf(_file, "%s", s);
 	va_end(t);
 }
 
-static void TONIGHT __Recorder_println(File _file, String txt, ...){
+static void TONIGHT __Recorder_println(file _file, string txt, ...){
 	va_list t;
-	String s;
+	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		fprintf(_file, "%s", s);
 	va_end(t);
 	putc('\n', _file);
 }
 
-static void TONIGHT __Recorder_printargln(File _file, String txt, ...){
+static void TONIGHT __Recorder_printargln(file _file, string txt, ...){
 	va_list t;
-	String s;
+	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		fprintf(_file, "%s\n", s);
 	va_end(t);
 }
 
-static INLINE void TONIGHT __Recorder_nl(File __file){
+static INLINE void TONIGHT __Recorder_nl(file __file){
 	fputc('\n', __file);
 }
 
-static INLINE void TONIGHT __Recorder_nls(File __file, int qtd){
+static INLINE void TONIGHT __Recorder_nls(file __file, int qtd){
 	while(qtd--)
 		fputc('\n', __file);
 }
 
-static void TONIGHT __Recorder_buffer(File __file){
+static void TONIGHT __Recorder_buffer(file __file){
 	setbuf(__file, __buffer);
 }
 
-static void TONIGHT throws __Recorder_clear(File __file){
+static void TONIGHT $throws __Recorder_clear(file __file){
 	if(!fflush(__file))
 		throw(GenericException, strerror(errno));
 }
 
 /* Functions to Tonight.std.error */
-static void TONIGHT __Error_text(String txt){
+static void TONIGHT __Error_text(string txt){
 	fprintf(stderr, "%s", txt);
 }
 
-static INLINE void TONIGHT __Error_textln(String txt){
+static INLINE void TONIGHT __Error_textln(string txt){
 	fprintf(stderr, "%s\n", txt);
 }
 
-static void TONIGHT __Error_print(String txt, ...){
+static void TONIGHT __Error_print(string txt, ...){
 	va_list t;
-	String s;
+	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		fprintf(stderr, "%s", s);
 	va_end(t);
 }
 
-static void TONIGHT __Error_println(String txt, ...){
+static void TONIGHT __Error_println(string txt, ...){
 	va_list t;
-	String s;
+	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		fprintf(stderr, "%s", s);
 	va_end(t);
 	putc('\n', stderr);
 }
 
-static void TONIGHT __Error_printargln(String txt, ...){
+static void TONIGHT __Error_printargln(string txt, ...){
 	va_list t;
-	String s;
+	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, String))
+	for(s = txt; s; s = va_arg(t, string))
 		fprintf(stderr, "%s\n", s);
 	va_end(t);
 }
@@ -812,98 +812,98 @@ static void TONIGHT __Error_buffer(void){
 	setbuf(stderr, __buffer);
 }
 
-static void TONIGHT throws __Error_clear(void){
+static void TONIGHT $throws __Error_clear(void){
 	if(!fflush(stderr))
 		throw(GenericException, strerror(errno));
 }
 
 /* Functions to Tonight.std.string.output */
-static void TONIGHT __String_text(char *str, String txt){
+static void TONIGHT __String_text(char *str, string txt){
 	sprintf(str, "%s", txt);
 }
 
-static void TONIGHT __String_textln(char *str, String txt){
+static void TONIGHT __String_textln(char *str, string txt){
 	sprintf(str, "%s\n", txt);
 }
 
-static void TONIGHT __String_print(char *str, String txt, ...){
-	String s;
+static void TONIGHT __String_print(char *str, string txt, ...){
+	string s;
 	va_list v;
 	va_start(v, txt);
-	for(s = txt; s; s = va_arg(v, String))
+	for(s = txt; s; s = va_arg(v, string))
 		strcat(str, s);
 	va_end(v);
 }
 
-static void TONIGHT __String_println(char *str, String txt, ...){
+static void TONIGHT __String_println(char *str, string txt, ...){
 	__String_print(str, txt);
 	sprintf(str, "%s\n", str);
 }
 
-static void TONIGHT __String_printargln(char *str, String txt, ...){
-	String s;
+static void TONIGHT __String_printargln(char *str, string txt, ...){
+	string s;
 	va_list v;
 	va_start(v, txt);
-	for(s = txt; s; s = va_arg(v, String))
+	for(s = txt; s; s = va_arg(v, string))
 		strcat(str, s);
 	va_end(v);
 }
 
 /* Functions to Tonight.std.object.output */
-static INLINE void TONIGHT __Object_text(IWriter iWrt, Object obj, String txt){
+static INLINE void TONIGHT __Object_text(IWriter iWrt, object obj, string txt){
 	iWrt.addText(obj, txt);
 }
 
-static INLINE void TONIGHT __Object_textln(IWriter iWrt, Object obj, String txt){
-	String s = concat(txt, "\n", end);
+static INLINE void TONIGHT __Object_textln(IWriter iWrt, object obj, string txt){
+	string s = concat(txt, "\n", $end);
 	iWrt.addText(obj, s);
 	free(s);
 }
 
-static void TONIGHT __Object_print(IWriter iWrt, Object obj, String txt, ...){
-	String a;
+static void TONIGHT __Object_print(IWriter iWrt, object obj, string txt, ...){
+	string a;
 	va_list v;
 	static char s[1000];
 	*s = 0;
 	va_start(v, txt);
-	for(a = txt; a; a = va_arg(v, String))
+	for(a = txt; a; a = va_arg(v, string))
 		strcat(s, a);
 	va_end(v);
 	iWrt.addText(obj, &s[0]);
 }
 
-static void TONIGHT __Object_println(IWriter iWrt, Object obj, String txt, ...){
-	String a;
+static void TONIGHT __Object_println(IWriter iWrt, object obj, string txt, ...){
+	string a;
 	va_list v;
 	static char s[1000];
 	*s = 0;
 	va_start(v, txt);
-	for(a = txt; a; a = va_arg(v, String))
+	for(a = txt; a; a = va_arg(v, string))
 		strcat(s, a);
 	va_end(v);
 	strcat(s, "\n");
 	iWrt.addText(obj, &s[0]);
 }
 
-static void TONIGHT __Object_printargln(IWriter iWrt, Object obj, String txt, ...){
-	String a;
+static void TONIGHT __Object_printargln(IWriter iWrt, object obj, string txt, ...){
+	string a;
 	va_list v;
 	va_start(v, txt);
-	for(a = txt; a; a = va_arg(v, String))
+	for(a = txt; a; a = va_arg(v, string))
 		__Object_println(iWrt, obj, a);
 	va_end(v);
 }
 
-static void TONIGHT __Object_nl(IWriter iWrt, Object obj){
+static void TONIGHT __Object_nl(IWriter iWrt, object obj){
 	iWrt.addText(obj, "\n");
 }
 
-static void TONIGHT __Object_nls(IWriter iWrt, Object obj, int qtd){
+static void TONIGHT __Object_nls(IWriter iWrt, object obj, int qtd){
 	while(qtd--)
 		iWrt.addText(obj, "\n");
 }
 
-static void TONIGHT __Object_clear(IWriter iWrt, Object obj){
+static void TONIGHT __Object_clear(IWriter iWrt, object obj){
 	iWrt.clear(obj);
 }
 
@@ -1031,17 +1031,17 @@ static INLINE Painter TONIGHT __new_Painter(ColorCreate father){
 	return *(Painter*)&father;
 }
 
-static File TONIGHT throws __new_File(String fName, String fMode){
-	File f = fopen(fName, fMode);
+static file TONIGHT $throws __new_File(string fName, string fMode){
+	file f = fopen(fName, fMode);
 	if(f)
 		return(f);
-	throw(FileOpenException, concat("Impossible to open the file \"", fName, "\"", end));
+	throw(FileOpenException, concat("Impossible to open the file \"", fName, "\"", $end));
 	return NULL;
 }
 
-static Object TONIGHT __new_Object(Class_Name name, ...){
+static object TONIGHT __new_Object(Class_Name name, ...){
 	va_list v;
-	Object _new = new Memory(sizeof(Intern_Object));
+	object _new = new Memory(sizeof(Intern_Object));
 	va_start(v, name);
 	_new->obj = new Memory(name->size);
 	_new->class_pointer = name;
@@ -1050,7 +1050,7 @@ static Object TONIGHT __new_Object(Class_Name name, ...){
 	return _new;
 }
 
-void TONIGHT delete(Object self){
+void TONIGHT delete(object self){
 	if(!self)
 		return;
 	if(self->class_pointer->dtor)
@@ -1059,7 +1059,7 @@ void TONIGHT delete(Object self){
 }
 
 /* Alloc pointers */
-static char* TONIGHT throws __new_char(char value){
+static char* TONIGHT $throws __new_char(char value){
 	char* c = malloc(sizeof(char));
 	if(c){
 		*c = value;
@@ -1069,7 +1069,7 @@ static char* TONIGHT throws __new_char(char value){
 	return NULL;
 }
 
-static bool* TONIGHT throws __new_bool(bool value){
+static bool* TONIGHT $throws __new_bool(bool value){
 	bool *b = malloc(sizeof(bool));
 	if(b){
 		*b = value;
@@ -1079,7 +1079,7 @@ static bool* TONIGHT throws __new_bool(bool value){
 	return NULL;
 }
 
-static int* TONIGHT throws __new_int(int value){
+static int* TONIGHT $throws __new_int(int value){
 	int *i = malloc(sizeof(int));
 	if(i){
 		*i = value;
@@ -1089,7 +1089,7 @@ static int* TONIGHT throws __new_int(int value){
 	return NULL;
 }
 
-static float* TONIGHT throws __new_float(float value){
+static float* TONIGHT $throws __new_float(float value){
 	float *f = malloc(sizeof(float));
 	if(f){
 		*f = value;
@@ -1099,7 +1099,7 @@ static float* TONIGHT throws __new_float(float value){
 	return NULL;
 }
 
-static double* TONIGHT throws __new_double(double value){
+static double* TONIGHT $throws __new_double(double value){
 	double *d = malloc(sizeof(double));
 	if(d){
 		*d = value;
@@ -1109,17 +1109,17 @@ static double* TONIGHT throws __new_double(double value){
 	return NULL;
 }
 
-static String* TONIGHT throws __new_String(String value){
-	String *s = malloc(sizeof(String));
+static string* TONIGHT $throws __new_String(string value){
+	string *s = malloc(sizeof(string));
 	if(s){
 		*s = value;
 		return (s);
 	}
-	throw(MemoryAllocException, "Impossible allocate memory to String");
+	throw(MemoryAllocException, "Impossible allocate memory to string");
 	return NULL;
 }
 
-static pointer TONIGHT throws __new_pointer(pointer value){
+static pointer TONIGHT $throws __new_pointer(pointer value){
 	pointer *p = malloc(sizeof(pointer));
 	if(p){
 		*p = value;
@@ -1129,7 +1129,7 @@ static pointer TONIGHT throws __new_pointer(pointer value){
 	return NULL;
 }
 
-static pointer TONIGHT throws __new_memory(size_t q){
+static pointer TONIGHT $throws __new_memory(size_t q){
 	pointer *p = malloc(q);
 	if(p)
 		return (p);
@@ -1138,7 +1138,7 @@ static pointer TONIGHT throws __new_memory(size_t q){
 }
 
 /* Initialize arrays */
-static char* TONIGHT throws __new_array_char(int q){
+static char* TONIGHT $throws __new_array_char(int q){
 	char* c = malloc(q * sizeof(char));
 	if(c)
 		return (c);
@@ -1146,7 +1146,7 @@ static char* TONIGHT throws __new_array_char(int q){
 	return NULL;
 }
 
-static bool* TONIGHT throws __new_array_bool(int q){
+static bool* TONIGHT $throws __new_array_bool(int q){
 	bool* b = malloc(q * sizeof(bool));
 	if(b)
 		return (b);
@@ -1154,7 +1154,7 @@ static bool* TONIGHT throws __new_array_bool(int q){
 	return NULL;
 }
 
-static int* TONIGHT throws __new_array_int(int q){
+static int* TONIGHT $throws __new_array_int(int q){
 	int* i = malloc(q * sizeof(int));
 	if(i)
 		return (i);
@@ -1162,7 +1162,7 @@ static int* TONIGHT throws __new_array_int(int q){
 	return NULL;
 }
 
-static float* TONIGHT throws __new_array_float(int q){
+static float* TONIGHT $throws __new_array_float(int q){
 	float* f = malloc(q * sizeof(float));
 	if(f)
 		return (f);
@@ -1170,7 +1170,7 @@ static float* TONIGHT throws __new_array_float(int q){
 	return NULL;
 }
 
-static double* TONIGHT throws __new_array_double(int q){
+static double* TONIGHT $throws __new_array_double(int q){
 	double* d = malloc(q * sizeof(double));
 	if(d)
 		return (d);
@@ -1178,23 +1178,23 @@ static double* TONIGHT throws __new_array_double(int q){
 	return NULL;
 }
 
-static String* TONIGHT throws __new_array_String(int q){
-	String* s = malloc(q * sizeof(String));
+static string* TONIGHT $throws __new_array_String(int q){
+	string* s = malloc(q * sizeof(string));
 	if(s)
 		return (s);
-	throw(MemoryAllocException, "Impossible allocate memory to String array");
+	throw(MemoryAllocException, "Impossible allocate memory to string array");
 	return NULL;
 }
 
-static Object* TONIGHT throws __new_array_Object(int q){
-	Object* o = malloc(q * sizeof(Object));
+static object* TONIGHT $throws __new_array_Object(int q){
+	object* o = malloc(q * sizeof(object));
 	if(o)
 		return (o);
-	throw(MemoryAllocException, "Impossible allocate memory to Object array");
+	throw(MemoryAllocException, "Impossible allocate memory to object array");
 	return NULL;
 }
 
-static pointer* TONIGHT throws __new_array_pointer(int q){
+static pointer* TONIGHT $throws __new_array_pointer(int q){
 	pointer *p = malloc(q * sizeof(pointer));
 	if(p)
 		return (p);
@@ -1203,7 +1203,7 @@ static pointer* TONIGHT throws __new_array_pointer(int q){
 }
 
 /* Initialize matrixes */
-static char** TONIGHT throws __new_matrix_char(int l, int c){
+static char** TONIGHT $throws __new_matrix_char(int l, int c){
 	char** m = malloc(l * sizeof(char*));
 	register int i;
 	if(!m)
@@ -1213,7 +1213,7 @@ static char** TONIGHT throws __new_matrix_char(int l, int c){
 	return (m);
 }
 
-static bool** TONIGHT throws __new_matrix_bool(int l, int c){
+static bool** TONIGHT $throws __new_matrix_bool(int l, int c){
 	bool** m = malloc(l * sizeof(bool*));
 	register int i;
 	if(!m)
@@ -1223,7 +1223,7 @@ static bool** TONIGHT throws __new_matrix_bool(int l, int c){
 	return (m);
 }
 
-static int** TONIGHT throws __new_matrix_int(int l, int c){
+static int** TONIGHT $throws __new_matrix_int(int l, int c){
 	int** m = malloc(l * sizeof(int*));
 	register int i;
 	if(!m)
@@ -1233,7 +1233,7 @@ static int** TONIGHT throws __new_matrix_int(int l, int c){
 	return (m);
 }
 
-static float** TONIGHT throws __new_matrix_float(int l, int c){
+static float** TONIGHT $throws __new_matrix_float(int l, int c){
 	float** m = malloc(l * sizeof(float*));
 	register int i;
 	if(!m)
@@ -1243,7 +1243,7 @@ static float** TONIGHT throws __new_matrix_float(int l, int c){
 	return (m);
 }
 
-static double** TONIGHT throws __new_matrix_double(int l, int c){
+static double** TONIGHT $throws __new_matrix_double(int l, int c){
 	double** m = malloc(l * sizeof(double*));
 	register int i;
 	if(!m)
@@ -1253,27 +1253,27 @@ static double** TONIGHT throws __new_matrix_double(int l, int c){
 	return (m);
 }
 
-static String** TONIGHT throws __new_matrix_String(int l, int c){
-	String** m = malloc(l * sizeof(String*));
+static string** TONIGHT $throws __new_matrix_String(int l, int c){
+	string** m = malloc(l * sizeof(string*));
 	register int i;
 	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to String matrix");
+		throw(MemoryAllocException, "Impossible allocate memory to string matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_String(c);
 	return (m);
 }
 
-static Object** TONIGHT throws __new_matrix_Object(int l, int c){
-	Object** m = malloc(l * sizeof(Object*));
+static object** TONIGHT $throws __new_matrix_Object(int l, int c){
+	object** m = malloc(l * sizeof(object*));
 	register int i;
 	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to String matrix");
+		throw(MemoryAllocException, "Impossible allocate memory to string matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_Object(c);
 	return (m);
 }
 
-static pointer** TONIGHT throws __new_matrix_pointer(int l, int c){
+static pointer** TONIGHT $throws __new_matrix_pointer(int l, int c){
 	pointer** m = malloc(l * sizeof(pointer*));
 	register int i;
 	if(!m)
@@ -1284,14 +1284,14 @@ static pointer** TONIGHT throws __new_matrix_pointer(int l, int c){
 }
 
 /* Functions to Convert */
-static char TONIGHT throws char_fromString(String s){
+static char TONIGHT $throws char_fromString(string s){
 	c = *s;
 	if(* ++ s)
 		throw(ConvertException, "Impossible to convert the string to a char");
 	return c;
 }
 
-static bool TONIGHT throws bool_fromString(String s){
+static bool TONIGHT $throws bool_fromString(string s){
 	if(equal(s, "true"))
 		return true;
 	if(equal(s, "false"))
@@ -1300,31 +1300,31 @@ static bool TONIGHT throws bool_fromString(String s){
 	return false;
 }
 
-static int TONIGHT throws int_fromString(String s){
-	String a;
+static int TONIGHT $throws int_fromString(string s){
+	string a;
 	i = (int)strtol(s, &a, 0);
 	if(*a)
 		throw(ConvertException, "Impossible to convert the string to integer");
 	return i;
 }
 
-static float TONIGHT throws float_fromString(String s){
-	String a;
+static float TONIGHT $throws float_fromString(string s){
+	string a;
 	f = strtof(s, &a);
 	if(*a)
 		throw(ConvertException, "Impossible to convert the string to float");
 	return f;
 }
 
-static double TONIGHT throws double_fromString(String s){
-	String a;
+static double TONIGHT $throws double_fromString(string s){
+	string a;
 	d = strtod(s, &a);
 	if(*a)
 		throw(ConvertException, "Impossible to convert the string to double");
 	return d;
 }
 
-static String TONIGHT String_formated(const String frmt, ...){
+static string TONIGHT String_formated(const string frmt, ...){
 	va_list v;
 	va_start(v, frmt);
 	vsprintf(str, frmt, v);
@@ -1334,8 +1334,8 @@ static String TONIGHT String_formated(const String frmt, ...){
 
 /* Tonight */
 const TONIGHT struct Resources Tonight = {
-	.std ={
-		.console = {
+	.Std ={
+		.Console = {
 			.input = {
 				__Scanner_nextChar,
 				__Scanner_nextInt,
@@ -1359,7 +1359,7 @@ const TONIGHT struct Resources Tonight = {
 				__Screen_clear
 			}
 		},
-		.file = {
+		.File = {
 			.input = {
 				__Scanner_file_nextChar,
 				__Scanner_file_nextInt,
@@ -1383,7 +1383,7 @@ const TONIGHT struct Resources Tonight = {
 				__Recorder_clear
 			}
 		},
-		.string = {
+		.String = {
 			.input = {
 				__Scanner_string_nextChar,
 				__Scanner_string_nextInt,
@@ -1407,7 +1407,7 @@ const TONIGHT struct Resources Tonight = {
 				__Default_void_function
 			}
 		},
-		.object = {
+		.Object = {
 			.input = {
 				__Scanner_object_nextChar,
 				__Scanner_object_nextInt,
@@ -1442,7 +1442,7 @@ const TONIGHT struct Resources Tonight = {
 			__Error_buffer,
 			__Error_clear
 		},
-		.random = {
+		.Random = {
 			.simple = {
 				__Random_simple_nextChar,
 				__Random_simple_nextInt,
@@ -1462,7 +1462,7 @@ const TONIGHT struct Resources Tonight = {
 				__Random_begin_end_nextDouble
 			}
 		},
-		.clock = {
+		.Clock = {
 			__Time_hours,
 			__Time_minutes,
 			__Time_seconds,
@@ -1473,7 +1473,7 @@ const TONIGHT struct Resources Tonight = {
 			__Time_year
 		}
 	},
-	.resources = {
+	.Resources = {
 		.Color = {
 			__Colors_text,
 			__Colors_background,
