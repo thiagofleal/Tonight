@@ -30,6 +30,7 @@ EXCEPTION TONIGHT GenericException = &___GenericException;
 static EXCEPTION_DEFINE ___AssertException = {"Assert fail", &GenericException};
 static EXCEPTION_DEFINE ___ErrnoException = {"Errno error", &GenericException};
 static EXCEPTION_DEFINE ___MemoryAllocException = {"Memory allocate error", &GenericException};
+static EXCEPTION_DEFINE ___ArrayIndexBoundException = {"Invalid array index", &GenericException};
 static EXCEPTION_DEFINE ___FileOpenException = {"file open error", &GenericException};
 static EXCEPTION_DEFINE ___InputException = {"Input error", &GenericException};
 static EXCEPTION_DEFINE ___ConvertException = {"Convert error", &GenericException};
@@ -38,6 +39,7 @@ static EXCEPTION_DEFINE ___NotImplementException = {"Not implemented method erro
 EXCEPTION TONIGHT AssertException = &___AssertException;
 EXCEPTION TONIGHT ErrnoException = &___ErrnoException;
 EXCEPTION TONIGHT MemoryAllocException = &___MemoryAllocException;
+EXCEPTION TONIGHT ArrayIndexBoundException = &___ArrayIndexBoundException;
 EXCEPTION TONIGHT FileOpenException = &___FileOpenException;
 EXCEPTION TONIGHT InputException = &___InputException;
 EXCEPTION TONIGHT ConvertException = &___ConvertException;
@@ -461,7 +463,7 @@ static string TONIGHT $throws __Scanner_nextLine(void){
 
 static string TONIGHT __Scanner_Password(int nchar){
 	int i = 0;
-	char* senha = new Array.Char(nchar + 1);
+	char* senha = Array.Char(nchar + 1);
 	while((senha[i] = Tonight.getKey()) != key_ENTER){
 		if(senha[i] != key_BS && i < nchar){
 			printf("*");
@@ -1058,237 +1060,204 @@ void TONIGHT delete(object self){
 	free(self);
 }
 
+
 /* Alloc pointers */
 static char* TONIGHT $throws __new_char(char value){
 	char* c = malloc(sizeof(char));
-	if(c){
+	if(c)
 		*c = value;
-		return (c);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to char");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to char");
+	return c;
 }
 
 static bool* TONIGHT $throws __new_bool(bool value){
 	bool *b = malloc(sizeof(bool));
-	if(b){
+	if(b)
 		*b = value;
-		return (b);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to bool");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to bool");
+	return b;
 }
 
 static int* TONIGHT $throws __new_int(int value){
 	int *i = malloc(sizeof(int));
-	if(i){
+	if(i)
 		*i = value;
-		return (i);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to int");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to int");
+	return i;
 }
 
 static float* TONIGHT $throws __new_float(float value){
 	float *f = malloc(sizeof(float));
-	if(f){
+	if(f)
 		*f = value;
-		return (f);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to float");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to float");
+	return f;
 }
 
 static double* TONIGHT $throws __new_double(double value){
 	double *d = malloc(sizeof(double));
-	if(d){
+	if(d)
 		*d = value;
-		return (d);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to double");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to double");
+	return d;
 }
 
 static string* TONIGHT $throws __new_String(string value){
 	string *s = malloc(sizeof(string));
-	if(s){
+	if(s)
 		*s = value;
-		return (s);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to string");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to string");
+	return s;
 }
 
 static pointer TONIGHT $throws __new_pointer(pointer value){
 	pointer *p = malloc(sizeof(pointer));
-	if(p){
+	if(p)
 		*p = value;
-		return (p);
-	}
-	throw(MemoryAllocException, "Impossible allocate memory to pointer");
-	return NULL;
+	else
+		throw(MemoryAllocException, "Impossible allocate memory to pointer");
+	return p;
 }
 
 static pointer TONIGHT $throws __new_memory(size_t q){
 	pointer *p = malloc(q);
-	if(p)
-		return (p);
-	throw(MemoryAllocException, "Impossible allocate memory");
-	return NULL;
+	if(!p)
+		throw(MemoryAllocException, strerror(errno));
+	return p;
 }
 
 /* Initialize arrays */
-static char* TONIGHT $throws __new_array_char(int q){
-	char* c = malloc(q * sizeof(char));
-	if(c)
-		return (c);
-	throw(MemoryAllocException, "Impossible allocate memory to char array");
-	return NULL;
+
+static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
+	pointer p = __new_memory(sizeof(int) + sizeof(size_t) + size * lenght);
+	*(int*)p = lenght;
+	p += sizeof(int);
+	*(size_t*)p = size;
+	p += sizeof(size_t);
+	return p;
 }
 
-static bool* TONIGHT $throws __new_array_bool(int q){
-	bool* b = malloc(q * sizeof(bool));
-	if(b)
-		return (b);
-	throw(MemoryAllocException, "Impossible allocate memory to bool array");
-	return NULL;
+static INLINE char* TONIGHT $throws __new_array_char(int q){
+	return alloc_array(sizeof(char), q);
 }
 
-static int* TONIGHT $throws __new_array_int(int q){
-	int* i = malloc(q * sizeof(int));
-	if(i)
-		return (i);
-	throw(MemoryAllocException, "Impossible allocate memory to int array");
-	return NULL;
+static INLINE bool* TONIGHT $throws __new_array_bool(int q){
+	return alloc_array(sizeof(bool), q);
 }
 
-static float* TONIGHT $throws __new_array_float(int q){
-	float* f = malloc(q * sizeof(float));
-	if(f)
-		return (f);
-	throw(MemoryAllocException, "Impossible allocate memory to float array");
-	return NULL;
+static INLINE int* TONIGHT $throws __new_array_int(int q){
+	return alloc_array(sizeof(int), q);
 }
 
-static double* TONIGHT $throws __new_array_double(int q){
-	double* d = malloc(q * sizeof(double));
-	if(d)
-		return (d);
-	throw(MemoryAllocException, "Impossible allocate memory to double array");
-	return NULL;
+static INLINE float* TONIGHT $throws __new_array_float(int q){
+	return alloc_array(sizeof(float), q);
 }
 
-static string* TONIGHT $throws __new_array_String(int q){
-	string* s = malloc(q * sizeof(string));
-	if(s)
-		return (s);
-	throw(MemoryAllocException, "Impossible allocate memory to string array");
-	return NULL;
+static INLINE double* TONIGHT $throws __new_array_double(int q){
+	return alloc_array(sizeof(double), q);
 }
 
-static object* TONIGHT $throws __new_array_Object(int q){
-	object* o = malloc(q * sizeof(object));
-	if(o)
-		return (o);
-	throw(MemoryAllocException, "Impossible allocate memory to object array");
-	return NULL;
+static INLINE string* TONIGHT $throws __new_array_String(int q){
+	return alloc_array(sizeof(string), q);
 }
 
-static pointer* TONIGHT $throws __new_array_pointer(int q){
-	pointer *p = malloc(q * sizeof(pointer));
-	if(p)
-		return (p);
-	throw(MemoryAllocException, "Impossible allocate memory to pointer array");
-	return NULL;
+static INLINE object* TONIGHT $throws __new_array_Object(int q){
+	return alloc_array(sizeof(object), q);
+}
+
+static INLINE pointer* TONIGHT $throws __new_array_pointer(int q){
+	return alloc_array(sizeof(pointer), q);
+}
+
+static INLINE pointer TONIGHT $throws __new_array_generic(size_t size, int q){
+	return alloc_array(size, q);
 }
 
 /* Initialize matrixes */
 static char** TONIGHT $throws __new_matrix_char(int l, int c){
-	char** m = malloc(l * sizeof(char*));
+	char** m = alloc_array(sizeof(char*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to char matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_char(c);
-	return (m);
+	return m;
 }
 
 static bool** TONIGHT $throws __new_matrix_bool(int l, int c){
-	bool** m = malloc(l * sizeof(bool*));
+	bool** m = alloc_array(sizeof(bool*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to bool matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_bool(c);
-	return (m);
+	return m;
 }
 
 static int** TONIGHT $throws __new_matrix_int(int l, int c){
-	int** m = malloc(l * sizeof(int*));
+	int** m = alloc_array(sizeof(int*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to int matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_int(c);
-	return (m);
+	return m;
 }
 
 static float** TONIGHT $throws __new_matrix_float(int l, int c){
-	float** m = malloc(l * sizeof(float*));
+	float** m = alloc_array(sizeof(float*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to float matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_float(c);
-	return (m);
+	return m;
 }
 
 static double** TONIGHT $throws __new_matrix_double(int l, int c){
-	double** m = malloc(l * sizeof(double*));
+	double** m = alloc_array(sizeof(double*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to double matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_double(c);
-	return (m);
+	return m;
 }
 
 static string** TONIGHT $throws __new_matrix_String(int l, int c){
-	string** m = malloc(l * sizeof(string*));
+	string** m = alloc_array(sizeof(string*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to string matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_String(c);
-	return (m);
+	return m;
 }
 
 static object** TONIGHT $throws __new_matrix_Object(int l, int c){
-	object** m = malloc(l * sizeof(object*));
+	object** m = alloc_array(sizeof(object*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to string matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_Object(c);
-	return (m);
+	return m;
 }
 
 static pointer** TONIGHT $throws __new_matrix_pointer(int l, int c){
-	pointer** m = malloc(l * sizeof(pointer*));
+	pointer** m = alloc_array(sizeof(pointer*), l);
 	register int i;
-	if(!m)
-		throw(MemoryAllocException, "Impossible allocate memory to pointer matrix");
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_pointer(c);
-	return (m);
+	return m;
+}
+
+static pointer TONIGHT $throws __new_matrix_generic(size_t size, int l, int c){
+	pointer** m = alloc_array(sizeof(pointer*), l);
+	register int i;
+	for(i = 0; i < l; i++)
+		m[i] = __new_array_generic(size, c);
+	return m;
 }
 
 /* Functions to Convert */
-static char TONIGHT $throws char_fromString(string s){
-	c = *s;
+static char TONIGHT char_fromString(string s){
+	char ret = *s;
 	if(* ++ s)
 		throw(ConvertException, "Impossible to convert the string to a char");
-	return c;
+	return ret;
 }
 
 static bool TONIGHT $throws bool_fromString(string s){
@@ -1301,6 +1270,7 @@ static bool TONIGHT $throws bool_fromString(string s){
 }
 
 static int TONIGHT $throws int_fromString(string s){
+	int i;
 	string a;
 	i = (int)strtol(s, &a, 0);
 	if(*a)
@@ -1309,6 +1279,7 @@ static int TONIGHT $throws int_fromString(string s){
 }
 
 static float TONIGHT $throws float_fromString(string s){
+	float f;
 	string a;
 	f = strtof(s, &a);
 	if(*a)
@@ -1317,6 +1288,7 @@ static float TONIGHT $throws float_fromString(string s){
 }
 
 static double TONIGHT $throws double_fromString(string s){
+	double d;
 	string a;
 	d = strtod(s, &a);
 	if(*a)
@@ -1325,10 +1297,43 @@ static double TONIGHT $throws double_fromString(string s){
 }
 
 static string TONIGHT String_formated(const string frmt, ...){
+	static char s[1001];
 	va_list v;
 	va_start(v, frmt);
-	vsprintf(str, frmt, v);
+	vsprintf(s, frmt, v);
 	va_end(v);
+	return toString(s);
+}
+
+/* Functions to Array */
+static INLINE int TONIGHT Array_length(pointer array){
+	return *(int*)(array - sizeof(size_t) - sizeof(int));
+}
+
+static INLINE size_t TONIGHT Array_size(pointer array){
+	return *(size_t*)(array - sizeof(size_t));
+}
+
+static pointer TONIGHT $throws Array_access(pointer array, int index){
+	int lenght = Array_length(array);
+	size_t size = Array_size(array);
+	if(index < 0 || index >= lenght)
+		throw(ArrayIndexBoundException, "Index out of array bounds");
+	return array + index * size;
+}
+
+static INLINE void TONIGHT Array_free(pointer array){
+	free(array - sizeof(int) - sizeof(size_t));
+}
+
+static string TONIGHT Array_toString(pointer array, P_retString method){
+	static char str[1001];
+	register int i, length = Array_length(array);
+	*str = 0;
+	strcat(str, "[");
+	for(i=0;i<length;i++)
+		strncat(strncat(str, getText(method(Array_access(array, i))), 1001), ", ", 1001);
+	str[strlen(str) - 2] = ']';
 	return toString(str);
 }
 
@@ -1336,7 +1341,7 @@ static string TONIGHT String_formated(const string frmt, ...){
 const TONIGHT struct Resources Tonight = {
 	.Std ={
 		.Console = {
-			.input = {
+			.Input = {
 				__Scanner_nextChar,
 				__Scanner_nextInt,
 				__Scanner_nextFloat,
@@ -1347,7 +1352,7 @@ const TONIGHT struct Resources Tonight = {
 				__Scanner_ignore,
 				__Scanner_ignoreChar
 			},
-			.output = {
+			.Output = {
 				__Screen_text,
 				__Screen_textln,
 				__Screen_print,
@@ -1360,7 +1365,7 @@ const TONIGHT struct Resources Tonight = {
 			}
 		},
 		.File = {
-			.input = {
+			.Input = {
 				__Scanner_file_nextChar,
 				__Scanner_file_nextInt,
 				__Scanner_file_nextFloat,
@@ -1371,7 +1376,7 @@ const TONIGHT struct Resources Tonight = {
 				__Scanner_file_ignore,
 				__Scanner_file_ignoreChar
 			},
-			.output = {
+			.Output = {
 				__Recorder_text,
 				__Recorder_textln,
 				__Recorder_print,
@@ -1384,7 +1389,7 @@ const TONIGHT struct Resources Tonight = {
 			}
 		},
 		.String = {
-			.input = {
+			.Input = {
 				__Scanner_string_nextChar,
 				__Scanner_string_nextInt,
 				__Scanner_string_nextFloat,
@@ -1395,7 +1400,7 @@ const TONIGHT struct Resources Tonight = {
 				__Scanner_string_ignore,
 				__Scanner_string_ignoreChar
 			},
-			.output = {
+			.Output = {
 				__String_text,
 				__String_textln,
 				__String_print,
@@ -1408,7 +1413,7 @@ const TONIGHT struct Resources Tonight = {
 			}
 		},
 		.Object = {
-			.input = {
+			.Input = {
 				__Scanner_object_nextChar,
 				__Scanner_object_nextInt,
 				__Scanner_object_nextFloat,
@@ -1419,7 +1424,7 @@ const TONIGHT struct Resources Tonight = {
 				__Scanner_object_ignore,
 				__Scanner_object_ignoreChar
 			},
-			.output = {
+			.Output = {
 				__Object_text,
 				__Object_textln,
 				__Object_print,
@@ -1431,7 +1436,7 @@ const TONIGHT struct Resources Tonight = {
 				__Object_clear
 			}
 		},
-		.error = {
+		.Error = {
 			__Error_text,
 			__Error_textln,
 			__Error_print,
@@ -1443,19 +1448,19 @@ const TONIGHT struct Resources Tonight = {
 			__Error_clear
 		},
 		.Random = {
-			.simple = {
+			.Simple = {
 				__Random_simple_nextChar,
 				__Random_simple_nextInt,
 				__Random_simple_nextFloat,
 				__Random_simple_nextDouble
 			},
-			.limit = {
+			.Limit = {
 				__Random_end_nextChar,
 				__Random_end_nextInt,
 				__Random_end_nextFloat,
 				__Random_end_nextDouble
 			},
-			.range = {
+			.Range = {
 				__Random_begin_end_nextChar,
 				__Random_begin_end_nextInt,
 				__Random_begin_end_nextFloat,
@@ -1526,26 +1531,37 @@ const TONIGHT struct __New New = {
 	__new_double,
 	__new_String,
 	__new_pointer,
-	__new_memory,
+	__new_memory
+};
+
+/* Array */
+const struct __Array Array = {
+	.length = Array_length,
+	.size = Array_size,
+	.access = Array_access,
+	.free = Array_free,
+	.toString = Array_toString,
 	
-	{
-		__new_array_char,
-		__new_array_bool,
-		__new_array_int,
-		__new_array_float,
-		__new_array_double,
-		__new_array_String,
-		__new_array_Object,
-		__new_array_pointer
-	},
-	{
-		__new_matrix_char,
-		__new_matrix_bool,
-		__new_matrix_int,
-		__new_matrix_float,
-		__new_matrix_double,
-		__new_matrix_String,
-		__new_matrix_Object,
-		__new_matrix_pointer
-	}
+	.Char = __new_array_char,
+	.Bool = __new_array_bool,
+	.Int = __new_array_int,
+	.Float = __new_array_float,
+	.Double = __new_array_double,
+	.String = __new_array_String,
+	.Object = __new_array_Object,
+	.Pointer = __new_array_pointer,
+	.Generic = __new_array_generic
+};
+
+/* Matrix */
+const struct __Matrix Matrix = {
+	.Char = __new_matrix_char,
+	.Bool = __new_matrix_bool,
+	.Int = __new_matrix_int,
+	.Float = __new_matrix_float,
+	.Double = __new_matrix_double,
+	.String = __new_matrix_String,
+	.Object = __new_matrix_Object,
+	.Pointer = __new_matrix_pointer,
+	.Generic = __new_matrix_generic
 };

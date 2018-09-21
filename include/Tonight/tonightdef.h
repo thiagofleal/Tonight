@@ -91,6 +91,10 @@
 
 #	define __using__(_type, _from, _as)	_type _as = ((_type)(_from))
 #	define using(__arg__)	__using__(__arg__)
+
+#	define __foreach__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
+#	define	foreach(_args_)	__foreach__(_args_)
+
 #	define $in	,
 #	define $as	,
 
@@ -174,13 +178,13 @@
 		pointer newLine;
 		pointer newMultipleLines;
 		pointer SetBuffer;
-		pointer clearOutputBuffer;
+		pointer ClearOutputBuffer;
 	}Output;
 	
 	/* struct IO */
 	struct IO{
-		Input input;
-		Output output;
+		Input Input;
+		Output Output;
 	};
 	
 	/* Class Scanner */
@@ -308,28 +312,36 @@
 		string* (*String)(string);
 		pointer (*Pointer)(pointer);
 		pointer (*Memory)(size_t);
+	};
+	
+	struct __Array{
+		int		(* length)(pointer);
+		size_t	(* size)(pointer);
+		pointer	(* access)(pointer, int);
+		void	(* free)(pointer);
+		string	(* toString)(pointer, P_retString);
 		
-		struct{
-			char* (*Char)(int);
-			bool* (*Bool)(int);
-			int* (*Int)(int);
-			float* (*Float)(int);
-			double* (*Double)(int);
-			string* (*String)(int);
-			object* (*object)(int);
-			pointer* (*Pointer)(int);
-		}Array;
-		
-		struct{
-			char** (*Char)(int, int);
-			bool** (*Bool)(int, int);
-			int** (*Int)(int, int);
-			float** (*Float)(int, int);
-			double** (*Double)(int, int);
-			string** (*String)(int, int);
-			object** (*object)(int, int);
-			pointer** (*Pointer)(int, int);
-		}Matrix;
+		char* (*Char)(int);
+		bool* (*Bool)(int);
+		int* (*Int)(int);
+		float* (*Float)(int);
+		double* (*Double)(int);
+		string* (*String)(int);
+		object* (*Object)(int);
+		pointer* (*Pointer)(int);
+		pointer	(*Generic)(size_t, int);
+	};
+	
+	struct __Matrix{
+		char** (*Char)(int, int);
+		bool** (*Bool)(int, int);
+		int** (*Int)(int, int);
+		float** (*Float)(int, int);
+		double** (*Double)(int, int);
+		string** (*String)(int, int);
+		object** (*Object)(int, int);
+		pointer** (*Pointer)(int, int);
+		pointer	(*Generic)(size_t, int, int);
 	};
 	
 	/* struct Resources */
@@ -339,18 +351,17 @@
 			const struct IO File;
 			const struct IO String;
 			const struct IO Object;
-			const Output error;
+			const Output Error;
 			const struct{
-				RandomicMaker simple;
-				RandomicMaker limit;
-				RandomicMaker range;
+				RandomicMaker Simple;
+				RandomicMaker Limit;
+				RandomicMaker Range;
 			}Random;
 			const TimerCreate Clock;
 		}Std;
 		
 		const struct{
 			ColorCreate Color;
-			Output Box;
 		}Resources;
 		
 		const Conversor Convert;

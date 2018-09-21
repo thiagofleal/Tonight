@@ -29,6 +29,8 @@
 	
 			/* Objects */
 			extern const TONIGHT struct __New New;
+			extern const TONIGHT struct __Array Array;
+			extern const TONIGHT struct __Matrix Matrix;
 			extern const TONIGHT struct Resources Tonight;
 			
 			/* Exceptions */
@@ -36,6 +38,7 @@
 			extern EXCEPTION TONIGHT AssertException;
 			extern EXCEPTION TONIGHT ErrnoException;
 			extern EXCEPTION TONIGHT MemoryAllocException;
+			extern EXCEPTION TONIGHT ArrayIndexBoundException;
 			extern EXCEPTION TONIGHT FileOpenException;
 			extern EXCEPTION TONIGHT InputException;
 			extern EXCEPTION TONIGHT ConvertException;
