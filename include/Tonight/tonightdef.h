@@ -98,6 +98,15 @@
 #	define $in	,
 #	define $as	,
 
+#	define	$c(arg)	getText(cs(arg))
+#	define	$b(arg)	getText(bs(arg))
+#	define	$i(arg)	getText(is(arg))
+#	define	$f(arg)	getText(fs(arg))
+#	define	$d(arg)	getText(ds(arg))
+#	define	$s(arg)	getText(arg)
+#	define	$ff(arg, n)	getText(fs(arg, n))
+#	define	$df(arg, n)	getText(ds(arg, n))
+
 /* data types definitions */
 #	ifndef __cplusplus
 		typedef unsigned char bool;
