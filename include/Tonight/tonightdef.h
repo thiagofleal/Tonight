@@ -95,6 +95,13 @@
 #	define __foreach__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
 #	define	foreach(_args_)	__foreach__(_args_)
 
+#	define __Init__(funcMain, funcAux)	\
+	int funcMain(string ARRAY);\
+	int main(int argc, string argv[]){\
+		return funcAux(funcMain, argc, argv);\
+	}
+#	define Init(__arg__)	__Init__(__arg__)
+
 #	define $in	,
 #	define $as	,
 
@@ -104,8 +111,19 @@
 #	define	$f(arg)	getText(fs(arg))
 #	define	$d(arg)	getText(ds(arg))
 #	define	$s(arg)	getText(arg)
-#	define	$ff(arg, n)	getText(fs(arg, n))
-#	define	$df(arg, n)	getText(ds(arg, n))
+#	define	$ff(arg, n)	getText(fsf(arg, n))
+#	define	$df(arg, n)	getText(dsf(arg, n))
+#	define	$(format, args...)	getText(formated(format, args))
+
+#	define	$lc(arg)	getText(cls(arg))
+#	define	$lb(arg)	getText(bls(arg))
+#	define	$li(arg)	getText(ils(arg))
+#	define	$lf(arg)	getText(fls(arg))
+#	define	$ld(arg)	getText(dls(arg))
+#	define	$ls(arg)	getText(arg)
+#	define	$lff(arg, n)	getText(flsf(arg, n))
+#	define	$ldf(arg, n)	getText(dlsf(arg, n))
+#	define	$l(format, args...)	getText(longFormated(format, args))
 
 /* data types definitions */
 #	ifndef __cplusplus
@@ -114,7 +132,7 @@
 #		define false	0x0
 #	endif
 	typedef char* string;
-	typedef void* pointer;
+	typedef void *pointer, *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
 	typedef void (*P_void)	(OptionalArgs);
 	typedef char (*P_char)	(OptionalArgs);
@@ -125,8 +143,6 @@
 	typedef char* (*P_string)	(OptionalArgs);
 	typedef void* (*P_pointer)(OptionalArgs);
 	typedef object (*P_object)	(OptionalArgs);
-	
-	typedef FILE *file;
 	
 	typedef struct{
 		char Text[101];
@@ -351,6 +367,25 @@
 		object** (*Object)(int, int);
 		pointer** (*Pointer)(int, int);
 		pointer	(*Generic)(size_t, int, int);
+	};
+	
+	/* Keys */
+	struct __Key{
+		int Right;
+		int Left;
+		int Up;
+		int Down;
+		int Escape;
+		int Enter;
+		int Space;
+		int BackSpace;
+	};
+	
+	/* Exit codes */
+	struct __Exit{
+		int Success;
+		int Failure;
+		void (* Now)(int);
 	};
 	
 	/* struct Resources */

@@ -11,7 +11,6 @@
 #include <sys/select.h>
 #include <sys/ioctl.h>
 #include <stropts.h>
-
 #include "tonight.h"
 
 static char c;
@@ -31,7 +30,7 @@ static EXCEPTION_DEFINE ___AssertException = {"Assert fail", &GenericException};
 static EXCEPTION_DEFINE ___ErrnoException = {"Errno error", &GenericException};
 static EXCEPTION_DEFINE ___MemoryAllocException = {"Memory allocate error", &GenericException};
 static EXCEPTION_DEFINE ___ArrayIndexBoundException = {"Invalid array index", &GenericException};
-static EXCEPTION_DEFINE ___FileOpenException = {"file open error", &GenericException};
+static EXCEPTION_DEFINE ___FileOpenException = {"File open error", &GenericException};
 static EXCEPTION_DEFINE ___InputException = {"Input error", &GenericException};
 static EXCEPTION_DEFINE ___ConvertException = {"Convert error", &GenericException};
 static EXCEPTION_DEFINE ___NotImplementException = {"Not implemented method error", &GenericException};
@@ -289,8 +288,12 @@ INLINE static void __initRandom(void){
 	srand((unsigned int)time(NULL));
 }
 
-INLINE string TONIGHT toString(char ARRAY __array){
-	return strcpy(malloc((strlen(__array) + 1) * sizeof(char)), __array);
+static INLINE string TONIGHT __concatString(char dest[], char from[], int length){
+	return strncat(dest, from, length - strlen(dest) - 1);
+}
+
+INLINE string TONIGHT toString(register char ARRAY __array){
+	return strcpy(new Memory((strlen(__array) + 1) * sizeof(char)), __array);
 }
 
 string TONIGHT concat(string wrd_1, ...){
@@ -300,7 +303,7 @@ string TONIGHT concat(string wrd_1, ...){
 	*s = 0;
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, string))
-	strcat(s, p);
+		__concatString(s, p, sizeof s);
 	va_end(va);
 	return toString(s);
 }
@@ -312,7 +315,7 @@ retString TONIGHT retConcat(string wrd_1, ...){
 	*ret.Text = 0;
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, string))
-	strcat(ret.Text, p);
+		__concatString(ret.Text, p, sizeof ret);
 	va_end(va);
 	return ret;
 }
@@ -334,7 +337,7 @@ bool TONIGHT equal(register string const wrd_1, register string const wrd_2){
 }
 
 string TONIGHT s_cs(char var){
-	register char *s = (char*)calloc(2, sizeof(char));
+	register char *s = calloc(2, sizeof(char));
 	*s = var;
 	return (s);
 }
@@ -345,25 +348,26 @@ string TONIGHT s_bs(bool var){
 
 string TONIGHT s_is(int var){
 	static char s[15];
-	sprintf(s, "%i", var);
+	snprintf(s, sizeof s, "%i", var);
 	return toString(s);
 }
 
 string TONIGHT s_fsf(float var, int _decimal){
 	static char s[100];
-	sprintf(s, "%.*f", _decimal, var);
+	snprintf(s, sizeof s, "%.*f", _decimal, var);
 	return toString(s);
 }
 
 string TONIGHT s_dsf(double var, int _decimal){
 	static char s[100];
-	sprintf(s, "%.*lf", _decimal, var);
+	snprintf(s, sizeof s, "%.*lf", _decimal, var);
 	return toString(s);
 }
 
 string TONIGHT s_ds(double var){
+	double n;
 	static char s[100];
-	sprintf(s, "%.10g", var);
+	snprintf(s, sizeof s, "%.10g", var);
 	return toString(s);
 }
 
@@ -374,7 +378,7 @@ INLINE string TONIGHT s_fs(float var){
 retString TONIGHT cs(char var){
 	register char *s = s_cs(var);
 	static retString ret;
-	strcpy(ret.Text, s);
+	strncpy(ret.Text, s, sizeof ret);
 	free(s);
 	return ret;
 }
@@ -382,7 +386,7 @@ retString TONIGHT cs(char var){
 retString TONIGHT bs(bool var){
 	register char *s = s_bs(var);
 	static retString ret;
-	strcpy(ret.Text, s);
+	strncpy(ret.Text, s, sizeof ret);
 	free(s);
 	return ret;
 }
@@ -390,7 +394,7 @@ retString TONIGHT bs(bool var){
 retString TONIGHT is(int var){
 	register char *s = s_is(var);
 	static retString ret;
-	strcpy(ret.Text, s);
+	strncpy(ret.Text, s, sizeof ret);
 	free(s);
 	return ret;
 }
@@ -398,7 +402,7 @@ retString TONIGHT is(int var){
 retString TONIGHT fsf(float var, int _decimal){
 	register char *s = s_fsf(var, _decimal);
 	static retString ret;
-	strcpy(ret.Text, s);
+	strncpy(ret.Text, s, sizeof ret);
 	free(s);
 	return ret;
 }
@@ -406,7 +410,7 @@ retString TONIGHT fsf(float var, int _decimal){
 retString TONIGHT dsf(double var, int _decimal){
 	register char *s = s_dsf(var, _decimal);
 	static retString ret;
-	strcpy(ret.Text, s);
+	strncpy(ret.Text, s, sizeof ret);
 	free(s);
 	return ret;
 }
@@ -414,13 +418,99 @@ retString TONIGHT dsf(double var, int _decimal){
 retString TONIGHT ds(double var){
 	register char *s = s_ds(var);
 	static retString ret;
-	strcpy(ret.Text, s);
+	strncpy(ret.Text, s, sizeof ret);
 	free(s);
 	return ret;
 }
 
 INLINE retString TONIGHT fs(float var){
 	return ds((double)var);
+}
+
+long_retString TONIGHT longRetConcat(string wrd_1, ...){
+	va_list va;
+	string p;
+	static long_retString ret;
+	*ret.Text = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		__concatString(ret.Text, p, sizeof ret);
+	va_end(va);
+	return ret;
+}
+
+long_retString TONIGHT cls(char var){
+	register char *s = s_cs(var);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+long_retString TONIGHT bls(bool var){
+	register char *s = s_bs(var);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+long_retString TONIGHT ils(int var){
+	register char *s = s_is(var);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+long_retString TONIGHT fls(float var){
+	register char *s = s_fs(var);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+long_retString TONIGHT dls(double var){
+	register char *s = s_ds(var);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+long_retString TONIGHT flsf(float var, int d){
+	register char *s = s_fsf(var, d);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+long_retString TONIGHT dlsf(double var, int d){
+	register char *s = s_dsf(var, d);
+	static long_retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	free(s);
+	return ret;
+}
+
+retString TONIGHT formated(const string format, ...){
+	va_list v;
+	retString ret;
+	va_start(v, format);
+	vsnprintf(ret.Text, sizeof ret, format, v);
+	va_end(v);
+	return ret;
+}
+
+long_retString TONIGHT longFormated(const string format, ...){
+	va_list v;
+	long_retString ret;
+	va_start(v, format);
+	vsnprintf(ret.Text, sizeof ret, format, v);
+	va_end(v);
+	return ret;
 }
 
 /* Functions to Tonight.std.Console.input */
@@ -1565,3 +1655,35 @@ const struct __Matrix Matrix = {
 	.Pointer = __new_matrix_pointer,
 	.Generic = __new_matrix_generic
 };
+
+/* Key */
+const struct __Key Key = {
+	.Right = key_right,
+	.Left = key_left,
+	.Up = key_up,
+	.Down = key_down,
+	.Escape = key_ESC,
+	.Enter = key_ENTER,
+	.Space = key_SPACE,
+	.BackSpace = key_BS
+};
+
+/* Exit */
+const struct __Exit Exit = {
+	.Success = EXIT_SUCCESS,
+	.Failure = EXIT_FAILURE,
+	.Now = exit
+};
+
+int TONIGHT TonightMode(P_int func, int argc, string argv[]){
+	register int i, ret;
+	string ARRAY arg = Array.String(argc);
+	for(i = 0; i < argc; i++)
+		arg[i] = argv[i];
+	TRY
+		ret = func(arg);
+	CATCH(GenericException)
+		ret = EXIT_FAILURE;
+	Array.free(arg);
+	return ret;
+}

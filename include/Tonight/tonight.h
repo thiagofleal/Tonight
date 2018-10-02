@@ -16,9 +16,7 @@
 #ifndef TONIGHT_LIBRARY
 #	define TONIGHT_LIBRARY
 
-#	include <stdio.h>
 #	include <setjmp.h>
-#	include <stdlib.h>
 
 #	ifdef __cplusplus
 		extern "C"{
@@ -26,11 +24,13 @@
 	
 #			include "tonightdef.h"
 #			include "tonightOO.h"
-	
+			
 			/* Objects */
 			extern const TONIGHT struct __New New;
 			extern const TONIGHT struct __Array Array;
 			extern const TONIGHT struct __Matrix Matrix;
+			extern const TONIGHT struct __Key Key;
+			extern const TONIGHT struct __Exit Exit;
 			extern const TONIGHT struct Resources Tonight;
 			
 			/* Exceptions */
@@ -60,7 +60,7 @@
 			
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);
-			extern string TONIGHT toString(char ARRAY);
+			extern string TONIGHT toString(char[]);
 			extern string TONIGHT concat(string, ...);
 			extern string TONIGHT s_cs(char);
 			extern string TONIGHT s_bs(bool);
@@ -78,6 +78,19 @@
 			extern retString TONIGHT ds(double);
 			extern retString TONIGHT fsf(float, int);
 			extern retString TONIGHT dsf(double, int);
+			extern retString TONIGHT formated(const string, ...);
+			
+			extern long_retString TONIGHT longRetConcat(string, ...);
+			extern long_retString TONIGHT cls(char);
+			extern long_retString TONIGHT bls(bool);
+			extern long_retString TONIGHT ils(int);
+			extern long_retString TONIGHT fls(float);
+			extern long_retString TONIGHT dls(double);
+			extern long_retString TONIGHT flsf(float, int);
+			extern long_retString TONIGHT dlsf(double, int);
+			extern long_retString TONIGHT longFormated(const string, ...);
+			
+			extern int TONIGHT TonightMode(P_int, int, string[]);
 	
 #	ifdef __cplusplus
 		}
