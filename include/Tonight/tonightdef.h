@@ -336,7 +336,6 @@
 		double* (*Double)(double);
 		string* (*String)(string);
 		pointer (*Pointer)(pointer);
-		pointer (*Memory)(size_t);
 	};
 	
 	struct __Array{
@@ -367,6 +366,13 @@
 		object** (*Object)(int, int);
 		pointer** (*Pointer)(int, int);
 		pointer	(*Generic)(size_t, int, int);
+	};
+	
+	struct __Memory{
+		pointer	(* alloc)(size_t);
+		size_t	(* size)(pointer);
+		pointer	(* copy)(pointer);
+		void	(* free)(pointer);
 	};
 	
 	/* Keys */

@@ -292,18 +292,33 @@ static INLINE string TONIGHT __concatString(char dest[], char from[], int length
 	return strncat(dest, from, length - strlen(dest) - 1);
 }
 
-INLINE string TONIGHT toString(register char ARRAY __array){
-	return strcpy(new Memory((strlen(__array) + 1) * sizeof(char)), __array);
+INLINE string TONIGHT toString(register char __array[]){
+	return strcpy(Memory.alloc((strlen(__array) + 1) * sizeof(char)), __array);
 }
 
 string TONIGHT concat(string wrd_1, ...){
 	va_list va;
 	static char s[1001];
-	string p;
+	static string p;
 	*s = 0;
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, string))
 		__concatString(s, p, sizeof s);
+	va_end(va);
+	return toString(s);
+}
+
+string TONIGHT nconcat(int size, string wrd_1, ...){
+	va_list va;
+	static char ARRAY s = NULL;
+	static string p;
+	if(s)
+		Array.free(s);
+	s = Array.Char(size + 1);
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		strcat(s, p);
 	va_end(va);
 	return toString(s);
 }
@@ -337,9 +352,8 @@ bool TONIGHT equal(register string const wrd_1, register string const wrd_2){
 }
 
 string TONIGHT s_cs(char var){
-	register char *s = calloc(2, sizeof(char));
-	*s = var;
-	return (s);
+	char c[] = {var, 0};
+	return toString(c);
 }
 
 string TONIGHT s_bs(bool var){
@@ -379,7 +393,7 @@ retString TONIGHT cs(char var){
 	register char *s = s_cs(var);
 	static retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -387,7 +401,7 @@ retString TONIGHT bs(bool var){
 	register char *s = s_bs(var);
 	static retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -395,7 +409,7 @@ retString TONIGHT is(int var){
 	register char *s = s_is(var);
 	static retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -403,7 +417,7 @@ retString TONIGHT fsf(float var, int _decimal){
 	register char *s = s_fsf(var, _decimal);
 	static retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -411,7 +425,7 @@ retString TONIGHT dsf(double var, int _decimal){
 	register char *s = s_dsf(var, _decimal);
 	static retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -419,7 +433,7 @@ retString TONIGHT ds(double var){
 	register char *s = s_ds(var);
 	static retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -451,7 +465,7 @@ long_retString TONIGHT bls(bool var){
 	register char *s = s_bs(var);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -459,7 +473,7 @@ long_retString TONIGHT ils(int var){
 	register char *s = s_is(var);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -467,7 +481,7 @@ long_retString TONIGHT fls(float var){
 	register char *s = s_fs(var);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -475,7 +489,7 @@ long_retString TONIGHT dls(double var){
 	register char *s = s_ds(var);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -483,7 +497,7 @@ long_retString TONIGHT flsf(float var, int d){
 	register char *s = s_fsf(var, d);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -491,7 +505,7 @@ long_retString TONIGHT dlsf(double var, int d){
 	register char *s = s_dsf(var, d);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	Memory.free(s);
 	return ret;
 }
 
@@ -949,7 +963,7 @@ static INLINE void TONIGHT __Object_text(IWriter iWrt, object obj, string txt){
 static INLINE void TONIGHT __Object_textln(IWriter iWrt, object obj, string txt){
 	string s = concat(txt, "\n", $end);
 	iWrt.addText(obj, s);
-	free(s);
+	Memory.free(s);
 }
 
 static void TONIGHT __Object_print(IWriter iWrt, object obj, string txt, ...){
@@ -1027,7 +1041,7 @@ static INLINE int TONIGHT __Random_end_nextInt(int _end){
 
 static INLINE double TONIGHT __Random_end_nextDouble(double _end, int _decimal){
 	double d = floor((double)rand() / RAND_MAX * pow(10.0, _decimal)) / pow(10.0, _decimal);
-	return _decimal ? (rand() % (int)_end) * d : (double)(rand() % ((int)_end) + 1);
+	return _decimal ? ((rand() % (int)_end) + 1.0) * d : (double)(rand() % ((int)_end) + 1);
 }
 
 static INLINE float TONIGHT __Random_end_nextFloat(float _end, int _decimal){
@@ -1090,16 +1104,17 @@ static INLINE int TONIGHT __Time_year(void){
 }
 
 /* Functions to the Colors class */
-INLINE void TONIGHT __Colors_textbackground(int _tcolor, int _bcolor){
-	printf("\033[%im\033[%im", _bcolor + 39, _tcolor + 29);
+static INLINE void TONIGHT __Colors_textbackground(register int _tcolor, register int _bcolor){
+	WORD w = (0x0F & (text_color = _tcolor)) + ((0x0F & (background_color = _bcolor)) << 4);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), w);
 }
 
-INLINE void TONIGHT __Colors_text(int _color){
-	printf("\033[0m\033[%im", _color + 29);
+static INLINE void TONIGHT __Colors_text(int _color){
+	__Colors_textbackground((text_color = _color), background_color);
 }
 
-INLINE void TONIGHT __Colors_background(int _color){
-	printf("\033[%im\033[0m", _color + 39);
+static INLINE void TONIGHT __Colors_background(int _color){
+	__Colors_textbackground(text_color, (background_color = _color));
 }
 
 /* Initialize objects */
@@ -1125,17 +1140,16 @@ static INLINE Painter TONIGHT __new_Painter(ColorCreate father){
 
 static file TONIGHT $throws __new_File(string fName, string fMode){
 	file f = fopen(fName, fMode);
-	if(f)
-		return(f);
-	throw(FileOpenException, concat("Impossible to open the file \"", fName, "\"", $end));
-	return NULL;
+	if(!f)
+		throw(FileOpenException, concat("Impossible to open the file \"", fName, "\"", $end));
+	return f;
 }
 
 static object TONIGHT __new_Object(Class_Name name, ...){
 	va_list v;
-	object _new = new Memory(sizeof(Intern_Object));
+	object _new = Memory.alloc(sizeof(Intern_Object));
 	va_start(v, name);
-	_new->obj = new Memory(name->size);
+	_new->obj = Memory.alloc(name->size);
 	_new->class_pointer = name;
 	name->ctor(_new, &v);
 	va_end(v);
@@ -1147,90 +1161,83 @@ void TONIGHT delete(object self){
 		return;
 	if(self->class_pointer->dtor)
 		self->class_pointer->dtor(self);
-	free(self);
+	Memory.free(self);
 }
-
 
 /* Alloc pointers */
 static char* TONIGHT $throws __new_char(char value){
-	char* c = malloc(sizeof(char));
-	if(c)
-		*c = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to char");
+	char* c = Memory.alloc(sizeof(char));
+	*c = value;
 	return c;
 }
 
 static bool* TONIGHT $throws __new_bool(bool value){
-	bool *b = malloc(sizeof(bool));
-	if(b)
-		*b = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to bool");
+	bool *b = Memory.alloc(sizeof(bool));
+	*b = value;
 	return b;
 }
 
 static int* TONIGHT $throws __new_int(int value){
-	int *i = malloc(sizeof(int));
-	if(i)
-		*i = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to int");
+	int *i = Memory.alloc(sizeof(int));
+	*i = value;
 	return i;
 }
 
 static float* TONIGHT $throws __new_float(float value){
-	float *f = malloc(sizeof(float));
-	if(f)
-		*f = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to float");
+	float *f = Memory.alloc(sizeof(float));
+	*f = value;
 	return f;
 }
 
 static double* TONIGHT $throws __new_double(double value){
-	double *d = malloc(sizeof(double));
-	if(d)
-		*d = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to double");
+	double *d = Memory.alloc(sizeof(double));
+	*d = value;
 	return d;
 }
 
 static string* TONIGHT $throws __new_String(string value){
-	string *s = malloc(sizeof(string));
-	if(s)
-		*s = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to string");
+	string *s = Memory.alloc(sizeof(string));
+	*s = value;
 	return s;
 }
 
 static pointer TONIGHT $throws __new_pointer(pointer value){
-	pointer *p = malloc(sizeof(pointer));
-	if(p)
-		*p = value;
-	else
-		throw(MemoryAllocException, "Impossible allocate memory to pointer");
+	pointer *p = Memory.alloc(sizeof(pointer));
+	*p = value;
 	return p;
 }
 
 static pointer TONIGHT $throws __new_memory(size_t q){
-	pointer *p = malloc(q);
+	pointer p = malloc(q + sizeof(size_t));
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
-	return p;
+	*(size_t*)p = q;
+	return p + sizeof(size_t);
+}
+
+static INLINE size_t TONIGHT __memory_size(pointer mem){
+	return *(size_t*)(mem - sizeof(size_t));
+}
+
+static INLINE pointer TONIGHT __memory_copy(pointer mem) {
+	size_t size = Memory.size(mem);
+	return memcpy(Memory.alloc(size), mem, size);
+}
+
+static INLINE void TONIGHT __memory_free(pointer mem){
+	free(mem - sizeof(size_t));
 }
 
 /* Initialize arrays */
 
 static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
-	pointer p = __new_memory(sizeof(int) + sizeof(size_t) + size * lenght);
+	pointer p = malloc(sizeof(int) + sizeof(size_t) + size * lenght);
+	if(!p)
+		throw(MemoryAllocException, strerror(errno));
 	*(int*)p = lenght;
 	p += sizeof(int);
 	*(size_t*)p = size;
-	p += sizeof(size_t);
-	return p;
+	return p + sizeof(size_t);
 }
 
 static INLINE char* TONIGHT $throws __new_array_char(int q){
@@ -1417,12 +1424,15 @@ static INLINE void TONIGHT Array_free(pointer array){
 }
 
 static string TONIGHT Array_toString(pointer array, P_retString method){
-	static char str[1001];
+	static char ARRAY str = NULL;
 	register int i, length = Array_length(array);
+	if(str)
+		Array.free(str);
+	str = Array.Char(Array.size(array) * 3 * Array.length(array));
 	*str = 0;
 	strcat(str, "[");
 	for(i=0;i<length;i++)
-		strncat(strncat(str, getText(method(Array_access(array, i))), 1001), ", ", 1001);
+		strncat(strncat(str, getText(method(Array_access(array, i))), 1001), ", ", 1000 - strlen(str));
 	str[strlen(str) - 2] = ']';
 	return toString(str);
 }
@@ -1620,8 +1630,7 @@ const TONIGHT struct __New New = {
 	__new_float,
 	__new_double,
 	__new_String,
-	__new_pointer,
-	__new_memory
+	__new_pointer
 };
 
 /* Array */
@@ -1654,6 +1663,13 @@ const struct __Matrix Matrix = {
 	.Object = __new_matrix_Object,
 	.Pointer = __new_matrix_pointer,
 	.Generic = __new_matrix_generic
+};
+
+const struct __Memory Memory = {
+	.alloc = __new_memory,
+	.size = __memory_size,
+	.copy = __memory_copy,
+	.free = __memory_free
 };
 
 /* Key */

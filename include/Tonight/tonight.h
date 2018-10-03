@@ -29,6 +29,7 @@
 			extern const TONIGHT struct __New New;
 			extern const TONIGHT struct __Array Array;
 			extern const TONIGHT struct __Matrix Matrix;
+			extern const TONIGHT struct __Memory Memory;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
 			extern const TONIGHT struct Resources Tonight;
@@ -62,6 +63,7 @@
 			extern bool TONIGHT equal(register string const, register string const);
 			extern string TONIGHT toString(char[]);
 			extern string TONIGHT concat(string, ...);
+			extern string TONIGHT nconcat(int, string, ...);
 			extern string TONIGHT s_cs(char);
 			extern string TONIGHT s_bs(bool);
 			extern string TONIGHT s_is(int);
