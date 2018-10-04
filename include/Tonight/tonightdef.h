@@ -326,7 +326,6 @@
 		Random (*Random)(RandomicMaker);
 		Timer (*Timer)(TimerCreate);
 		Painter (*Painter)(ColorCreate);
-		file (*File)(string, string);
 		object (*Object)(Class_Name, ...);
 		
 		char* (*Char)(char);
@@ -373,6 +372,17 @@
 		size_t	(* size)(pointer);
 		pointer	(* copy)(pointer);
 		void	(* free)(pointer);
+	};
+	
+	struct __File{
+		file (* open)(string, string);
+		void (* close)(file);
+		bool (* end)(file);
+		
+		const struct{
+			const string read;
+			const string write;
+		}Mode;
 	};
 	
 	/* Keys */

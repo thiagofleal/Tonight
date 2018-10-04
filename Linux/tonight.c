@@ -1621,7 +1621,6 @@ const TONIGHT struct __New New = {
 	__new_Random,
 	__new_Timer,
 	__new_Painter,
-	__new_File,
 	__new_Object,
 	
 	__new_char,
@@ -1670,6 +1669,15 @@ const struct __Memory Memory = {
 	.size = __memory_size,
 	.copy = __memory_copy,
 	.free = __memory_free
+};
+
+/* File */
+const struct __File File = {
+	.open = __new_File,
+	.close = (pointer)fclose,
+	.end = (pointer)feof,
+	.Mode.read = "r",
+	.Mode.write = "w"
 };
 
 /* Key */
