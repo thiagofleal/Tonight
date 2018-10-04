@@ -89,7 +89,7 @@
 #		define OptionalArgs
 #	endif
 
-#	define __using__(_type, _from, _as)	_type _as = ((_type)(_from))
+#	define __using__(_type, _from, _as)	const _type _as = ((_type)(_from))
 #	define using(__arg__)	__using__(__arg__)
 
 #	define __foreach__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
