@@ -75,6 +75,7 @@
 #		define catch	CATCH
 #		define finally	FINALLY
 #		define throw	THROW
+#		define using	USING
 #	endif
 
 #	if (defined __GNUC_GNU_INLINE || defined __cplusplus)
@@ -90,7 +91,7 @@
 #	endif
 
 #	define __using__(_type, _from, _as)	const _type _as = ((_type)(_from))
-#	define using(__arg__)	__using__(__arg__)
+#	define USING(__arg__)	__using__(__arg__)
 
 #	define __foreach__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
 #	define	foreach(_args_)	__foreach__(_args_)
@@ -131,6 +132,7 @@
 #		define true	0x1
 #		define false	0x0
 #	endif
+	typedef unsigned char byte;
 	typedef char* string;
 	typedef void *pointer, *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
@@ -307,11 +309,13 @@
 	/* Conversor */
 	typedef struct{
 		char (*toChar)(string);
+		byte (*toByte)(string);
 		bool (*toBool)(string);
 		int (*toInt)(string);
 		float (*toFloat)(string);
 		double (*toDouble)(string);
 		string (*fromChar)(char);
+		string (*fromByte)(byte);
 		string (*fromBool)(bool);
 		string (*fromInt)(int);
 		string (*fromFloat)(float);
@@ -329,6 +333,7 @@
 		object (*Object)(Class_Name, ...);
 		
 		char* (*Char)(char);
+		byte* (*Byte)(byte);
 		bool* (*Bool)(bool);
 		int* (*Int)(int);
 		float* (*Float)(float);
@@ -343,8 +348,10 @@
 		pointer	(* access)(pointer, int);
 		void	(* free)(pointer);
 		string	(* toString)(pointer, P_retString);
+		pointer	(* convert)(pointer, size_t);
 		
 		char* (*Char)(int);
+		byte* (*Byte)(int);
 		bool* (*Bool)(int);
 		int* (*Int)(int);
 		float* (*Float)(int);
@@ -357,6 +364,7 @@
 	
 	struct __Matrix{
 		char** (*Char)(int, int);
+		byte** (*Byte)(int, int);
 		bool** (*Bool)(int, int);
 		int** (*Int)(int, int);
 		float** (*Float)(int, int);

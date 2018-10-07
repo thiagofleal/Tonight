@@ -21,7 +21,8 @@
 #	ifdef __cplusplus
 		extern "C"{
 #	endif
-	
+
+#			include <stddef.h>
 #			include "tonightdef.h"
 #			include "tonightOO.h"
 			

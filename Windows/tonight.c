@@ -25,23 +25,14 @@ static int text_color = 7, background_color = 0;
 static EXCEPTION_DEFINE ___GenericException = {"Generic exception throwed", NULL};
 EXCEPTION TONIGHT GenericException = &___GenericException;
 
-static EXCEPTION_DEFINE ___AssertException = {"Assert fail", &GenericException};
-static EXCEPTION_DEFINE ___ErrnoException = {"Errno error", &GenericException};
-static EXCEPTION_DEFINE ___MemoryAllocException = {"Memory allocate error", &GenericException};
-static EXCEPTION_DEFINE ___ArrayIndexBoundException = {"Invalid array index", &GenericException};
-static EXCEPTION_DEFINE ___FileOpenException = {"File open error", &GenericException};
-static EXCEPTION_DEFINE ___InputException = {"Input error", &GenericException};
-static EXCEPTION_DEFINE ___ConvertException = {"Convert error", &GenericException};
-static EXCEPTION_DEFINE ___NotImplementException = {"Not implemented method error", &GenericException};
-
-EXCEPTION TONIGHT AssertException = &___AssertException;
-EXCEPTION TONIGHT ErrnoException = &___ErrnoException;
-EXCEPTION TONIGHT MemoryAllocException = &___MemoryAllocException;
-EXCEPTION TONIGHT ArrayIndexBoundException = &___ArrayIndexBoundException;
-EXCEPTION TONIGHT FileOpenException = &___FileOpenException;
-EXCEPTION TONIGHT InputException = &___InputException;
-EXCEPTION TONIGHT ConvertException = &___ConvertException;
-EXCEPTION TONIGHT NotImplementException = &___NotImplementException;
+static Define_Exception(AssertException, "Assert fail", GenericException);
+static Define_Exception(ErrnoException, "Errno error", GenericException);
+static Define_Exception(MemoryAllocException, "Memory allocate error", GenericException);
+static Define_Exception(ArrayIndexBoundException, "Invalid array index", GenericException);
+static Define_Exception(FileOpenException, "File open error", GenericException);
+static Define_Exception(InputException, "Input error", GenericException);
+static Define_Exception(ConvertException, "Convert error", GenericException);
+static Define_Exception(NotImplementException, "Not implemented method error", GenericException);
 
 /* try - catch - throw */
 
@@ -1153,6 +1144,12 @@ static char* TONIGHT $throws __new_char(char value){
 	return c;
 }
 
+static byte* TONIGHT $throws __new_byte(byte value){
+	byte* b = Memory.alloc(sizeof(byte));
+	*b = value;
+	return b;
+}
+
 static bool* TONIGHT $throws __new_bool(bool value){
 	bool *b = Memory.alloc(sizeof(bool));
 	*b = value;
@@ -1226,6 +1223,10 @@ static INLINE char* TONIGHT $throws __new_array_char(int q){
 	return alloc_array(sizeof(char), q);
 }
 
+static INLINE byte* TONIGHT $throws __new_array_byte(int q){
+	return alloc_array(sizeof(byte), q);
+}
+
 static INLINE bool* TONIGHT $throws __new_array_bool(int q){
 	return alloc_array(sizeof(bool), q);
 }
@@ -1264,6 +1265,14 @@ static char** TONIGHT $throws __new_matrix_char(int l, int c){
 	register int i;
 	for(i = 0; i < l; i++)
 		m[i] = __new_array_char(c);
+	return m;
+}
+
+static byte** TONIGHT $throws __new_matrix_byte(int l, int c){
+	byte** m = alloc_array(sizeof(byte*), l);
+	register int i;
+	for(i = 0; i < l; i++)
+		m[i] = __new_array_byte(c);
 	return m;
 }
 
@@ -1339,6 +1348,15 @@ static char TONIGHT char_fromString(string s){
 	return ret;
 }
 
+static byte TONIGHT $throws byte_fromString(string s){
+	byte b;
+	string a;
+	i = (byte)strtol(s, &a, 0);
+	if(*a)
+		throw(ConvertException, "Impossible to convert the string to byte");
+	return i;
+}
+
 static bool TONIGHT $throws bool_fromString(string s){
 	if(equal(s, "true"))
 		return true;
@@ -1384,6 +1402,10 @@ static string TONIGHT String_formated(const string frmt, ...){
 	return toString(s);
 }
 
+static INLINE string TONIGHT byte_toString(byte b){
+	return s_is((int)b);
+}
+
 /* Functions to Array */
 static INLINE int TONIGHT Array_length(pointer array){
 	return *(int*)(array - sizeof(size_t) - sizeof(int));
@@ -1407,16 +1429,27 @@ static INLINE void TONIGHT Array_free(pointer array){
 
 static string TONIGHT Array_toString(pointer array, P_retString method){
 	static char ARRAY str = NULL;
-	register int i, length = Array_length(array);
+	register int i, length = Array.length(array);
 	if(str)
 		Array.free(str);
-	str = Array.Char(Array.size(array) * 3 * Array.length(array));
+	str = Array.Char((Array.size(array) * 3 + 2) * Array.length(array));
 	*str = 0;
 	strcat(str, "[");
 	for(i=0;i<length;i++)
-		strncat(strncat(str, getText(method(Array_access(array, i))), 1001), ", ", 1000 - strlen(str));
+		strcat(strcat(str, getText(method(Array_access(array, i)))), ", ");
 	str[strlen(str) - 2] = ']';
 	return toString(str);
+}
+
+static pointer TONIGHT Array_convert(pointer array, size_t size){
+	register int i, length = Array.length(array);
+	pointer ret = Array.Generic(size, length);
+	size_t size_array = Array.size(array);
+	for(i=0;i<length;i++){
+		memset(Array.access(ret, i), 0, size);
+		memcpy(Array.access(ret, i), Array.access(array, i), size_array);
+	}
+	return ret;
 }
 
 /* Tonight */
@@ -1570,17 +1603,20 @@ const TONIGHT struct Resources Tonight = {
 	
 	.Convert = {
 		char_fromString,
+		byte_fromString,
 		bool_fromString,
 		int_fromString,
 		float_fromString,
 		double_fromString,
 		s_cs,
+		byte_toString,
 		s_bs,
 		s_is,
 		s_fs,
 		s_ds,
 		String_formated
 	},
+	
 	.DefaultFunctionPointer = __Default_void_function,
 	
 	.assert = __assert,
@@ -1606,6 +1642,7 @@ const TONIGHT struct __New New = {
 	__new_Object,
 	
 	__new_char,
+	__new_byte,
 	__new_bool,
 	__new_int,
 	__new_float,
@@ -1621,8 +1658,10 @@ const struct __Array Array = {
 	.access = Array_access,
 	.free = Array_free,
 	.toString = Array_toString,
+	.convert = Array_convert,
 	
 	.Char = __new_array_char,
+	.Byte = __new_array_byte,
 	.Bool = __new_array_bool,
 	.Int = __new_array_int,
 	.Float = __new_array_float,
@@ -1636,6 +1675,7 @@ const struct __Array Array = {
 /* Matrix */
 const struct __Matrix Matrix = {
 	.Char = __new_matrix_char,
+	.Byte = __new_matrix_byte,
 	.Bool = __new_matrix_bool,
 	.Int = __new_matrix_int,
 	.Float = __new_matrix_float,
