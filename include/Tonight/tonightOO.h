@@ -17,7 +17,7 @@
 #	define	TONIGHT_OO_MACROS
 
 #	ifndef TONIGHT_LIBRARY
-#		error "Include the Tonight library (tonight.h)"
+#		error "Include the Tonight library with #include<Tonight/tonight.h>"
 #	endif
 
 #	ifndef __cplusplus
@@ -33,10 +33,29 @@
 #		ifdef interface
 #			undef interface
 #		endif
+#		ifdef $
+#			undef $
+#		endif
+#		ifdef type
+#			undef type
+#		endif
 
-#		define Define_Class(_Class)	struct str_Class class_##_Class = {sizeof(struct _Class), __new_##_Class, __del_##_Class};Class_Name _Class = &class_##_Class
-#		define class(_Class)	Class_Name _Class
+#		define Define_Class(_Class, _int, _intVal)	struct str_Class class_##_Class = {\
+														sizeof(struct _Class),\
+														__new_##_Class,\
+														__del_##_Class\
+													};\
+													const struct Define_##_Class _Class = {\
+														&class_##_Class,\
+														&_intVal\
+													}
+#		define class(_Class, _int)	const struct Define_##_Class{\
+										const Class_Data class;\
+										const _int *defaultInterface;\
+									}_Class
 #		define interface(_int)	typedef struct _int _int
+#		define $(_Class)		_Class.defaultInterface
+#		define type(_obj)		(_obj)->class_pointer
 
 /*	Access modifiers	*/
 
@@ -50,7 +69,7 @@
 #			undef public
 #		endif
 
-#		define private
+#		define	private
 #		define	protected
 #		define	public
 
@@ -90,9 +109,9 @@
 #		define INTERN_METHOD	Intern_Object *self
 #		define CLASS(_Class)	struct _Class *This = self->obj
 #		define this	(*This)
-#		define nextConstrArg(type)	(__builtin_va_arg(*__construct_args, type))
+#		define nextConstrArg(type)			(__builtin_va_arg(*__construct_args, type))
 #		define setInterface(_int, _value)	This->__Int_##_int = &_value
-#		define getInterface(_int)	(*This->__Int_##_int)
+#		define getInterface(_int)			(*This->__Int_##_int)
 
 /*	Constructor and destructor	*/
 
@@ -132,7 +151,6 @@
 #		define	cast_super(Class)		(*((struct Class*)This))
 
 /*	delete(obj)	*/
-
 void delete(object);
 
 #	endif	// ifndef __cplusplus

@@ -17,7 +17,7 @@
 #	define TONIGHT_DEFINITIONS
 
 #	ifndef TONIGHT_LIBRARY
-#		error "Include the Tonight library (tonight.h)"
+#		error "Include the Tonight library with #include<Tonight/tonight.h>"
 #	endif
 
 #	define	TONIGHT
@@ -82,7 +82,10 @@
 #		define INLINE	inline
 #	else
 #		define INLINE
+#		define inline
 #	endif
+
+#	define	NORMAL
 
 #	ifdef __cplusplus
 #		define OptionalArgs	...
@@ -96,12 +99,11 @@
 #	define __foreach__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
 #	define	foreach(_args_)	__foreach__(_args_)
 
-#	define __Init__(funcMain, funcAux)	\
-	int funcMain(string ARRAY);\
-	int main(int argc, string argv[]){\
-		return funcAux(funcMain, argc, argv);\
-	}
-#	define Init(__arg__)	__Init__(__arg__)
+#	define	__application_start_with__(_main, _func, _mod...)	_mod int _main(OptionalArgs);\
+																int main(int argc, string argv[]){\
+																	return _func(_main, argc, argv);\
+																}
+#	define	APPLICATION_START_WITH(_args_)	__application_start_with__(_args_)
 
 #	define $in	,
 #	define $as	,
@@ -114,7 +116,16 @@
 #	define	$s(arg)	getText(arg)
 #	define	$ff(arg, n)	getText(fsf(arg, n))
 #	define	$df(arg, n)	getText(dsf(arg, n))
-#	define	$(format, args...)	getText(formated(format, args))
+#	define	$format(format, args...)	getText(formated(format, args))
+
+#	define	$cp(arg)		getText(cps(arg))
+#	define	$bp(arg)		getText(bps(arg))
+#	define	$ip(arg)		getText(ips(arg))
+#	define	$fp(arg)		getText(fps(arg))
+#	define	$dp(arg)		getText(dps(arg))
+#	define	$sp(arg)		getText((*arg))
+#	define	$fpf(arg, n)	getText(fpsf(arg, n))
+#	define	$dpf(arg, n)	getText(dpsf(arg, n))
 
 #	define	$lc(arg)	getText(cls(arg))
 #	define	$lb(arg)	getText(bls(arg))
@@ -124,7 +135,7 @@
 #	define	$ls(arg)	getText(arg)
 #	define	$lff(arg, n)	getText(flsf(arg, n))
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
-#	define	$l(format, args...)	getText(longFormated(format, args))
+#	define	$formatl(format, args...)	getText(longFormated(format, args))
 
 /* data types definitions */
 #	ifndef __cplusplus
@@ -132,6 +143,7 @@
 #		define true	0x1
 #		define false	0x0
 #	endif
+#	define iterator register int
 	typedef unsigned char byte;
 	typedef char* string;
 	typedef void *pointer, *file;
@@ -173,14 +185,32 @@
 	/* Objects structs */
 	typedef struct str_Class{
 		const size_t size;
-		void (* ctor)(Intern_Object *, __builtin_va_list *);
-		void (* dtor)(Intern_Object *);
-	}*Class_Name;
+		void (* ctor)(object, __builtin_va_list *);
+		void (* dtor)(object);
+	}*Class_Data;
 	
 	struct str_Intern_Object{
 		pointer obj;
-		Class_Name class_pointer;
+		Class_Data class_pointer;
 	};
+	
+	/* cast */
+	typedef struct{
+		size_t original;
+		size_t result;
+		void (* parse)(pointer, pointer);
+	}cast, (* P_cast)(OptionalArgs);
+	
+#	define __DefineCast__(_cast, typeFrom, typeTo)	static void _cast##_##cast\
+													(pointer, pointer);\
+													const cast _cast = (cast){\
+															sizeof(typeFrom),\
+															sizeof(typeTo),\
+															_cast##_##cast};\
+													static void _cast##_##cast\
+													(pointer from, pointer to)\
+													{*(typeTo*)to = (typeTo)(*(typeFrom*)from);}
+#	define DefineCast(__args__)	__DefineCast__(__args__)
 	
 	/* "Class" Input */
 	typedef struct{
@@ -330,7 +360,7 @@
 		Random (*Random)(RandomicMaker);
 		Timer (*Timer)(TimerCreate);
 		Painter (*Painter)(ColorCreate);
-		object (*Object)(Class_Name, ...);
+		object (*Object)(Class_Data, ...);
 		
 		char* (*Char)(char);
 		byte* (*Byte)(byte);
@@ -348,7 +378,7 @@
 		pointer	(* access)(pointer, int);
 		void	(* free)(pointer);
 		string	(* toString)(pointer, P_retString);
-		pointer	(* convert)(pointer, size_t);
+		pointer	(* convert)(pointer, cast);
 		
 		char* (*Char)(int);
 		byte* (*Byte)(int);
@@ -377,6 +407,7 @@
 	
 	struct __Memory{
 		pointer	(* alloc)(size_t);
+		pointer	(* realloc)(pointer, size_t);
 		size_t	(* size)(pointer);
 		pointer	(* copy)(pointer);
 		void	(* free)(pointer);
@@ -409,7 +440,9 @@
 	struct __Exit{
 		int Success;
 		int Failure;
-		void (* Now)(int);
+		void (* With)(int);
+		void (* WithSuccess)(void);
+		void (* WithFail)(void);
 	};
 	
 	/* struct Resources */
@@ -419,7 +452,7 @@
 			const struct IO File;
 			const struct IO String;
 			const struct IO Object;
-			const Output Error;
+			const struct IO Error;
 			const struct{
 				RandomicMaker Simple;
 				RandomicMaker Limit;
@@ -448,5 +481,4 @@
 		void (*initRandom)(void);
 	};
 	
-#	undef OptionalArgs
 #endif

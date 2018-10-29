@@ -140,7 +140,7 @@ string hello = "Hello";
 string world = "World";
 string helloWorld = concat(hello, ", ", world, "!", $end);
 /* code */
-free(helloWorld);
+Memory.free(helloWorld);
 ```
 
 > ### pointer
@@ -156,7 +156,7 @@ typedef void* pointer;
 ```C
 int i;
 pointer p = &i;
-pointer mem = new Memory(sizeof(int));
+pointer mem = Memory.alloc(sizeof(int));
 ```
 
 > ### file
@@ -164,13 +164,13 @@ pointer mem = new Memory(sizeof(int));
 This data type stores a pointer to a file buffer. It is used to handle files. It's defined as a *FILE* pointer;
 
 ```C
-typedef FILE* file;
+typedef void* file;
 ```
 
 > #### file use examples
 
 ```C
-file file = new file("file_name.ext", "w");
+file file = File.open("file_name.ext", "w");
 Writer write = new Writer(Tonight.std.file.output);
 write.textln(file, "This is a test...");
 ```

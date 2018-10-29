@@ -1,19 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <math.h>
-#include <locale.h>
-#include <errno.h>
-#include <stdarg.h>
-#include <termios.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/select.h>
-#include <sys/ioctl.h>
-#include <stropts.h>
-#include "tonight.h"
+#include "tonight.proto.h"
+#include "tonight.objects.h"
 
 static char c;
 static int i;
@@ -23,6 +9,8 @@ static char str[1001];
 
 static char __buffer[1024];
 static int text_color = 7, background_color = 0;
+
+#include "tonight.sys.h"
 
 /* Exceptions */
 static EXCEPTION_DEFINE ___GenericException = {"Generic exception throwed", NULL};
@@ -36,6 +24,7 @@ static Define_Exception(FileOpenException, "File open error", GenericException);
 static Define_Exception(InputException, "Input error", GenericException);
 static Define_Exception(ConvertException, "Convert error", GenericException);
 static Define_Exception(NotImplementException, "Not implemented method error", GenericException);
+static Define_Exception(NullArgumentException, "Null argument error", GenericException);
 
 /* try - catch - throw */
 
@@ -203,49 +192,6 @@ INLINE EXCEPTION TONIGHT ExceptionType(Exception exc){
 
 /* Functions */
 
-/**
-*	@Atention!
-*	
-*	Function: pressKey
-*	This function needs be changed
-*/
-static bool TONIGHT pressKey(void){
-	static int bytesWaiting;
-	static struct termios old_term, new_term;
-	tcgetattr(stdin->_fileno, &old_term);
-	new_term = old_term;
-	new_term.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(stdin->_fileno, TCSANOW, &new_term);
-	ioctl(stdin->_fileno, FIONREAD, &bytesWaiting);
-	tcsetattr(stdin->_fileno, TCSANOW, &old_term);
-	return bytesWaiting ? true : false;
-}
-
-static int TONIGHT getKey(void){
-	struct termios oldattr, newattr;
-	tcgetattr(stdin->_fileno, &oldattr);
-	newattr = oldattr;
-	newattr.c_lflag &= ~(ICANON | ECHO);
-	newattr.c_cc[VTIME] = 0;
-	newattr.c_cc[VMIN] = 1;
-	tcsetattr(stdin->_fileno, TCSANOW, &newattr);
-	newattr.c_cc[VMIN] = 0;
-	i = 0;
-	while(true){
-		c = getchar();
-		if(!c || c == EOF) break;
-		if(!i) tcsetattr(stdin->_fileno, TCSANOW, &newattr);
-		i += c;
-	}
-	tcsetattr(stdin->_fileno, TCSANOW, &oldattr);
-	return i;
-}
-
-static INLINE int TONIGHT getKeyEcho(void){
-	putchar((char)(i = getKey()));
-	return i;
-}
-
 static void __assert(bool test){
 	if(!test)
 		throw(AssertException, "Assert test failed");
@@ -256,16 +202,13 @@ static void __checkErrno(void){
 		throw(ErrnoException, strerror(errno));
 }
 
-INLINE void TONIGHT __sleep(unsigned int miliseconds){
-	usleep(miliseconds * 1000);
+static INLINE int TONIGHT getKeyEcho(void){
+	putchar(c = getKey());
+	return c;
 }
 
-INLINE double TONIGHT decimal(double n){
+static INLINE double TONIGHT decimal(double n){
 	return n - (long int)n;
-}
-
-INLINE void TONIGHT cursor_position(int x, int y){
-	printf("\033[%d;%dH", y, x);
 }
 
 INLINE string TONIGHT __locale(void){
@@ -382,6 +325,34 @@ INLINE string TONIGHT s_fs(float var){
 	return s_ds((double)var);
 }
 
+INLINE string TONIGHT s_cps(char *p){
+	return s_cs(*p);
+}
+
+INLINE string TONIGHT s_bps(bool *p){
+	return s_bs(*p);
+}
+
+INLINE string TONIGHT s_ips(int *p){
+	return s_is(*p);
+}
+
+INLINE string TONIGHT s_fps(float *p){
+	return s_fs(*p);
+}
+
+INLINE string TONIGHT s_dps(double *p){
+	return s_ds(*p);
+}
+
+INLINE string TONIGHT s_fpsf(float *p, int d){
+	return s_fsf(*p, d);
+}
+
+INLINE string TONIGHT s_dpsf(double *p, int d){
+	return s_dsf(*p, d);
+}
+
 retString TONIGHT cs(char var){
 	register char *s = s_cs(var);
 	static retString ret;
@@ -444,6 +415,34 @@ long_retString TONIGHT longRetConcat(string wrd_1, ...){
 		__concatString(ret.Text, p, sizeof ret);
 	va_end(va);
 	return ret;
+}
+
+INLINE retString TONIGHT cps(char *p){
+	return cs(*p);
+}
+
+INLINE retString TONIGHT bps(bool *p){
+	return bs(*p);
+}
+
+INLINE retString TONIGHT ips(int *p){
+	return is(*p);
+}
+
+INLINE retString TONIGHT fps(float *p){
+	return fs(*p);
+}
+
+INLINE retString TONIGHT dps(double *p){
+	return ds(*p);
+}
+
+INLINE retString TONIGHT fpsf(float *p, int d){
+	return fsf(*p, d);
+}
+
+INLINE retString TONIGHT dpsf(double *p, int d){
+	return dsf(*p, d);
 }
 
 long_retString TONIGHT cls(char var){
@@ -521,7 +520,6 @@ long_retString TONIGHT longFormated(const string format, ...){
 }
 
 /* Functions to Tonight.std.Console.input */
-
 static char TONIGHT $throws __Scanner_nextChar(void){
 	if(scanf("%c", &c) != 1)
 		throw(InputException, "Impossible to read a \"char\" from the standard input");
@@ -560,7 +558,7 @@ static string TONIGHT $throws __Scanner_nextLine(void){
 
 static string TONIGHT __Scanner_Password(int nchar){
 	int i = 0;
-	char* senha = Array.Char(nchar + 1);
+	char* senha = Memory.alloc(sizeof(char) * (nchar + 1));
 	while((senha[i] = Tonight.getKey()) != key_ENTER){
 		if(senha[i] != key_BS && i < nchar){
 			printf("*");
@@ -694,35 +692,35 @@ static void TONIGHT __Scanner_string_ignoreChar(string str){
 static char TONIGHT $throws __Scanner_object_nextChar(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
 	char c = __Scanner_string_nextChar(s);
-	free(s);
+	Memory.free(s);
 	return c;
 }
 
 static int TONIGHT $throws __Scanner_object_nextInt(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
 	int i = __Scanner_string_nextInt(s);
-	free(s);
+	Memory.free(s);
 	return i;
 }
 
 static float TONIGHT $throws __Scanner_object_nextFloat(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
 	float f = __Scanner_string_nextFloat(s);
-	free(s);
+	Memory.free(s);
 	return f;
 }
 
 static double TONIGHT $throws __Scanner_object_nextDouble(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
 	double d = __Scanner_string_nextDouble(s);
-	free(s);
+	Memory.free(s);
 	return d;
 }
 
 static string TONIGHT $throws __Scanner_object_next(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
 	string str = __Scanner_string_next(s);
-	free(s);
+	Memory.free(s);
 	return str;
 }
 
@@ -736,19 +734,40 @@ static INLINE void TONIGHT  __Scanner_object_clear(IScanner iScan, object obj){
 
 static INLINE void TONIGHT __Scanner_object_ignore(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
-	free(s);
+	Memory.free(s);
 }
 
 static INLINE void TONIGHT __Scanner_object_ignoreChar(IScanner iScan, object obj){
 	string s = iScan.getString(obj);
 	iScan.setString(obj, ++s);
-	free(s);
+	Memory.free(s);
+}
+
+static INLINE char TONIGHT __Scanner_Error_nextChar(void){
+	return (char)errno;
+}
+
+static INLINE int TONIGHT __Scanner_Error_nextInt(void){
+	return errno;
+}
+
+static INLINE float TONIGHT __Scanner_Error_nextFloat(void){
+	return (float)errno;
+}
+
+static double TONIGHT __Scanner_Error_nextDouble(void){
+	return (double)errno;
+}
+
+static string TONIGHT $throws __Scanner_Error_next(void){
+	return __Scanner_string_next(strerror(errno));
+}
+
+static INLINE string TONIGHT $throws __Scanner_Error_nextLine(void){
+	return __Scanner_string_nextLine(strerror(errno));
 }
 
 /* Functions to Tonight.std.Console.output */
-static void TONIGHT __Recorder_text(file, string);
-static INLINE void TONIGHT __Recorder_textln(file, string);
-
 static INLINE void TONIGHT __Screen_text(string txt){
 	__Recorder_text(stdout, txt);
 }
@@ -769,8 +788,9 @@ static void TONIGHT __Screen_print(string txt, ...){
 static void TONIGHT __Screen_println(string txt, ...){
 	va_list t;
 	register string s;
+	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		__Screen_text(s);
+		printf("%s", s);
 	va_end(t);
 	putchar('\n');
 }
@@ -780,7 +800,7 @@ static void TONIGHT __Screen_printargln(string txt, ...){
 	register string s;
 	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		__Screen_textln(s);
+		puts(s);
 	va_end(t);
 }
 
@@ -800,10 +820,6 @@ static void TONIGHT __Screen_buffer(void){
 static void TONIGHT __Screen_clear(void){
 	if(!fflush(stdout))
 		throw(GenericException, strerror(errno));
-}
-
-static void TONIGHT __clearScreen(void){
-	printf("\e[2J\e[H");
 }
 
 /* Functions to Tonight.std.file.output */
@@ -1097,16 +1113,12 @@ static INLINE int TONIGHT __Time_year(void){
 }
 
 /* Functions to the Colors class */
-INLINE void TONIGHT __Colors_textbackground(int _tcolor, int _bcolor){
-	printf("\033[%im\033[%im", _bcolor + 39, _tcolor + 29);
+static INLINE void TONIGHT __Colors_text(int _color){
+	__Colors_textbackground((text_color = _color), background_color);
 }
 
-INLINE void TONIGHT __Colors_text(int _color){
-	printf("\033[0m\033[%im", _color + 29);
-}
-
-INLINE void TONIGHT __Colors_background(int _color){
-	printf("\033[%im\033[0m", _color + 39);
+static INLINE void TONIGHT __Colors_background(int _color){
+	__Colors_textbackground(text_color, (background_color = _color));
 }
 
 /* Initialize objects */
@@ -1137,7 +1149,7 @@ static file TONIGHT $throws __new_File(string fName, string fMode){
 	return f;
 }
 
-static object TONIGHT __new_Object(Class_Name name, ...){
+static object TONIGHT __new_Object(Class_Data name, ...){
 	va_list v;
 	object _new = Memory.alloc(sizeof(Intern_Object));
 	va_start(v, name);
@@ -1207,6 +1219,14 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 
 static pointer TONIGHT $throws __new_memory(size_t q){
 	pointer p = malloc(q + sizeof(size_t));
+	if(!p)
+		throw(MemoryAllocException, strerror(errno));
+	*(size_t*)p = q;
+	return p + sizeof(size_t);
+}
+
+static pointer TONIGHT $throws __realloc_memory(pointer mem, size_t q){
+	pointer p = realloc(mem, q + sizeof(size_t));
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	*(size_t*)p = q;
@@ -1427,10 +1447,12 @@ static INLINE string TONIGHT byte_toString(byte b){
 
 /* Functions to Array */
 static INLINE int TONIGHT Array_length(pointer array){
+	checkArgumentPointer(array);
 	return *(int*)(array - sizeof(size_t) - sizeof(int));
 }
 
 static INLINE size_t TONIGHT Array_size(pointer array){
+	checkArgumentPointer(array);
 	return *(size_t*)(array - sizeof(size_t));
 }
 
@@ -1443,6 +1465,7 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 }
 
 static INLINE void TONIGHT Array_free(pointer array){
+	checkArgumentPointer(array);
 	free(array - sizeof(int) - sizeof(size_t));
 }
 
@@ -1453,6 +1476,7 @@ static string TONIGHT Array_toString(pointer array, P_retString method){
 		Array.free(str);
 	str = Array.Char((Array.size(array) * 3 + 2) * Array.length(array));
 	*str = 0;
+	checkArgumentPointer(method);
 	strcat(str, "[");
 	for(i=0;i<length;i++)
 		strcat(strcat(str, getText(method(Array_access(array, i)))), ", ");
@@ -1460,295 +1484,46 @@ static string TONIGHT Array_toString(pointer array, P_retString method){
 	return toString(str);
 }
 
-static pointer TONIGHT Array_convert(pointer array, size_t size){
+static pointer TONIGHT Array_convert(pointer array, cast casting){
 	register int i, length = Array.length(array);
-	pointer ret = Array.Generic(size, length);
+	pointer ret = Array.Generic(casting.result, length);
 	size_t size_array = Array.size(array);
 	for(i=0;i<length;i++){
-		memset(Array.access(ret, i), 0, size);
-		memcpy(Array.access(ret, i), Array.access(array, i), size_array);
+		casting.parse(Array.access(array, i), Array.access(ret, i));
 	}
 	return ret;
 }
 
-/* Tonight */
-const TONIGHT struct Resources Tonight = {
-	.Std ={
-		.Console = {
-			.Input = {
-				__Scanner_nextChar,
-				__Scanner_nextInt,
-				__Scanner_nextFloat,
-				__Scanner_nextDouble,
-				__Scanner_next,
-				__Scanner_nextLine,
-				__Scanner_clear,
-				__Scanner_ignore,
-				__Scanner_ignoreChar
-			},
-			.Output = {
-				__Screen_text,
-				__Screen_textln,
-				__Screen_print,
-				__Screen_println,
-				__Screen_printargln,
-				__Screen_nl,
-				__Screen_nls,
-				__Screen_buffer,
-				__Screen_clear
-			}
-		},
-		.File = {
-			.Input = {
-				__Scanner_file_nextChar,
-				__Scanner_file_nextInt,
-				__Scanner_file_nextFloat,
-				__Scanner_file_nextDouble,
-				__Scanner_file_next,
-				__Scanner_file_nextLine,
-				__Scanner_file_clear,
-				__Scanner_file_ignore,
-				__Scanner_file_ignoreChar
-			},
-			.Output = {
-				__Recorder_text,
-				__Recorder_textln,
-				__Recorder_print,
-				__Recorder_println,
-				__Recorder_printargln,
-				__Recorder_nl,
-				__Recorder_nls,
-				__Recorder_buffer,
-				__Recorder_clear
-			}
-		},
-		.String = {
-			.Input = {
-				__Scanner_string_nextChar,
-				__Scanner_string_nextInt,
-				__Scanner_string_nextFloat,
-				__Scanner_string_nextDouble,
-				__Scanner_string_next,
-				__Scanner_string_nextLine,
-				__Scanner_string_clear,
-				__Scanner_string_ignore,
-				__Scanner_string_ignoreChar
-			},
-			.Output = {
-				__String_text,
-				__String_textln,
-				__String_print,
-				__String_println,
-				__String_printargln,
-				__Default_void_function,
-				__Default_void_function,
-				__Default_void_function,
-				__Default_void_function
-			}
-		},
-		.Object = {
-			.Input = {
-				__Scanner_object_nextChar,
-				__Scanner_object_nextInt,
-				__Scanner_object_nextFloat,
-				__Scanner_object_nextDouble,
-				__Scanner_object_next,
-				__Scanner_object_nextLine,
-				__Scanner_object_clear,
-				__Scanner_object_ignore,
-				__Scanner_object_ignoreChar
-			},
-			.Output = {
-				__Object_text,
-				__Object_textln,
-				__Object_print,
-				__Object_println,
-				__Object_printargln,
-				__Object_nl,
-				__Object_nls,
-				__Default_void_function,
-				__Object_clear
-			}
-		},
-		.Error = {
-			__Error_text,
-			__Error_textln,
-			__Error_print,
-			__Error_println,
-			__Error_printargln,
-			__Error_nl,
-			__Error_nls,
-			__Error_buffer,
-			__Error_clear
-		},
-		.Random = {
-			.Simple = {
-				__Random_simple_nextChar,
-				__Random_simple_nextInt,
-				__Random_simple_nextFloat,
-				__Random_simple_nextDouble
-			},
-			.Limit = {
-				__Random_end_nextChar,
-				__Random_end_nextInt,
-				__Random_end_nextFloat,
-				__Random_end_nextDouble
-			},
-			.Range = {
-				__Random_begin_end_nextChar,
-				__Random_begin_end_nextInt,
-				__Random_begin_end_nextFloat,
-				__Random_begin_end_nextDouble
-			}
-		},
-		.Clock = {
-			__Time_hours,
-			__Time_minutes,
-			__Time_seconds,
-			__Time_month,
-			__Time_day_month,
-			__Time_day_week,
-			__Time_day_year,
-			__Time_year
-		}
-	},
-	.Resources = {
-		.Color = {
-			__Colors_text,
-			__Colors_background,
-			__Colors_textbackground
-		}
-	},
-	
-	.Convert = {
-		char_fromString,
-		byte_fromString,
-		bool_fromString,
-		int_fromString,
-		float_fromString,
-		double_fromString,
-		s_cs,
-		byte_toString,
-		s_bs,
-		s_is,
-		s_fs,
-		s_ds,
-		String_formated
-	},
-	
-	.DefaultFunctionPointer = __Default_void_function,
-	
-	.assert = __assert,
-	.checkErrno = __checkErrno,
-	.locale = __locale,
-	.password = __Scanner_Password,
-	.clearScreen = __clearScreen,
-	.getKey = getKey,
-	.getKeyEcho = getKeyEcho,
-	.pressKey = pressKey,
-	.sleep = __sleep,
-	.position = cursor_position,
-	.initRandom = __initRandom
-};
+static string ARRAY __args = NULL;
 
-/* New (new) */
-const TONIGHT struct __New New = {
-	__new_Scanner,
-	__new_Writer,
-	__new_Random,
-	__new_Timer,
-	__new_Painter,
-	__new_Object,
-	
-	__new_char,
-	__new_byte,
-	__new_bool,
-	__new_int,
-	__new_float,
-	__new_double,
-	__new_String,
-	__new_pointer
-};
+static void onExit(void){
+	if(__args){
+		Array.free(__args);
+		__args = NULL;
+	}
+}
 
-/* Array */
-const struct __Array Array = {
-	.length = Array_length,
-	.size = Array_size,
-	.access = Array_access,
-	.free = Array_free,
-	.toString = Array_toString,
-	.convert = Array_convert,
-	
-	.Char = __new_array_char,
-	.Byte = __new_array_byte,
-	.Bool = __new_array_bool,
-	.Int = __new_array_int,
-	.Float = __new_array_float,
-	.Double = __new_array_double,
-	.String = __new_array_String,
-	.Object = __new_array_Object,
-	.Pointer = __new_array_pointer,
-	.Generic = __new_array_generic
-};
-
-/* Matrix */
-const struct __Matrix Matrix = {
-	.Char = __new_matrix_char,
-	.Byte = __new_matrix_byte,
-	.Bool = __new_matrix_bool,
-	.Int = __new_matrix_int,
-	.Float = __new_matrix_float,
-	.Double = __new_matrix_double,
-	.String = __new_matrix_String,
-	.Object = __new_matrix_Object,
-	.Pointer = __new_matrix_pointer,
-	.Generic = __new_matrix_generic
-};
-
-const struct __Memory Memory = {
-	.alloc = __new_memory,
-	.size = __memory_size,
-	.copy = __memory_copy,
-	.free = __memory_free
-};
-
-/* File */
-const struct __File File = {
-	.open = __new_File,
-	.close = (pointer)fclose,
-	.end = (pointer)feof,
-	.Mode.read = "r",
-	.Mode.write = "w"
-};
-
-/* Key */
-const struct __Key Key = {
-	.Right = key_right,
-	.Left = key_left,
-	.Up = key_up,
-	.Down = key_down,
-	.Escape = key_ESC,
-	.Enter = key_ENTER,
-	.Space = key_SPACE,
-	.BackSpace = key_BS
-};
-
-/* Exit */
-const struct __Exit Exit = {
-	.Success = EXIT_SUCCESS,
-	.Failure = EXIT_FAILURE,
-	.Now = exit
-};
-
-int TONIGHT TonightMode(P_int func, int argc, string argv[]){
-	register int i, ret;
-	string ARRAY arg = Array.String(argc);
+int TONIGHT TonightMode(P_int func, register int argc, string argv[]){
+	register int i;
+	string ARRAY arg = __args = Array.String(argc);
 	for(i = 0; i < argc; i++)
 		arg[i] = argv[i];
-	TRY
-		ret = func(arg);
-	CATCH(GenericException)
-		ret = EXIT_FAILURE;
-	Array.free(arg);
-	return ret;
+	atexit(onExit);
+	try
+		return func(arg);
+	catch(GenericException)
+		return EXIT_FAILURE;
+}
+
+static INLINE void TONIGHT Exit_WithSuccess(void){
+	exit(EXIT_SUCCESS);
+}
+
+static INLINE void TONIGHT Exit_WithFail(void){
+	exit(EXIT_FAILURE);
+}
+
+INLINE void TONIGHT checkArgumentPointer(pointer arg){
+	if(!arg)
+		throw(NullArgumentException, "Null argument");
 }

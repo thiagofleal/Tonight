@@ -1,5 +1,5 @@
 # Tonight: The highest-level C library in someplace
- ![alt tag](https://github.com/thiagofleal/Tonight/blob/master/Images/Logo.png)
+ ![alt tag](/Images/Logo.png)
 
 The Tonight Library was created to make hight-level C programming easy code.
 This library implements the following resources:

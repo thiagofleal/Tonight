@@ -17,12 +17,12 @@
 #	define TONIGHT_LIBRARY
 
 #	include <setjmp.h>
+#	include <stddef.h>	
 
 #	ifdef __cplusplus
 		extern "C"{
 #	endif
 
-#			include <stddef.h>
 #			include "tonightdef.h"
 #			include "tonightOO.h"
 			
@@ -46,6 +46,7 @@
 			extern EXCEPTION TONIGHT InputException;
 			extern EXCEPTION TONIGHT ConvertException;
 			extern EXCEPTION TONIGHT NotImplementException;
+			extern EXCEPTION TONIGHT NullArgumentException;
 			
 			/* Exceptions control */
 			extern void TONIGHT THROW(EXCEPTION, string);
@@ -74,6 +75,14 @@
 			extern string TONIGHT s_fsf(float, int);
 			extern string TONIGHT s_dsf(double, int);
 			
+			extern INLINE string TONIGHT s_cps(char*);
+			extern INLINE string TONIGHT s_bps(bool*);
+			extern INLINE string TONIGHT s_ips(int*);
+			extern INLINE string TONIGHT s_fps(float*);
+			extern INLINE string TONIGHT s_dps(double*);
+			extern INLINE string TONIGHT s_fpsf(float*, int);
+			extern INLINE string TONIGHT s_dpsf(double*, int);
+			
 			extern retString TONIGHT retConcat(string, ...);
 			extern retString TONIGHT cs(char);
 			extern retString TONIGHT bs(bool);
@@ -83,6 +92,14 @@
 			extern retString TONIGHT fsf(float, int);
 			extern retString TONIGHT dsf(double, int);
 			extern retString TONIGHT formated(const string, ...);
+			
+			extern INLINE retString TONIGHT cps(char*);
+			extern INLINE retString TONIGHT bps(bool*);
+			extern INLINE retString TONIGHT ips(int*);
+			extern INLINE retString TONIGHT fps(float*);
+			extern INLINE retString TONIGHT dps(double*);
+			extern INLINE retString TONIGHT fpsf(float*, int);
+			extern INLINE retString TONIGHT dpsf(double*, int);
 			
 			extern long_retString TONIGHT longRetConcat(string, ...);
 			extern long_retString TONIGHT cls(char);
@@ -94,7 +111,9 @@
 			extern long_retString TONIGHT dlsf(double, int);
 			extern long_retString TONIGHT longFormated(const string, ...);
 			
-			extern int TONIGHT TonightMode(P_int, int, string[]);
+			extern int TONIGHT TonightMode(P_int, register int, string[]);
+			
+			extern INLINE void TONIGHT checkArgumentPointer(pointer);
 	
 #	ifdef __cplusplus
 		}
