@@ -199,8 +199,12 @@ static	NORMAL	bool	TONIGHT	$throws	bool_fromString(string);
 static	NORMAL	int		TONIGHT	$throws	int_fromString(string);
 static	NORMAL	float	TONIGHT	$throws	float_fromString(string);
 static	NORMAL	double	TONIGHT	$throws	double_fromString(string);
-static	NORMAL	string	TONIGHT			String_formated(const string, ...);
 static	INLINE	string	TONIGHT			byte_toString(byte);
+
+static	NORMAL	string	TONIGHT	String_formated(const string, ...);
+static	INLINE	string	TONIGHT	String_concatenate(string, string);
+static	NORMAL	string	TONIGHT	String_upper(const string str);
+static	NORMAL	string	TONIGHT	String_lower(const string str);
 
 static	INLINE	int		TONIGHT			Array_length(pointer);
 static	INLINE	size_t	TONIGHT			Array_size(pointer);

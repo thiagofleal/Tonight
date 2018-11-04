@@ -24,7 +24,8 @@ static Define_Exception(FileOpenException, "File open error", GenericException);
 static Define_Exception(InputException, "Input error", GenericException);
 static Define_Exception(ConvertException, "Convert error", GenericException);
 static Define_Exception(NotImplementException, "Not implemented method error", GenericException);
-static Define_Exception(NullArgumentException, "Null argument error", GenericException);
+static Define_Exception(ArgumentException, "Argument error", GenericException);
+static Define_Exception(NullArgumentException, "Null argument error", ArgumentException);
 
 /* try - catch - throw */
 
@@ -228,8 +229,8 @@ static INLINE string TONIGHT __concatString(char dest[], char from[], int length
 	return strncat(dest, from, length - strlen(dest) - 1);
 }
 
-INLINE string TONIGHT toString(register char __array[]){
-	return strcpy(Memory.alloc((strlen(__array) + 1) * sizeof(char)), __array);
+INLINE string TONIGHT toString(register pointer __array){
+	return (string)strcpy(Memory.alloc((strlen(__array) + 1) * sizeof(char)), __array);
 }
 
 string TONIGHT concat(string wrd_1, ...){
@@ -790,9 +791,9 @@ static void TONIGHT __Screen_println(string txt, ...){
 	register string s;
 	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		printf("%s", s);
+		__Screen_text(s);
 	va_end(t);
-	putchar('\n');
+	__Screen_text("\n");
 }
 
 static void TONIGHT __Screen_printargln(string txt, ...){
@@ -800,7 +801,7 @@ static void TONIGHT __Screen_printargln(string txt, ...){
 	register string s;
 	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		puts(s);
+		__Screen_textln(s);
 	va_end(t);
 }
 
@@ -823,12 +824,14 @@ static void TONIGHT __Screen_clear(void){
 }
 
 /* Functions to Tonight.std.file.output */
-static void TONIGHT __Recorder_text(file _file, string txt){
-	fprintf(_file, "%s", txt);
+static INLINE void TONIGHT __Recorder_text(file _file, string txt){
+	for(;*txt;++txt)
+		fputc(*txt, _file);
 }
 
 static INLINE void TONIGHT __Recorder_textln(file _file, string txt){
-	fprintf(_file, "%s\n", txt);
+	__Recorder_text(_file, txt);
+	__Recorder_text(_file, "\n");
 }
 
 static void TONIGHT __Recorder_print(file _file, string txt, ...){
@@ -836,7 +839,7 @@ static void TONIGHT __Recorder_print(file _file, string txt, ...){
 	string s;
 	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		fprintf(_file, "%s", s);
+		__Recorder_text(_file, s);
 	va_end(t);
 }
 
@@ -845,9 +848,9 @@ static void TONIGHT __Recorder_println(file _file, string txt, ...){
 	string s;
 	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		fprintf(_file, "%s", s);
+		__Recorder_text(_file, s);
 	va_end(t);
-	putc('\n', _file);
+	__Recorder_text(_file, "\n");
 }
 
 static void TONIGHT __Recorder_printargln(file _file, string txt, ...){
@@ -855,7 +858,7 @@ static void TONIGHT __Recorder_printargln(file _file, string txt, ...){
 	string s;
 	va_start(t, txt);
 	for(s = txt; s; s = va_arg(t, string))
-		fprintf(_file, "%s\n", s);
+		__Recorder_textln(_file, s);
 	va_end(t);
 }
 
@@ -1439,6 +1442,26 @@ static string TONIGHT String_formated(const string frmt, ...){
 	vsprintf(s, frmt, v);
 	va_end(v);
 	return toString(s);
+}
+
+static INLINE string TONIGHT String_concatenate(string str1, string str2){
+	return concat(str1, str2, $end);
+}
+
+static string TONIGHT String_upper(const string str){
+	register string s, aux = toString(str);
+	for(s = aux; *s; s++){
+		toupper(*s);
+	}
+	return aux;
+}
+
+static string TONIGHT String_lower(const string str){
+	register string s, aux = toString(str);
+	for(s = aux; *s; s++){
+		tolower(*s);
+	}
+	return aux;
 }
 
 static INLINE string TONIGHT byte_toString(byte b){

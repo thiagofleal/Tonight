@@ -116,7 +116,7 @@
 #	define	$s(arg)	getText(arg)
 #	define	$ff(arg, n)	getText(fsf(arg, n))
 #	define	$df(arg, n)	getText(dsf(arg, n))
-#	define	$format(format, args...)	getText(formated(format, args))
+#	define	$F(format, args...)	getText(formated(format, args))
 
 #	define	$cp(arg)		getText(cps(arg))
 #	define	$bp(arg)		getText(bps(arg))
@@ -135,7 +135,7 @@
 #	define	$ls(arg)	getText(arg)
 #	define	$lff(arg, n)	getText(flsf(arg, n))
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
-#	define	$formatl(format, args...)	getText(longFormated(format, args))
+#	define	$lF(format, args...)	getText(longFormated(format, args))
 
 /* data types definitions */
 #	ifndef __cplusplus
@@ -143,9 +143,8 @@
 #		define true	0x1
 #		define false	0x0
 #	endif
-#	define iterator register int
 	typedef unsigned char byte;
-	typedef char* string;
+	typedef	char *string;
 	typedef void *pointer, *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
 	typedef void (*P_void)	(OptionalArgs);
@@ -350,7 +349,6 @@
 		string (*fromInt)(int);
 		string (*fromFloat)(float);
 		string (*fromDouble)(double);
-		string (*formated)(const string, ...);
 	}Conversor;
 	
 	/* Constructors */
@@ -413,9 +411,21 @@
 		void	(* free)(pointer);
 	};
 	
+	struct __String{
+		string (* formated)(const string, ...);
+		string (* copy)(string);
+		string (* concatenate)(string, string);
+		string (* upper)(const string);
+		string (* lower)(const string);
+		size_t (* length)(const string);
+		int (* compare)(const string, const string);
+		void (* free)(string);
+	};
+	
 	struct __File{
 		file (* open)(string, string);
 		void (* close)(file);
+		void (* rewind)(file);
 		bool (* end)(file);
 		
 		const struct{

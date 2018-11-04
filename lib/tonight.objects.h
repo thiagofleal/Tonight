@@ -173,8 +173,7 @@ const TONIGHT struct Resources Tonight = {
 		.fromBool = s_bs,
 		.fromInt = s_is,
 		.fromFloat = s_fs,
-		.fromDouble = s_ds,
-		.formated = String_formated
+		.fromDouble = s_ds
 	},
 	
 	.DefaultFunctionPointer = __Default_void_function,
@@ -253,11 +252,23 @@ const struct __Memory Memory = {
 	.free = __memory_free
 };
 
+const struct __String String = {
+	.formated = String_formated,
+	.copy = (pointer)toString,
+	.concatenate = String_concatenate,
+	.upper = String_upper,
+	.lower = String_lower,
+	.length = (pointer)strlen,
+	.compare = (pointer)strcmp,
+	.free = (pointer)__memory_free
+};
+
 /* File */
 const struct __File File = {
 	.open = __new_File,
 	.close = (pointer)fclose,
 	.end = (pointer)feof,
+	.rewind = (pointer)rewind,
 	.Mode.read = "r",
 	.Mode.write = "w"
 };

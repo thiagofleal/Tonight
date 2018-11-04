@@ -31,6 +31,7 @@
 			extern const TONIGHT struct __Array Array;
 			extern const TONIGHT struct __Matrix Matrix;
 			extern const TONIGHT struct __Memory Memory;
+			extern const TONIGHT struct __String String;
 			extern const TONIGHT struct __File File;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
@@ -46,6 +47,7 @@
 			extern EXCEPTION TONIGHT InputException;
 			extern EXCEPTION TONIGHT ConvertException;
 			extern EXCEPTION TONIGHT NotImplementException;
+			extern EXCEPTION TONIGHT ArgumentException;
 			extern EXCEPTION TONIGHT NullArgumentException;
 			
 			/* Exceptions control */
@@ -64,7 +66,7 @@
 			
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);
-			extern string TONIGHT toString(char[]);
+			extern string TONIGHT toString(pointer);
 			extern string TONIGHT concat(string, ...);
 			extern string TONIGHT nconcat(int, string, ...);
 			extern string TONIGHT s_cs(char);
