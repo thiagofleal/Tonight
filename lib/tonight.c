@@ -899,8 +899,8 @@ static INLINE float TONIGHT __Random_begin_end_nextFloat(float _begin, float _en
 	return (float)__Random_begin_end_nextDouble((double)_begin, (double)_end, _decimal);
 }
 
-/* Functions to Tonight.std.Clock */
-static struct tm* TONIGHT __time(void){
+/* Functions to Tonight.std.TimeNow */
+static Time TONIGHT __time(void){
 	time_t s;
 	time(&s);
 	return localtime(&s);
@@ -1256,6 +1256,13 @@ static double TONIGHT $throws double_fromString(string s){
 	if(*a)
 		throw(ConvertException, "Impossible to convert the string to double");
 	return d;
+}
+
+static string TONIGHT $throws string_fromDate(Time t){
+	static char s[100] = {0};
+	if(!strftime(s, sizeof s, "%c", t))
+		throw(ConvertException, strerror(errno));
+	return toString(s);
 }
 
 static string TONIGHT String_formated(const string frmt, ...){

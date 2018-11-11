@@ -142,7 +142,8 @@ const TONIGHT struct Resources Tonight = {
 				.MakeRandomicDouble = __Random_begin_end_nextDouble
 			}
 		},
-		.Clock = {
+		.TimeNow = {
+			.GetTime = __time,
 			.TimeHours = __Time_hours,
 			.TimeMinutes = __Time_minutes,
 			.TimeSeconds = __Time_seconds,
@@ -173,7 +174,8 @@ const TONIGHT struct Resources Tonight = {
 		.fromBool = s_bs,
 		.fromInt = s_is,
 		.fromFloat = s_fs,
-		.fromDouble = s_ds
+		.fromDouble = s_ds,
+		.fromTime = string_fromDate
 	},
 	
 	.DefaultFunctionPointer = __Default_void_function,

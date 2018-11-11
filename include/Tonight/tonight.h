@@ -54,20 +54,19 @@
 			
 			/* Exceptions control */
 			extern void TONIGHT THROW(EXCEPTION, string);
-			extern pointer TONIGHT __create_try_context(void);
-			extern bool TONIGHT __try_context(void);
-			extern bool TONIGHT __function_try(void);
-			extern bool TONIGHT __function_catch(EXCEPTION);
-			extern bool TONIGHT __function_finally(void);
+			extern pointer TONIGHT NO_CALL __create_try_context(void);
+			extern bool TONIGHT NO_CALL __try_context(void);
+			extern bool TONIGHT NO_CALL __function_try(void);
+			extern bool TONIGHT NO_CALL __function_catch(EXCEPTION);
+			extern bool TONIGHT NO_CALL __function_finally(void);
 			
 			extern INLINE Exception TONIGHT getException(void);
-			extern INLINE void TONIGHT init_try(void);
 			extern INLINE string TONIGHT Error(Exception);
 			extern INLINE string TONIGHT Message(Exception);
 			extern INLINE EXCEPTION TONIGHT ExceptionType(Exception);
 			
-			INLINE void TONIGHT initForeach(void);
-			bool TONIGHT foreachIterator(pointer, pointer);
+			INLINE void TONIGHT NO_CALL initForeach(void);
+			bool TONIGHT NO_CALL foreachIterator(pointer, pointer);
 			
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);
@@ -118,7 +117,7 @@
 			extern long_retString TONIGHT dlsf(double, int);
 			extern long_retString TONIGHT longFormated(const string, ...);
 			
-			extern int TONIGHT TonightMode(P_int, register int, string[]);
+			extern int TONIGHT NO_CALL TonightMode(P_int, register int, string[]);
 			
 			extern INLINE void TONIGHT checkArgumentPointer(pointer);
 	

@@ -21,6 +21,7 @@
 #	endif
 
 #	define	TONIGHT
+#	define	NO_CALL
 
 /* Definitions */
 #	ifdef key_right
@@ -48,14 +49,26 @@
 #		undef key_BS
 #	endif
 
-#	define key_right	295
-#	define key_left		293
-#	define key_up		294
-#	define key_down		296
-#	define key_ESC		27
-#	define key_ENTER	13
-#	define key_SPACE	32
-#	define key_BS		8
+#	ifdef _WIN32
+#		define key_right	295
+#		define key_left		293
+#		define key_up		294
+#		define key_down		296
+#		define key_ESC		27
+#		define key_ENTER	13
+#		define key_SPACE	32
+#		define key_BS		8
+#	else
+#		define key_right	185
+#		define key_left		186
+#		define key_up		183
+#		define key_down		184
+#		define key_ESC		27
+#		define key_ENTER	10
+#		define key_SPACE	32
+#		define key_BS		127
+#	endif
+
 #	define $end			((string)0)
 #	define ARRAY		*
 #	define MATRIX		**
@@ -171,6 +184,9 @@
 	
 	typedef retString (*P_retString)(OptionalArgs);
 	typedef long_retString (*P_long_retString)(OptionalArgs);
+	
+	typedef struct tm* Time;
+	typedef Time (*P_Time)(OptionalArgs);
 	
 	/* Exceptions */
 	typedef struct str_EXCEPTION EXCEPTION_DEFINE, *EXCEPTION;
@@ -297,6 +313,7 @@
 	
 	/* Class Timer */
 	typedef struct{
+		pointer GetTime;
 		pointer TimeHours;
 		pointer TimeMinutes;
 		pointer TimeSeconds;
@@ -309,6 +326,7 @@
 	
 	/* Class Time */
 	typedef struct{
+		Time (*getTime)(OptionalArgs);
 		int (*hours)(OptionalArgs);
 		int (*minutes)(OptionalArgs);
 		int (*seconds)(OptionalArgs);
@@ -347,6 +365,7 @@
 		string (*fromInt)(int);
 		string (*fromFloat)(float);
 		string (*fromDouble)(double);
+		string (*fromTime)(Time);
 	}Conversor;
 	
 	/* Constructors */
@@ -481,7 +500,7 @@
 				RandomicMaker Limit;
 				RandomicMaker Range;
 			}Random;
-			const TimerCreate Clock;
+			const TimerCreate TimeNow;
 		}Std;
 		
 		const struct{

@@ -99,8 +99,8 @@ pointer TONIGHT __create_try_context(void){
 	ctxTry->ctrl = CTRL_TRY;
 	ctxTry->exec_try = false;
 	ctxTry->final = false;
-	except.current = ctxTry;
 	push_context(except.current);
+	except.current = ctxTry;
 	return ctxTry->jump;
 }
 

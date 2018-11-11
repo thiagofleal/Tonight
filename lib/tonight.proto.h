@@ -132,15 +132,15 @@ static	INLINE	int		TONIGHT	__Random_begin_end_nextInt(int, int);
 static	INLINE	double	TONIGHT	__Random_begin_end_nextDouble(double, double, int);
 static	INLINE	float	TONIGHT	__Random_begin_end_nextFloat(float, float, int);
 
-static	NORMAL	struct tm*	TONIGHT	__time(void);
-static	INLINE	int			TONIGHT	__Time_hours(void);
-static	INLINE	int			TONIGHT	__Time_minutes(void);
-static	INLINE	int			TONIGHT	__Time_seconds(void);
-static	INLINE	int			TONIGHT	__Time_day_week(void);
-static	INLINE	int			TONIGHT	__Time_day_month(void);
-static	INLINE	int			TONIGHT	__Time_day_year(void);
-static	INLINE	int			TONIGHT	__Time_month(void);
-static	INLINE	int			TONIGHT	__Time_year(void);
+static	NORMAL	Time	TONIGHT	__time(void);
+static	INLINE	int		TONIGHT	__Time_hours(void);
+static	INLINE	int		TONIGHT	__Time_minutes(void);
+static	INLINE	int		TONIGHT	__Time_seconds(void);
+static	INLINE	int		TONIGHT	__Time_day_week(void);
+static	INLINE	int		TONIGHT	__Time_day_month(void);
+static	INLINE	int		TONIGHT	__Time_day_year(void);
+static	INLINE	int		TONIGHT	__Time_month(void);
+static	INLINE	int		TONIGHT	__Time_year(void);
 
 static	INLINE	void	TONIGHT	__Colors_textbackground(int, int);
 static	INLINE	void	TONIGHT	__Colors_text(int);
@@ -200,6 +200,7 @@ static	NORMAL	int		TONIGHT	$throws	int_fromString(string);
 static	NORMAL	float	TONIGHT	$throws	float_fromString(string);
 static	NORMAL	double	TONIGHT	$throws	double_fromString(string);
 static	INLINE	string	TONIGHT			byte_toString(byte);
+static	NORMAL	string	TONIGHT	$throws	string_fromDate(Time);
 
 static	NORMAL	string	TONIGHT	String_formated(const string, ...);
 static	INLINE	string	TONIGHT	String_concatenate(string, string);
