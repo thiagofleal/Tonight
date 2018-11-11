@@ -65,7 +65,8 @@
 #	define TRY	setjmp(__create_try_context());while(__try_context())if(__function_try())
 #	define CATCH(exception)	else if(__function_catch(exception))
 #	define FINALLY	else if(__function_finally())
-#	define Define_Exception(exc, msg, super)	EXCEPTION_DEFINE __##exc = {msg, &super};EXCEPTION exc = &__##exc
+#	define Define_Exception(exc, msg, super)	static EXCEPTION_DEFINE __##exc = {msg, &super};\
+												EXCEPTION exc = &__##exc
 
 #	ifndef __cplusplus
 #		define and	&&
@@ -96,8 +97,11 @@
 #	define __using__(_type, _from, _as)	const _type _as = ((_type)(_from))
 #	define USING(__arg__)	__using__(__arg__)
 
-#	define __foreach__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
-#	define	foreach(_args_)	__foreach__(_args_)
+#	define __forindex__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
+#	define	forindex(_args_)	__forindex__(_args_)
+
+#	define __foreach__(var, array)	for(initForeach(); foreachIterator(&var, array);)
+#	define	foreach(_args_)		__foreach__(_args_)
 
 #	define	__application_start_with__(_main, _func, _mod...)	_mod int _main(OptionalArgs);\
 																int main(int argc, string argv[]){\
@@ -143,7 +147,7 @@
 #		define true	0x1
 #		define false	0x0
 #	endif
-	typedef unsigned char byte;
+	typedef unsigned char u_char, byte;
 	typedef	char *string;
 	typedef void *pointer, *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
@@ -170,16 +174,12 @@
 	
 	/* Exceptions */
 	typedef struct str_EXCEPTION EXCEPTION_DEFINE, *EXCEPTION;
+	typedef struct __struct_exception *Exception;
 	
 	struct str_EXCEPTION{
 		const string error_name;
 		EXCEPTION *_super;
 	};
-	
-	typedef struct __struct_exception{
-		EXCEPTION exception;
-		string message;
-	}_Exception, *Exception;
 	
 	/* Objects structs */
 	typedef struct str_Class{
@@ -201,14 +201,12 @@
 	}cast, (* P_cast)(OptionalArgs);
 	
 #	define __DefineCast__(_cast, typeFrom, typeTo)	static void _cast##_##cast\
-													(pointer, pointer);\
-													const cast _cast = (cast){\
-															sizeof(typeFrom),\
-															sizeof(typeTo),\
-															_cast##_##cast};\
-													static void _cast##_##cast\
 													(pointer from, pointer to)\
-													{*(typeTo*)to = (typeTo)(*(typeFrom*)from);}
+													{*(typeTo*)to = (typeTo)(*(typeFrom*)from);}\
+													_cast = (cast){\
+														sizeof(typeFrom),\
+														sizeof(typeTo),\
+														_cast##_##cast}
 #	define DefineCast(__args__)	__DefineCast__(__args__)
 	
 	/* "Class" Input */
@@ -455,6 +453,21 @@
 		void (* WithFail)(void);
 	};
 	
+	struct __Locale{
+		int category;
+		string name;
+		string (* set)(void);
+		
+		const struct{
+			int All;
+			int Collate;
+			int Type;
+			int Monetary;
+			int Numeric;
+			int Time;
+		}Category;
+	};
+	
 	/* struct Resources */
 	struct Resources{
 		const struct{
@@ -478,9 +491,17 @@
 		const Conversor Convert;
 		const pointer DefaultFunctionPointer;
 		
+		const struct{
+			u_char (* normalizeChar)(int);
+			string (* normalizeString)(string);
+			u_char (* upper)(int);
+			u_char (* lower)(int);
+			bool (* isupper)(int);
+			bool (* islower)(int);
+		}ASCII;
+		
 		void (*assert)(bool);
 		void (*checkErrno)(void);
-		string (*locale)(void);
 		string (*password)(int);
 		void (*clearScreen)(void);
 		int (*getKey)(void);

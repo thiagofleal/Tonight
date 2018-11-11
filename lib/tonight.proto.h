@@ -215,3 +215,10 @@ static	NORMAL	pointer	TONIGHT	$throws	Array_convert(pointer, cast);
 
 static	INLINE	void	TONIGHT	Exit_WithSuccess(void);
 static	INLINE	void	TONIGHT	Exit_WithFail(void);
+
+static	NORMAL	u_char	TONIGHT	ASCII_normalizeChar(int);
+static	NORMAL	string	TONIGHT	ASCII_normalizeString(string);
+static	NORMAL	u_char	TONIGHT	ASCII_toUpper(int);
+static	NORMAL	u_char	TONIGHT	ASCII_toLower(int);
+static	NORMAL	bool	TONIGHT	ASCII_isUpper(int);
+static	NORMAL	bool	TONIGHT	ASCII_isLower(int);

@@ -12,185 +12,6 @@ static int text_color = 7, background_color = 0;
 
 #include "tonight.sys.h"
 
-/* Exceptions */
-static EXCEPTION_DEFINE ___GenericException = {"Generic exception throwed", NULL};
-EXCEPTION TONIGHT GenericException = &___GenericException;
-
-static Define_Exception(AssertException, "Assert fail", GenericException);
-static Define_Exception(ErrnoException, "Errno error", GenericException);
-static Define_Exception(MemoryAllocException, "Memory allocate error", GenericException);
-static Define_Exception(ArrayIndexBoundException, "Invalid array index", GenericException);
-static Define_Exception(FileOpenException, "File open error", GenericException);
-static Define_Exception(InputException, "Input error", GenericException);
-static Define_Exception(ConvertException, "Convert error", GenericException);
-static Define_Exception(NotImplementException, "Not implemented method error", GenericException);
-static Define_Exception(ArgumentException, "Argument error", GenericException);
-static Define_Exception(NullArgumentException, "Null argument error", ArgumentException);
-
-/* try - catch - throw */
-
-enum ctrl{
-	CTRL_CONTINUE,
-	CTRL_FINALLY,
-	CTRL_CATCH,
-	CTRL_BREAK,
-	CTRL_TRY
-};
-
-typedef struct{
-	pointer jump;
-	int ctrl;
-	bool inside_try;
-	bool exec_try;
-	bool thrown;
-	bool final;
-}strContext, *Context;
-
-typedef struct{
-	Context context;
-	pointer next;
-}Stack_node, *Stack;
-
-static strContext begin = {
-	NULL, CTRL_CONTINUE, false, false, false, false
-};
-
-static struct{
-	Stack stack;
-	Context current;
-	Exception value;
-}except = {NULL, &begin, NULL};
-
-static Context createContext(void){
-	Context ctxt = calloc(1, sizeof(strContext));
-	if(!ctxt) exit(EXIT_FAILURE);
-	ctxt->jump = malloc(sizeof(jmp_buf));
-	if(!ctxt->jump) exit(EXIT_FAILURE);
-	return ctxt;
-}
-
-static void deleteContext(Context ctxt){
-	if(ctxt){
-		if(ctxt->jump) free(ctxt->jump);
-		free(ctxt);
-	}
-}
-
-static void push_context(Context value){
-	Stack node = malloc(sizeof(Stack_node));
-	if(!node) exit(EXIT_FAILURE);
-	node->context = value;
-	node->next = except.stack;
-	except.stack = node;
-}
-
-static Context pop_context(void){
-	Stack node = except.stack;
-	if(node){
-		Context ctx = node->context;
-		except.stack = node->next;
-		free(node);
-		return ctx;
-	}
-	return NULL;
-}
-
-Exception TONIGHT getException(void){
-	return except.value;
-}
-
-pointer TONIGHT __create_try_context(void){
-	Context ctxTry = createContext();
-	ctxTry->inside_try = true;
-	ctxTry->ctrl = CTRL_TRY;
-	push_context(except.current);
-	except.current = ctxTry;
-	except.current->exec_try = false;
-	except.current->final = false;
-	return ctxTry->jump;
-}
-
-INLINE void TONIGHT __restaure_try_context(void){
-	deleteContext(except.current);
-	except.current = pop_context();
-}
-
-bool TONIGHT __try_context(void){
-	switch(except.current->ctrl){
-		case CTRL_TRY:
-			except.current->ctrl = CTRL_BREAK;
-			except.current->exec_try = true;
-			return true;
-		case CTRL_BREAK:
-			__restaure_try_context();
-		case CTRL_CONTINUE:
-			return false;
-		case CTRL_CATCH:
-			except.current->ctrl = CTRL_BREAK;
-			return true;
-		case CTRL_FINALLY:
-			except.current->ctrl = CTRL_CONTINUE;
-			except.current->final = true;
-			return true;
-	}
-}
-
-bool TONIGHT __function_try(void){
-	if(except.current->exec_try){
-		except.current->exec_try = false;
-		return true;
-	}
-	return false;
-}
-
-bool TONIGHT __function_catch(EXCEPTION _exception){
-	if(except.current->thrown){
-		EXCEPTION *_e = &except.value->exception;
-		while(_e){
-			if(*_e == _exception){
-				__restaure_try_context();
-				except.current->ctrl = CTRL_FINALLY;
-				except.current->thrown = false;
-				return true;
-			}
-			_e = (*_e)->_super;
-		}
-	}
-	return false;
-}
-
-bool TONIGHT __function_finally(void){
-	if(except.current->final){
-		except.current->final = false;
-		return true;
-	}
-	return false;
-}
-
-void TONIGHT THROW(EXCEPTION __exc, string message){
-	if(except.current->inside_try){
-		static _Exception exc;
-		exc.exception = __exc;
-		exc.message = message;
-		except.current->thrown = true;
-		except.value = &exc;
-		except.current->ctrl = CTRL_CATCH;
-		longjmp(except.current->jump, 1);
-	}
-}
-
-INLINE string TONIGHT Error(Exception exc){
-	return exc->exception->error_name;
-}
-
-INLINE string TONIGHT Message(Exception exc){
-	return exc->message;
-}
-
-INLINE EXCEPTION TONIGHT ExceptionType(Exception exc){
-	return exc->exception;
-}
-
 /* Functions */
 
 static void __assert(bool test){
@@ -212,8 +33,10 @@ static INLINE double TONIGHT decimal(double n){
 	return n - (long int)n;
 }
 
-INLINE string TONIGHT __locale(void){
-	return setlocale(LC_ALL, "");
+static pointer buf_locale = NULL;
+
+static INLINE string TONIGHT __locale(void){
+	return setlocale(Locale.category, Locale.name);
 }
 
 INLINE static pointer __Default_void_function(){
@@ -276,16 +99,16 @@ bool TONIGHT equal(register string const wrd_1, register string const wrd_2){
 	register string s1 = wrd_1, s2 = wrd_2;
 	while(*s1 && *s2){
 		if(*s1 != *s2){
-			if(isupper(*s1))
-				if(tolower(*s1) != *s2)
+			if(ASCII_isUpper(*s1))
+				if(ASCII_toLower(*s1) != *s2)
 					return false;
-			if(islower(*s1))
-				if(toupper(*s1) != *s2)
+			if(ASCII_isLower(*s1))
+				if(ASCII_toUpper(*s1) != *s2)
 					return false;
 		}
 		s1++; s2++;
 	}
-	return (bool)*s1 == *s2;
+	return *s1 == *s2 ? true : false;
 }
 
 string TONIGHT s_cs(char var){
@@ -294,7 +117,7 @@ string TONIGHT s_cs(char var){
 }
 
 string TONIGHT s_bs(bool var){
-	return var ? toString("TRUE") : toString("FALSE");
+	return var ? toString("true") : toString("false");
 }
 
 string TONIGHT s_is(int var){
@@ -1451,7 +1274,7 @@ static INLINE string TONIGHT String_concatenate(string str1, string str2){
 static string TONIGHT String_upper(const string str){
 	register string s, aux = toString(str);
 	for(s = aux; *s; s++){
-		toupper(*s);
+		ASCII_toUpper(*s);
 	}
 	return aux;
 }
@@ -1459,7 +1282,7 @@ static string TONIGHT String_upper(const string str){
 static string TONIGHT String_lower(const string str){
 	register string s, aux = toString(str);
 	for(s = aux; *s; s++){
-		tolower(*s);
+		ASCII_toLower(*s);
 	}
 	return aux;
 }
@@ -1528,7 +1351,10 @@ static void onExit(void){
 
 int TONIGHT TonightMode(P_int func, register int argc, string argv[]){
 	register int i;
+	static int f;
 	string ARRAY arg = __args = Array.String(argc);
+	if(f++)
+		throw(ApplicationException, "Application previosly initialized");
 	for(i = 0; i < argc; i++)
 		arg[i] = argv[i];
 	atexit(onExit);
@@ -1549,4 +1375,126 @@ static INLINE void TONIGHT Exit_WithFail(void){
 INLINE void TONIGHT checkArgumentPointer(pointer arg){
 	if(!arg)
 		throw(NullArgumentException, "Null argument");
+}
+
+
+#define CR(_case, _return)	case _case: return _return
+#define RC(_return, _case)	case _case: return _return
+
+static unsigned char ASCII_normalizeChar(int input){
+	switch(input){
+		CR('Ç', 128);CR('ü', 129);
+		CR('é', 130);CR('â', 131);
+		CR('ä', 132);CR('à', 133);
+		CR('å', 134);CR('ç', 135);
+		CR('ê', 136);CR('ë', 137);
+		CR('è', 138);CR('ï', 139);
+		CR('î', 140);CR('ì', 141);
+		CR('Ä', 142);CR('Å', 143);
+		CR('É', 144);CR('æ', 145);
+		CR('Æ', 146);CR('ô', 147);
+		CR('ö', 148);CR('ò', 149);
+		CR('û', 150);CR('ù', 151);
+		CR('ÿ', 152);CR('Ö', 153);
+		CR('Ü', 154);CR('ø', 155);
+		CR('£', 156);CR('Ø', 157);
+		CR('×', 158);CR('ƒ', 159);
+		CR('á', 160);CR('í', 161);
+		CR('ó', 162);CR('ú', 163);
+		CR('ñ', 164);CR('Ñ', 165);
+		CR('ª', 166);CR('º', 167);
+		CR('¿', 168);CR('®', 169);
+		CR('¬', 170);CR('½', 171);
+		CR('¼', 172);CR('¡', 173);
+		CR('«', 174);CR('»', 175);
+		CR('Á', 181);
+		CR('Â', 182);CR('À', 183);
+		CR('©', 184);
+		CR('¢', 189);
+		CR('¥', 190);
+		CR('ã', 198);CR('Ã', 199);
+		CR('¤', 207);
+		CR('ð', 208);CR('Ð', 209);
+		CR('Ê', 210);CR('Ë', 211);
+		CR('È', 212);
+		CR('Í', 214);CR('Î', 215);
+		CR('Ï', 216);
+		CR('Ì', 222);
+		CR('Ó', 224);CR('ß', 225);
+		CR('Ô', 226);CR('Ò', 227);
+		CR('õ', 228);CR('Õ', 229);
+		CR('µ', 230);CR('þ', 231);
+		CR('Þ', 232);CR('Ú', 233);
+		CR('Û', 234);CR('Ù', 235);
+		CR('ý', 236);CR('Ý', 237);
+		CR('´', 239);
+		CR('±', 241);
+		CR('¾', 243);
+		CR('¶', 244);CR('§', 245);
+		CR('÷', 246);
+		CR('°', 248);CR('¨', 249);
+		CR('¹', 251);
+		CR('³', 252);CR('²', 253);
+		CR(' ', 255);
+		default: return input;
+	}
+}
+
+static string ASCII_normalizeString(string input){
+	register string aux;
+	for(aux = input; *aux; aux++)
+		*aux = ASCII_normalizeChar(*aux);
+	return input;
+}
+
+#define UP_LOWER_FUNC(TMP, func, _in) \
+	switch(_in){\
+		TMP('ü', 'Ü');\
+		TMP('é', 'É');\
+		TMP('â', 'Â');\
+		TMP('ä', 'Ä');\
+		TMP('à', 'À');\
+		TMP('å', 'Å');\
+		TMP('ç', 'Ç');\
+		TMP('ê', 'Ê');\
+		TMP('ë', 'Ë');\
+		TMP('è', 'È');\
+		TMP('ï', 'Ï');\
+		TMP('î', 'Î');\
+		TMP('ì', 'Ì');\
+		TMP('ô', 'Ô');\
+		TMP('ö', 'Ö');\
+		TMP('ò', 'Ò');\
+		TMP('û', 'Û');\
+		TMP('ù', 'Ù');\
+		TMP('á', 'Á');\
+		TMP('í', 'Í');\
+		TMP('ó', 'Ó');\
+		TMP('ú', 'Ú');\
+		TMP('ñ', 'Ñ');\
+		TMP('ã', 'Ã');\
+		TMP('õ', 'Õ');\
+		TMP('ý', 'Ý');\
+		default:\
+			if(input <= 127) return func(input);\
+			else return input;\
+	}
+
+static u_char TONIGHT ASCII_toUpper(int input){
+	UP_LOWER_FUNC(CR, toupper, input)
+}
+
+static u_char TONIGHT ASCII_toLower(int input){
+	UP_LOWER_FUNC(RC, tolower, input)
+}
+
+#define	CT(_case, _null)	case _case: return true
+#define	TC(_null, _case)	case _case: return true
+
+static bool TONIGHT ASCII_isUpper(int input){
+	UP_LOWER_FUNC(TC, isupper, input)
+}
+
+static bool TONIGHT ASCII_isLower(int input){
+	UP_LOWER_FUNC(CT, islower, input)
 }

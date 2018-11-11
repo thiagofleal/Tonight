@@ -178,9 +178,17 @@ const TONIGHT struct Resources Tonight = {
 	
 	.DefaultFunctionPointer = __Default_void_function,
 	
+	.ASCII = {
+		.normalizeChar = ASCII_normalizeChar,
+		.normalizeString = ASCII_normalizeString,
+		.upper = ASCII_toUpper,
+		.lower = ASCII_toLower,
+		.isupper = ASCII_isUpper,
+		.islower = ASCII_isLower
+	},
+	
 	.assert = __assert,
 	.checkErrno = __checkErrno,
-	.locale = __locale,
 	.password = __Scanner_Password,
 	.clearScreen = __clearScreen,
 	.getKey = getKey,
@@ -189,6 +197,21 @@ const TONIGHT struct Resources Tonight = {
 	.sleep = __sleep,
 	.position = cursor_position,
 	.initRandom = __initRandom
+};
+
+struct __Locale Locale = {
+	.category = LC_ALL,
+	.name = "",
+	.set = __locale,
+	
+	.Category = {
+		.All = LC_ALL,
+		.Collate = LC_COLLATE,
+		.Type = LC_CTYPE,
+		.Monetary = LC_MONETARY,
+		.Numeric = LC_NUMERIC,
+		.Time = LC_TIME
+	}
 };
 
 /* New (new) */
