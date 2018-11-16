@@ -1298,6 +1298,56 @@ static INLINE string TONIGHT byte_toString(byte b){
 	return s_is((int)b);
 }
 
+string TONIGHT strsep(register string *stringp, register const string delim){
+	register string s;
+	register string spanp;
+	register int c, sc;
+	string tok;
+	
+	if (!(s = *stringp))
+		return NULL;
+	for (tok = s;;) {
+		c = *s++;
+		spanp = delim;
+		do {
+			if ((sc = *spanp++) == c){
+				if (!c)
+					s = NULL;
+				else
+					s[-1] = 0;
+				*stringp = s;
+				return (tok);
+			}
+		} while (sc != 0);
+	}
+}
+
+static string ARRAY String_split(string src, string lim)
+{
+	register int i, ret_len;
+	string ARRAY ret = NULL;
+	string aux, aux2;
+	
+	for(aux2 = aux = toString(src), i = 0; strsep(&aux, lim); i++);
+	__memory_free(aux2);
+	ret_len = i;
+	ret = __new_array_String(ret_len);
+	aux = src;
+	for(aux2 = aux = toString(src), i = 0; i < ret_len; i++)
+		ret[i] = toString(strsep(&aux, lim));
+	__memory_free(aux2);
+	return ret;
+}
+
+string String_trim(string str){
+	register string aux = str + (strlen(str) - 1);
+	while(isspace(*str))
+		++str;
+	while(isspace(*aux))
+		*aux-- = 0;
+	return str;
+}
+
 /* Functions to Array */
 static INLINE int TONIGHT Array_length(pointer array){
 	checkArgumentPointer(array);

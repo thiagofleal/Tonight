@@ -285,6 +285,8 @@ const struct __String String = {
 	.lower = String_lower,
 	.length = (pointer)strlen,
 	.compare = (pointer)strcmp,
+	.split = String_split,
+	.trim = String_trim,
 	.free = (pointer)__memory_free
 };
 

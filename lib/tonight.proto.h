@@ -206,6 +206,9 @@ static	NORMAL	string	TONIGHT	String_formated(const string, ...);
 static	INLINE	string	TONIGHT	String_concatenate(string, string);
 static	NORMAL	string	TONIGHT	String_upper(const string str);
 static	NORMAL	string	TONIGHT	String_lower(const string str);
+static	NORMAL	string*	TONIGHT	String_split(const string, const string);
+static	NORMAL	string	TONIGHT	String_trim(const string);
+		NORMAL	string	TONIGHT	strsep(register string*, register const string);
 
 static	INLINE	int		TONIGHT			Array_length(pointer);
 static	INLINE	size_t	TONIGHT			Array_size(pointer);
