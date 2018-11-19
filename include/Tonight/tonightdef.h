@@ -108,9 +108,6 @@
 #		define OptionalArgs
 #	endif
 
-#	define $using(_arg_)	if(true){__using__(_arg_);
-#	define $end_block		}
-
 #	define	__using__(var, from)	__create_using_context(sizeof var, &var);\
 									var = from;\
 									while(__function_using(&var))
@@ -222,13 +219,13 @@
 		void (* parse)(pointer, pointer);
 	}cast, (* P_cast)(OptionalArgs);
 	
-#	define __DefineCast__(_cast, typeFrom, typeTo)	static void _cast##_##cast\
-													(pointer from, pointer to)\
-													{*(typeTo*)to = (typeTo)(*(typeFrom*)from);}\
-													_cast = (cast){\
-														sizeof(typeFrom),\
-														sizeof(typeTo),\
-														_cast##_##cast}
+#	define __DefineCast__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
+															(pointer from, pointer to)\
+															{*(typeTo*)to = (typeTo)(*(typeFrom*)from);}\
+															_arg cast _cast = (cast){\
+															sizeof(typeFrom),\
+															sizeof(typeTo),\
+															_cast##_##cast}
 #	define DefineCast(__args__)	__DefineCast__(__args__)
 	
 	/* "Class" Input */
