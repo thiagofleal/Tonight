@@ -395,7 +395,7 @@
 		size_t	(* size)(pointer);
 		pointer	(* access)(pointer, int);
 		void	(* free)(pointer);
-		string	(* toString)(pointer, P_retString);
+		string	(* toString)(pointer, P_retString, string);
 		pointer	(* convert)(pointer, cast);
 		
 		char* (*Char)(int);

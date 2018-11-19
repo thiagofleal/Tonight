@@ -1396,18 +1396,17 @@ static INLINE void TONIGHT Array_free(pointer array){
 	free(array - sizeof(int) - sizeof(size_t));
 }
 
-static string TONIGHT Array_toString(pointer array, P_retString method){
+static string TONIGHT Array_toString(pointer array, P_retString method, string sep){
 	static char ARRAY str = NULL;
 	register int i, length = Array.length(array);
 	if(str)
 		Array.free(str);
-	str = Array.Char((Array.size(array) * 3 + 2) * Array.length(array));
+	str = Array.Char((Array.size(array) * 3 + strlen(sep)) * Array.length(array));
 	*str = 0;
 	checkArgumentPointer(method);
-	strcat(str, "[");
 	for(i=0;i<length;i++)
-		strcat(strcat(str, getText(method(Array_access(array, i)))), ", ");
-	str[strlen(str) - 2] = ']';
+		strcat(strcat(str, getText(method(Array_access(array, i)))), sep);
+	str[strlen(str) - strlen(sep)] = 0;
 	return toString(str);
 }
 

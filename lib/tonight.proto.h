@@ -219,7 +219,7 @@ static	INLINE	int		TONIGHT			Array_length(pointer);
 static	INLINE	size_t	TONIGHT			Array_size(pointer);
 static	NORMAL	pointer	TONIGHT	$throws	Array_access(pointer, int);
 static	INLINE	void	TONIGHT			Array_free(pointer);
-static	NORMAL	string	TONIGHT	$throws	Array_toString(pointer, P_retString);
+static	NORMAL	string	TONIGHT	$throws	Array_toString(pointer, P_retString, string);
 static	NORMAL	pointer	TONIGHT	$throws	Array_convert(pointer, cast);
 
 static	INLINE	void	TONIGHT	Exit_WithSuccess(void);
