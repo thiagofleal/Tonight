@@ -1339,8 +1339,9 @@ static string ARRAY String_split(string src, string lim)
 	return ret;
 }
 
-string String_trim(string str){
-	register string aux = str + (strlen(str) - 1);
+string String_trim(const string _str){
+	string str = toString(_str);
+	register string aux = str + strlen(str) - 1;
 	while(isspace(*str))
 		++str;
 	while(isspace(*aux))
@@ -1437,62 +1438,63 @@ INLINE void TONIGHT checkArgumentPointer(pointer arg){
 
 #define CR(_case, _return)	case _case: return _return
 #define RC(_return, _case)	case _case: return _return
+#define	_FUNC	RC
 
 static unsigned char ASCII_normalizeChar(int input){
 	switch(input){
-		CR('Ç', 128);CR('ü', 129);
-		CR('é', 130);CR('â', 131);
-		CR('ä', 132);CR('à', 133);
-		CR('å', 134);CR('ç', 135);
-		CR('ê', 136);CR('ë', 137);
-		CR('è', 138);CR('ï', 139);
-		CR('î', 140);CR('ì', 141);
-		CR('Ä', 142);CR('Å', 143);
-		CR('É', 144);CR('æ', 145);
-		CR('Æ', 146);CR('ô', 147);
-		CR('ö', 148);CR('ò', 149);
-		CR('û', 150);CR('ù', 151);
-		CR('ÿ', 152);CR('Ö', 153);
-		CR('Ü', 154);CR('ø', 155);
-		CR('£', 156);CR('Ø', 157);
-		CR('×', 158);CR('ƒ', 159);
-		CR('á', 160);CR('í', 161);
-		CR('ó', 162);CR('ú', 163);
-		CR('ñ', 164);CR('Ñ', 165);
-		CR('ª', 166);CR('º', 167);
-		CR('¿', 168);CR('®', 169);
-		CR('¬', 170);CR('½', 171);
-		CR('¼', 172);CR('¡', 173);
-		CR('«', 174);CR('»', 175);
-		CR('Á', 181);
-		CR('Â', 182);CR('À', 183);
-		CR('©', 184);
-		CR('¢', 189);
-		CR('¥', 190);
-		CR('ã', 198);CR('Ã', 199);
-		CR('¤', 207);
-		CR('ð', 208);CR('Ð', 209);
-		CR('Ê', 210);CR('Ë', 211);
-		CR('È', 212);
-		CR('Í', 214);CR('Î', 215);
-		CR('Ï', 216);
-		CR('Ì', 222);
-		CR('Ó', 224);CR('ß', 225);
-		CR('Ô', 226);CR('Ò', 227);
-		CR('õ', 228);CR('Õ', 229);
-		CR('µ', 230);CR('þ', 231);
-		CR('Þ', 232);CR('Ú', 233);
-		CR('Û', 234);CR('Ù', 235);
-		CR('ý', 236);CR('Ý', 237);
-		CR('´', 239);
-		CR('±', 241);
-		CR('¾', 243);
-		CR('¶', 244);CR('§', 245);
-		CR('÷', 246);
-		CR('°', 248);CR('¨', 249);
-		CR('¹', 251);
-		CR('³', 252);CR('²', 253);
-		CR(' ', 255);
+		_FUNC('Ç', 128);_FUNC('ü', 129);
+		_FUNC('é', 130);_FUNC('â', 131);
+		_FUNC('ä', 132);_FUNC('à', 133);
+		_FUNC('å', 134);_FUNC('ç', 135);
+		_FUNC('ê', 136);_FUNC('ë', 137);
+		_FUNC('è', 138);_FUNC('ï', 139);
+		_FUNC('î', 140);_FUNC('ì', 141);
+		_FUNC('Ä', 142);_FUNC('Å', 143);
+		_FUNC('É', 144);_FUNC('æ', 145);
+		_FUNC('Æ', 146);_FUNC('ô', 147);
+		_FUNC('ö', 148);_FUNC('ò', 149);
+		_FUNC('û', 150);_FUNC('ù', 151);
+		_FUNC('ÿ', 152);_FUNC('Ö', 153);
+		_FUNC('Ü', 154);_FUNC('ø', 155);
+		_FUNC('£', 156);_FUNC('Ø', 157);
+		_FUNC('×', 158);_FUNC('ƒ', 159);
+		_FUNC('á', 160);_FUNC('í', 161);
+		_FUNC('ó', 162);_FUNC('ú', 163);
+		_FUNC('ñ', 164);_FUNC('Ñ', 165);
+		_FUNC('ª', 166);_FUNC('º', 167);
+		_FUNC('¿', 168);_FUNC('®', 169);
+		_FUNC('¬', 170);_FUNC('½', 171);
+		_FUNC('¼', 172);_FUNC('¡', 173);
+		_FUNC('«', 174);_FUNC('»', 175);
+		_FUNC('Á', 181);
+		_FUNC('Â', 182);_FUNC('À', 183);
+		_FUNC('©', 184);
+		_FUNC('¢', 189);
+		_FUNC('¥', 190);
+		_FUNC('ã', 198);_FUNC('Ã', 199);
+		_FUNC('¤', 207);
+		_FUNC('ð', 208);_FUNC('Ð', 209);
+		_FUNC('Ê', 210);_FUNC('Ë', 211);
+		_FUNC('È', 212);
+		_FUNC('Í', 214);_FUNC('Î', 215);
+		_FUNC('Ï', 216);
+		_FUNC('Ì', 222);
+		_FUNC('Ó', 224);_FUNC('ß', 225);
+		_FUNC('Ô', 226);_FUNC('Ò', 227);
+		_FUNC('õ', 228);_FUNC('Õ', 229);
+		_FUNC('µ', 230);_FUNC('þ', 231);
+		_FUNC('Þ', 232);_FUNC('Ú', 233);
+		_FUNC('Û', 234);_FUNC('Ù', 235);
+		_FUNC('ý', 236);_FUNC('Ý', 237);
+		_FUNC('´', 239);
+		_FUNC('±', 241);
+		_FUNC('¾', 243);
+		_FUNC('¶', 244);_FUNC('§', 245);
+		_FUNC('÷', 246);
+		_FUNC('°', 248);_FUNC('¨', 249);
+		_FUNC('¹', 251);
+		_FUNC('³', 252);_FUNC('²', 253);
+		_FUNC(' ', 255);
 		default: return input;
 	}
 }
