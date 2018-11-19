@@ -107,8 +107,13 @@
 #		define OptionalArgs
 #	endif
 
-#	define __using__(_type, _from, _as)	const _type _as = ((_type)(_from))
-#	define USING(__arg__)	__using__(__arg__)
+#	define $using(_arg_)	if(true){__using__(_arg_);
+#	define $end_block		}
+
+#	define	__using__(var, from)	__create_using_context(sizeof var, &var);\
+									var = from;\
+									while(__function_using(&var))
+#	define USING(_arg_)		__using__(_arg_)
 
 #	define __forindex__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
 #	define	forindex(_args_)	__forindex__(_args_)
@@ -474,12 +479,15 @@
 		void (* WithFail)(void);
 	};
 	
-	struct __Locale{
-		int category;
-		string name;
-		string (* set)(void);
+	struct Locale{
+		int (* getCategory)(OptionalArgs);
+		void (* setCategory)(OptionalArgs);
+		string (* getName)(OptionalArgs);
+		void (* setName)(OptionalArgs);
+		string (* set)(OptionalArgs);
+		string (* get)(OptionalArgs);
 		
-		const struct{
+		struct{
 			int All;
 			int Collate;
 			int Type;
@@ -510,6 +518,7 @@
 		}Resources;
 		
 		const Conversor Convert;
+		const struct Locale Locale;
 		const pointer DefaultFunctionPointer;
 		
 		const struct{

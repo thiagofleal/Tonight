@@ -35,8 +35,31 @@ static INLINE double TONIGHT decimal(double n){
 
 static pointer buf_locale = NULL;
 
+static int __category = LC_ALL;
+static string __name = "C";
+
 static INLINE string TONIGHT __locale(void){
-	return setlocale(Locale.category, Locale.name);
+	return setlocale(__category, __name);
+}
+
+static INLINE string __getlocale(int category){
+	return setlocale(category, NULL);
+}
+
+static INLINE int TONIGHT __getCategory(void){
+	return __category;
+}
+
+static INLINE void TONIGHT __setCategory(int category){
+	__category = category;
+}
+
+static INLINE string TONIGHT __getName(void){
+	return __name;
+}
+
+static INLINE void TONIGHT __setName(string name){
+	__name = name;
 }
 
 INLINE static pointer __Default_void_function(){

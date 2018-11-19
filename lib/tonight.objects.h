@@ -178,6 +178,24 @@ const TONIGHT struct Resources Tonight = {
 		.fromTime = string_fromDate
 	},
 	
+	.Locale = {
+		.getCategory = __getCategory,
+		.setCategory = __setCategory,
+		.getName = __getName,
+		.setName = __setName,
+		.set = __locale,
+		.get = __getlocale,
+		
+		.Category = {
+			.All = LC_ALL,
+			.Collate = LC_COLLATE,
+			.Type = LC_CTYPE,
+			.Monetary = LC_MONETARY,
+			.Numeric = LC_NUMERIC,
+			.Time = LC_TIME
+		}
+	},
+	
 	.DefaultFunctionPointer = __Default_void_function,
 	
 	.ASCII = {
@@ -199,21 +217,6 @@ const TONIGHT struct Resources Tonight = {
 	.sleep = __sleep,
 	.position = cursor_position,
 	.initRandom = __initRandom
-};
-
-struct __Locale Locale = {
-	.category = LC_ALL,
-	.name = "",
-	.set = __locale,
-	
-	.Category = {
-		.All = LC_ALL,
-		.Collate = LC_COLLATE,
-		.Type = LC_CTYPE,
-		.Monetary = LC_MONETARY,
-		.Numeric = LC_NUMERIC,
-		.Time = LC_TIME
-	}
 };
 
 /* New (new) */

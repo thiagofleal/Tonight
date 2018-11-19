@@ -21,6 +21,11 @@ static	INLINE	void	TONIGHT			cursor_position(int, int);
 static	INLINE	void	TONIGHT			__clearScreen(void);
 
 static	INLINE	string	TONIGHT 		__locale(void);
+static	INLINE	string	TONIGHT 		__getlocale(int);
+static	INLINE	int		TONIGHT 		__getCategory(void);
+static	INLINE	void	TONIGHT 		__setCategory(int);
+static	INLINE	string	TONIGHT 		__getName(void);
+static	INLINE	void	TONIGHT 		__setName(string);
 static	INLINE	int		TONIGHT 		getKeyEcho(void);
 static	INLINE	double	TONIGHT 		decimal(double n);
 static	INLINE	void	TONIGHT			__initRandom(void);

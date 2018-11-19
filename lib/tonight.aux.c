@@ -37,3 +37,35 @@ bool TONIGHT foreachIterator(pointer var, pointer array){
 		return false;
 	}
 }
+
+struct Stack{
+	bool ret;
+	size_t size;
+	pointer current;
+	pointer prev;
+}*stack = NULL;
+
+void __create_using_context(size_t size, pointer point){
+	struct Stack *_new = Memory.alloc(sizeof(struct Stack));
+	_new->current = Memory.alloc(size);
+	memcpy(_new->current, point, size);
+	_new->ret = true;
+	_new->size = size;
+	_new->prev = stack;
+	stack = _new;
+}
+
+bool __function_using(pointer point){
+	if(stack->ret){
+		stack->ret = false;
+		return true;
+	}
+	else{
+		struct Stack *tmp = stack;
+		memcpy(point, stack->current, stack->size);
+		stack = stack->prev;
+		Memory.free(tmp->current);
+		Memory.free(tmp);
+		return false;
+	}
+}

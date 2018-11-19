@@ -36,7 +36,6 @@
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
 			extern const TONIGHT struct Resources Tonight;
-			extern TONIGHT struct __Locale Locale;
 			
 			/* Exceptions */
 			extern EXCEPTION TONIGHT GenericException;
@@ -65,8 +64,10 @@
 			extern INLINE string TONIGHT Message(Exception);
 			extern INLINE EXCEPTION TONIGHT ExceptionType(Exception);
 			
-			INLINE void TONIGHT NO_CALL initForeach(void);
-			bool TONIGHT NO_CALL foreachIterator(pointer, pointer);
+			extern INLINE void TONIGHT NO_CALL initForeach(void);
+			extern bool TONIGHT NO_CALL foreachIterator(pointer, pointer);
+			extern void TONIGHT NO_CALL __create_using_context(size_t, pointer);
+			extern bool TONIGHT NO_CALL __function_using(pointer);
 			
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);
