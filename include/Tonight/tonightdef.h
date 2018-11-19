@@ -69,6 +69,7 @@
 #		define key_BS		127
 #	endif
 
+#	define $Empty(Type)	((Type){0})
 #	define $end			((string)0)
 #	define ARRAY		*
 #	define MATRIX		**
