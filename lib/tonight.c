@@ -10,6 +10,11 @@ static char str[1001];
 static char __buffer[1024];
 static int text_color = 7, background_color = 0;
 
+static P_pointer p_malloc = malloc;
+static P_pointer p_calloc = calloc;
+static P_pointer p_realloc = realloc;
+static P_void p_free = free;
+
 #include "tonight.sys.h"
 
 /* Functions */
@@ -296,7 +301,7 @@ long_retString TONIGHT cls(char var){
 	register char *s = s_cs(var);
 	static long_retString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	free(s);
+	p_free(s);
 	return ret;
 }
 
@@ -998,7 +1003,7 @@ static file TONIGHT $throws __new_File(string fName, string fMode){
 	return f;
 }
 
-static object TONIGHT __new_Object(Class_Data name, ...){
+static object TONIGHT __new_Object(Class name, ...){
 	va_list v;
 	object _new = Memory.alloc(sizeof(Intern_Object));
 	va_start(v, name);
@@ -1067,7 +1072,7 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 }
 
 static pointer TONIGHT $throws __new_memory(size_t q){
-	pointer p = malloc(q + sizeof(size_t));
+	pointer p = p_malloc(q + sizeof(size_t));
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	*(size_t*)p = q;
@@ -1075,7 +1080,7 @@ static pointer TONIGHT $throws __new_memory(size_t q){
 }
 
 static pointer TONIGHT $throws __realloc_memory(pointer mem, size_t q){
-	pointer p = realloc(mem, q + sizeof(size_t));
+	pointer p = p_realloc(mem, q + sizeof(size_t));
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	*(size_t*)p = q;
@@ -1092,13 +1097,13 @@ static INLINE pointer TONIGHT __memory_copy(pointer mem) {
 }
 
 static INLINE void TONIGHT __memory_free(pointer mem){
-	free(mem - sizeof(size_t));
+	p_free(mem - sizeof(size_t));
 }
 
 /* Initialize arrays */
 
 static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
-	pointer p = malloc(sizeof(int) + sizeof(size_t) + size * lenght);
+	pointer p = p_malloc(sizeof(int) + sizeof(size_t) + size * lenght);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	*(int*)p = lenght;
@@ -1393,7 +1398,14 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 
 static INLINE void TONIGHT Array_free(pointer array){
 	checkArgumentPointer(array);
-	free(array - sizeof(int) - sizeof(size_t));
+	p_free(array - sizeof(int) - sizeof(size_t));
+}
+
+static void TONIGHT Matrix_free(pointer mtrx){
+	checkArgumentPointer(mtrx);
+	register int i, length = Array_length(mtrx);
+	for(i=0;i<length;i++)
+		Array_free(Array_access(mtrx, i));
 }
 
 static string TONIGHT Array_toString(pointer array, P_retString method, string sep){
@@ -1578,4 +1590,35 @@ static bool TONIGHT ASCII_isUpper(int input){
 
 static bool TONIGHT ASCII_isLower(int input){
 	UP_LOWER_FUNC(CT, islower, input)
+}
+
+static INLINE Class TONIGHT Object_getClass(object obj){
+	return obj->class_pointer;
+}
+
+static INLINE size_t TONIGHT Object_getSize(object obj){
+	return obj->class_pointer->size;
+}
+
+static object TONIGHT Object_copy(object src){
+	object ret = Memory.alloc(sizeof(Intern_Object));
+	ret->class_pointer = src->class_pointer;
+	ret->obj = __memory_copy(src->obj);
+	return ret;
+}
+
+static INLINE void TONIGHT Callback_setMalloc(P_pointer callback){
+	p_malloc = callback;
+}
+
+static INLINE void TONIGHT Callback_setCalloc(P_pointer callback){
+	p_calloc = callback;
+}
+
+static INLINE void TONIGHT Callback_setRealloc(P_pointer callback){
+	p_realloc = callback;
+}
+
+static INLINE void TONIGHT Callback_setFree(P_void callback){
+	p_free = callback;
 }

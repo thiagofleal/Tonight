@@ -50,7 +50,7 @@
 														&_intVal\
 													}
 #		define class(_Class, _int)	const struct Define_##_Class{\
-										const Class_Data class;\
+										const Class class;\
 										const _int *defaultInterface;\
 									}_Class
 #		define interface(_int)	typedef struct _int _int
@@ -122,8 +122,8 @@
 #			undef Destructor
 #		endif
 
-#		define Constructor(Class)	void __new_##Class(Intern_Object *self, __builtin_va_list *__construct_args)
-#		define Destructor(Class)	void __del_##Class(Intern_Object *self)
+#		define Constructor(_Class)	void __new_##_Class(Intern_Object *self, __builtin_va_list *__construct_args)
+#		define Destructor(_Class)	void __del_##_Class(Intern_Object *self)
 
 /*	Superclass' access	*/
 
@@ -148,7 +148,7 @@
 #		define	super_delete(_super)	_super->dtor(self)
 #		define	super_getInterface(_super, _int)	(*((struct _super*)This)->__Int_##_int)
 #		define	super_setInterface(_super, _int, _new)	(((struct _super*)This)->__Int_##_int = &_new)
-#		define	cast_super(Class)		(*((struct Class*)This))
+#		define	cast_super(_Class)		(*((struct _Class*)This))
 
 /*	delete(obj)	*/
 void delete(object);

@@ -216,7 +216,14 @@ const TONIGHT struct Resources Tonight = {
 	.pressKey = pressKey,
 	.sleep = __sleep,
 	.position = cursor_position,
-	.initRandom = __initRandom
+	.initRandom = __initRandom,
+	
+	.Callback = {
+		.setMalloc = Callback_setMalloc,
+		.setCalloc = Callback_setCalloc,
+		.setRealloc = Callback_setRealloc,
+		.setFree = Callback_setFree
+	}
 };
 
 /* New (new) */
@@ -261,6 +268,7 @@ const struct __Array Array = {
 
 /* Matrix */
 const struct __Matrix Matrix = {
+	.free = Matrix_free,
 	.Char = __new_matrix_char,
 	.Byte = __new_matrix_byte,
 	.Bool = __new_matrix_bool,
@@ -322,4 +330,13 @@ const struct __Exit Exit = {
 	.With = exit,
 	.WithSuccess = Exit_WithSuccess,
 	.WithFail = Exit_WithFail
+};
+
+/* Object */
+const struct __Object Object = {
+	.free = delete,
+	.instance = __new_Object,
+	.getClass = Object_getClass,
+	.getSize = Object_getSize,
+	.copy = Object_copy
 };

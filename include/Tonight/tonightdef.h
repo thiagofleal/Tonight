@@ -205,11 +205,11 @@
 		const size_t size;
 		void (* ctor)(object, __builtin_va_list *);
 		void (* dtor)(object);
-	}*Class_Data;
+	}*Class;
 	
 	struct str_Intern_Object{
 		pointer obj;
-		Class_Data class_pointer;
+		Class class_pointer;
 	};
 	
 	/* cast */
@@ -378,7 +378,7 @@
 		Random (*Random)(RandomicMaker);
 		Timer (*Timer)(TimerCreate);
 		Painter (*Painter)(ColorCreate);
-		object (*Object)(Class_Data, ...);
+		object (*Object)(Class, ...);
 		
 		char* (*Char)(char);
 		byte* (*Byte)(byte);
@@ -390,11 +390,15 @@
 		pointer (*Pointer)(pointer);
 	};
 	
+	typedef struct{
+		void (* free)(pointer);
+	}Freely;
+	
 	struct __Array{
+		void	(* free)(pointer);
 		int		(* length)(pointer);
 		size_t	(* size)(pointer);
 		pointer	(* access)(pointer, int);
-		void	(* free)(pointer);
 		string	(* toString)(pointer, P_retString, string);
 		pointer	(* convert)(pointer, cast);
 		
@@ -411,6 +415,7 @@
 	};
 	
 	struct __Matrix{
+		void (* free)(pointer);
 		char** (*Char)(int, int);
 		byte** (*Byte)(int, int);
 		bool** (*Bool)(int, int);
@@ -424,14 +429,15 @@
 	};
 	
 	struct __Memory{
+		void	(* free)(pointer);
 		pointer	(* alloc)(size_t);
 		pointer	(* realloc)(pointer, size_t);
 		size_t	(* size)(pointer);
 		pointer	(* copy)(pointer);
-		void	(* free)(pointer);
 	};
 	
 	struct __String{
+		void (* free)(string);
 		string (* formated)(const string, ...);
 		string (* copy)(string);
 		string (* concatenate)(string, string);
@@ -441,7 +447,6 @@
 		string* (* split)(const string, const string);
 		size_t (* length)(const string);
 		int (* compare)(const string, const string);
-		void (* free)(string);
 	};
 	
 	struct __File{
@@ -454,6 +459,14 @@
 			const string read;
 			const string write;
 		}Mode;
+	};
+	
+	struct __Object{
+		void (* free)(object);
+		object (* instance)(Class, ...);
+		Class (* getClass)(object);
+		size_t (* getSize)(object);
+		object (* copy)(object);
 	};
 	
 	/* Keys */
@@ -538,6 +551,13 @@
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
 		void (*initRandom)(void);
+		
+		const struct{
+			void (* setMalloc)(P_pointer);
+			void (* setCalloc)(P_pointer);
+			void (* setRealloc)(P_pointer);
+			void (* setFree)(P_void);
+		}Callback;
 	};
 	
 #endif

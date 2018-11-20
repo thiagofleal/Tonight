@@ -35,6 +35,7 @@
 			extern const TONIGHT struct __File File;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
+			extern const TONIGHT struct __Object Object;
 			extern const TONIGHT struct Resources Tonight;
 			
 			/* Exceptions */
