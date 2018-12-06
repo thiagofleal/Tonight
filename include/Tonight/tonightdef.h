@@ -108,9 +108,9 @@
 #		define OptionalArgs
 #	endif
 
-#	define	__using__(var, from)	__create_using_context(sizeof var, &var);\
-									var = from;\
-									while(__function_using(&var))
+#	define	__using__(var, from, freely...)	__create_using_context(sizeof var, &var);\
+											var = from;\
+											while(__function_using(&var, ((Freely){freely}).free))
 #	define USING(_arg_)		__using__(_arg_)
 
 #	define __forindex__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
@@ -125,8 +125,9 @@
 																}
 #	define	APPLICATION_START_WITH(_args_)	__application_start_with__(_args_)
 
-#	define $in	,
-#	define $as	,
+#	define $in		,
+#	define $as		,
+#	define $with	,
 
 #	define	$c(arg)	getText(cs(arg))
 #	define	$b(arg)	getText(bs(arg))
@@ -391,7 +392,7 @@
 	};
 	
 	typedef struct{
-		void (* free)(pointer);
+		void (* free)(OptionalArgs);
 	}Freely;
 	
 	struct __Array{

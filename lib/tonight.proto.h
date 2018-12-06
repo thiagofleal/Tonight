@@ -214,6 +214,10 @@ static NORMAL string* TONIGHT String_split(const string, const string);
 static NORMAL string TONIGHT String_trim(const string);
 NORMAL string TONIGHT strsep(register string*, register const string);
 
+static INLINE void TONIGHT File_close(file);
+static INLINE bool TONIGHT File_end(file);
+static INLINE void TONIGHT File_rewind(file);
+
 static INLINE int TONIGHT Array_length(pointer);
 static INLINE size_t TONIGHT Array_size(pointer);
 static NORMAL pointer TONIGHT $throws Array_access(pointer, int);

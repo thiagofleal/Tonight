@@ -55,13 +55,14 @@ void __create_using_context(size_t size, pointer point){
 	stack = _new;
 }
 
-bool __function_using(pointer point){
+bool __function_using(pointer point, P_void destroy){
 	if(stack->ret){
 		stack->ret = false;
 		return true;
 	}
 	else{
 		struct Stack *tmp = stack;
+		if(destroy && *(pointer*)point) destroy(*(pointer*)point);
 		memcpy(point, stack->current, stack->size);
 		stack = stack->prev;
 		Memory.free(tmp->current);

@@ -304,9 +304,9 @@ const struct __String String = {
 /* File */
 const struct __File File = {
 	.open = __new_File,
-	.close = (pointer)fclose,
-	.end = (pointer)feof,
-	.rewind = (pointer)rewind,
+	.close = File_close,
+	.end = File_end,
+	.rewind = File_rewind,
 	.Mode.read = "r",
 	.Mode.write = "w"
 };

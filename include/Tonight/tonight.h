@@ -17,7 +17,7 @@
 #	define TONIGHT_LIBRARY
 
 #	include <setjmp.h>
-#	include <stddef.h>	
+#	include <stddef.h>
 
 #	ifdef __cplusplus
 		extern "C"{
@@ -68,7 +68,7 @@
 			extern INLINE void TONIGHT NO_CALL initForeach(void);
 			extern bool TONIGHT NO_CALL foreachIterator(pointer, pointer);
 			extern void TONIGHT NO_CALL __create_using_context(size_t, pointer);
-			extern bool TONIGHT NO_CALL __function_using(pointer);
+			extern bool TONIGHT NO_CALL __function_using(pointer, P_void);
 			
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);

@@ -1097,7 +1097,7 @@ static INLINE pointer TONIGHT __memory_copy(pointer mem) {
 }
 
 static INLINE void TONIGHT __memory_free(pointer mem){
-	p_free(mem - sizeof(size_t));
+	if(mem) p_free(mem - sizeof(size_t));
 }
 
 /* Initialize arrays */
@@ -1397,15 +1397,15 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 }
 
 static INLINE void TONIGHT Array_free(pointer array){
-	checkArgumentPointer(array);
-	p_free(array - sizeof(int) - sizeof(size_t));
+	if(array) p_free(array - sizeof(int) - sizeof(size_t));
 }
 
 static void TONIGHT Matrix_free(pointer mtrx){
-	checkArgumentPointer(mtrx);
-	register int i, length = Array_length(mtrx);
-	for(i=0;i<length;i++)
-		Array_free(Array_access(mtrx, i));
+	if(mtrx){
+		register int i, length = Array_length(mtrx);
+		for(i=0;i<length;i++)
+			Array_free(Array_access(mtrx, i));
+	}
 }
 
 static string TONIGHT Array_toString(pointer array, P_retString method, string sep){
@@ -1469,6 +1469,18 @@ INLINE void TONIGHT checkArgumentPointer(pointer arg){
 		throw(NullArgumentException, "Null argument");
 }
 
+static INLINE void TONIGHT File_close(file f){
+	if(f) fclose(f);
+}
+
+static INLINE bool TONIGHT File_end(file f){
+	if(f) return feof(f) ? true : false;
+	return false;
+}
+
+static INLINE void TONIGHT File_rewind(file f){
+	if(f) rewind(f);
+}
 
 #define CR(_case, _return)	case _case: return _return
 #define RC(_return, _case)	case _case: return _return
