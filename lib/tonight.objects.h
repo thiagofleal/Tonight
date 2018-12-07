@@ -308,7 +308,8 @@ const struct __File File = {
 	.end = File_end,
 	.rewind = File_rewind,
 	.Mode.read = "r",
-	.Mode.write = "w"
+	.Mode.write = "w",
+	.Mode.append = "a"
 };
 
 /* Key */

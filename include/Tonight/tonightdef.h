@@ -459,6 +459,7 @@
 		const struct{
 			const string read;
 			const string write;
+			const string append;
 		}Mode;
 	};
 	
