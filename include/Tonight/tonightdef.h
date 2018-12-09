@@ -101,6 +101,7 @@
 #	endif
 
 #	define	NORMAL
+#	define	ARRAY_LENGTH(array)	(sizeof array / sizeof array[0])
 
 #	ifdef __cplusplus
 #		define OptionalArgs	...
