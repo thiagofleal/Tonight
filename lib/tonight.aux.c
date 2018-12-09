@@ -62,11 +62,42 @@ bool __function_using(pointer point, P_void destroy){
 	}
 	else{
 		struct Stack *tmp = stack;
-		if(destroy && *(pointer*)point) destroy(*(pointer*)point);
+		if(destroy) if(*(pointer*)point) destroy(*(pointer*)point);
 		memcpy(point, stack->current, stack->size);
 		stack = stack->prev;
 		Memory.free(tmp->current);
 		Memory.free(tmp);
 		return false;
 	}
+}
+
+static struct object_stack{
+	object value;
+	pointer next;
+}*objstk = NULL;
+
+static void push_object(object value){
+	struct object_stack *p = Memory.alloc(sizeof(struct object_stack));
+	p->value = value;
+	p->next = objstk;
+	objstk = p;
+}
+
+static object pop_object(void){
+	if(objstk){
+		pointer node = objstk;
+		object ret = objstk->value;
+		objstk = objstk->next;
+		Memory.free(node);
+		return ret;
+	}
+	return NULL;
+}
+
+INLINE void TONIGHT setCurrentObject(object obj){
+	push_object(obj);
+}
+
+INLINE object TONIGHT getCurrentObject(void){
+	return pop_object();
 }

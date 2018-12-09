@@ -40,22 +40,29 @@
 #			undef type
 #		endif
 
-#		define Define_Class(_Class, _int, _intVal)	struct str_Class class_##_Class = {\
+#		define Define_Class(_Class, _int, _intVal)	static _int _Class##_select(object obj){\
+														setCurrentObject(obj);\
+														return *_Class.defaultInterface;\
+													}\
+													struct str_Class class_##_Class = {\
 														sizeof(struct _Class),\
 														__new_##_Class,\
 														__del_##_Class\
 													};\
 													const struct Define_##_Class _Class = {\
 														&class_##_Class,\
-														&_intVal\
+														&_intVal,\
+														_Class##_select\
 													}
 #		define class(_Class, _int)	const struct Define_##_Class{\
 										const Class class;\
 										const _int *defaultInterface;\
+										_int (*select)(object);\
 									}_Class
-#		define interface(_int)	typedef struct _int _int
-#		define $(_Class)		_Class.defaultInterface
-#		define type(_obj)		(_obj)->class_pointer
+#		define interface(_int)			typedef struct _int _int
+#		define __select__(_obj, _Class)	_Class.select(_obj)
+#		define $(_args_)				__select__(_args_)
+#		define type(_obj)				(_obj)->class_pointer
 
 /*	Access modifiers	*/
 
@@ -87,9 +94,6 @@
 
 /*	Methods	*/
 
-#		ifdef INTERN_METHOD
-#			undef INTERN_METHOD
-#		endif
 #		ifdef CLASS
 #			undef CLASS
 #		endif
@@ -106,12 +110,16 @@
 #			undef getInterface
 #		endif
 
-#		define INTERN_METHOD	Intern_Object *self
-#		define CLASS(_Class)	struct _Class *This = self->obj
-#		define this	(*This)
+#		define INTERN_METHOD				object self
+#		define CLASS(_Class)				struct _Class *This = self->obj
+#		define this							(*This)
 #		define nextConstrArg(type)			(__builtin_va_arg(*__construct_args, type))
 #		define setInterface(_int, _value)	This->__Int_##_int = &_value
 #		define getInterface(_int)			(*This->__Int_##_int)
+
+#		define INTERFACE_OF(_Class)					Intern_Object *self=getCurrentObject();\
+													struct _Class *This = self->obj
+#		define getFromInterface(_int, _met, _ret)	((_ret(*)())This->__Int_##_int->_met)
 
 /*	Constructor and destructor	*/
 
@@ -122,8 +130,8 @@
 #			undef Destructor
 #		endif
 
-#		define Constructor(_Class)	void __new_##_Class(Intern_Object *self, __builtin_va_list *__construct_args)
-#		define Destructor(_Class)	void __del_##_Class(Intern_Object *self)
+#		define Constructor(_Class)	void __new_##_Class(object self, __builtin_va_list *__construct_args)
+#		define Destructor(_Class)	void __del_##_Class(object self)
 
 /*	Superclass' access	*/
 
@@ -154,4 +162,8 @@
 void delete(object);
 
 #	endif	// ifndef __cplusplus
+
+INLINE void TONIGHT setCurrentObject(object);
+INLINE object TONIGHT getCurrentObject(void);
+
 #endif	// ifndef TONIGHT_OO_MACROS
