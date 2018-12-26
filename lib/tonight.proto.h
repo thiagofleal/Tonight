@@ -20,6 +20,9 @@ static INLINE void TONIGHT __sleep(unsigned int);
 static INLINE void TONIGHT cursor_position(int, int);
 static INLINE void TONIGHT __clearScreen(void);
 
+static NORMAL int TONIGHT TonightModeDefault(register int, string[]);
+static NORMAL int TONIGHT TonightModeLoop(register int, string[]);
+
 static INLINE string TONIGHT __locale(void);
 static INLINE string TONIGHT __getlocale(int);
 static INLINE int TONIGHT __getCategory(void);
@@ -157,7 +160,7 @@ static INLINE Random TONIGHT __new_Random(RandomicMaker);
 static INLINE Timer TONIGHT __new_Timer(TimerCreate);
 static INLINE Painter TONIGHT __new_Painter(ColorCreate);
 static NORMAL object TONIGHT __new_Object(Class, ...);
-static NORMAL file TONIGHT $throws __new_File(string, string);
+static NORMAL file TONIGHT $throws __new_File(string, FileMode);
 
 static NORMAL char* TONIGHT $throws __new_char(char);
 static NORMAL byte* TONIGHT $throws __new_byte(byte);
@@ -217,6 +220,9 @@ NORMAL string TONIGHT strsep(register string*, register const string);
 static INLINE void TONIGHT File_close(file);
 static INLINE bool TONIGHT File_end(file);
 static INLINE void TONIGHT File_rewind(file);
+static INLINE file TONIGHT File_stdInput(void);
+static INLINE file TONIGHT File_stdOutput(void);
+static INLINE file TONIGHT File_stdError(void);
 
 static INLINE int TONIGHT Array_length(pointer);
 static INLINE size_t TONIGHT Array_size(pointer);
@@ -228,13 +234,6 @@ static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
 
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);
-
-static NORMAL u_char TONIGHT ASCII_normalizeChar(int);
-static NORMAL string TONIGHT ASCII_normalizeString(string);
-static NORMAL u_char TONIGHT ASCII_toUpper(int);
-static NORMAL u_char TONIGHT ASCII_toLower(int);
-static NORMAL bool TONIGHT ASCII_isUpper(int);
-static NORMAL bool TONIGHT ASCII_isLower(int);
 
 static INLINE Class TONIGHT Object_getClass(object);
 static INLINE size_t TONIGHT Object_getSize(object);

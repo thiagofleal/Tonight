@@ -198,15 +198,6 @@ const TONIGHT struct Resources Tonight = {
 	
 	.DefaultFunctionPointer = __Default_void_function,
 	
-	.ASCII = {
-		.normalizeChar = ASCII_normalizeChar,
-		.normalizeString = ASCII_normalizeString,
-		.upper = ASCII_toUpper,
-		.lower = ASCII_toLower,
-		.isupper = ASCII_isUpper,
-		.islower = ASCII_isLower
-	},
-	
 	.assert = __assert,
 	.checkErrno = __checkErrno,
 	.password = __Scanner_Password,
@@ -217,6 +208,11 @@ const TONIGHT struct Resources Tonight = {
 	.sleep = __sleep,
 	.position = cursor_position,
 	.initRandom = __initRandom,
+	
+	.Mode = {
+		.Default = TonightModeDefault,
+		.Loop = TonightModeLoop
+	},
 	
 	.Callback = {
 		.setMalloc = Callback_setMalloc,
@@ -307,9 +303,12 @@ const struct __File File = {
 	.close = File_close,
 	.end = File_end,
 	.rewind = File_rewind,
-	.Mode.read = "r",
-	.Mode.write = "w",
-	.Mode.append = "a"
+	.stdInput = File_stdInput,
+	.stdOutput = File_stdOutput,
+	.stdError = File_stdError,
+	.Mode.read = {"r"},
+	.Mode.write = {"w"},
+	.Mode.append = {"a"}
 };
 
 /* Key */

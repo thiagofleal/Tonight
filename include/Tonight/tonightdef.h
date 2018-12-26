@@ -120,12 +120,9 @@
 #	define __foreach__(var, array)	for(initForeach(); foreachIterator(&var, array);)
 #	define	foreach(_args_)		__foreach__(_args_)
 
-#	define	__application_start_with__(_main, _func, _mod...)	_mod int _main(OptionalArgs);\
-																int main(int argc, string argv[]){\
-																	return _func(_main, argc, argv);\
-																}
-#	define	APPLICATION_START_WITH(_args_)	__application_start_with__(_args_)
-
+#	define	APPLICATION_MODE(_func)		int main(int argc, string argv[]){\
+											return _func(argc, argv);\
+										}
 #	define $in		,
 #	define $as		,
 #	define $with	,
@@ -167,7 +164,8 @@
 #	endif
 	typedef unsigned char u_char, byte;
 	typedef	char *string;
-	typedef void *pointer, *file;
+	typedef void *pointer;
+	typedef struct {} *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
 	typedef void (*P_void)	(OptionalArgs);
 	typedef char (*P_char)	(OptionalArgs);
@@ -451,16 +449,23 @@
 		int (* compare)(const string, const string);
 	};
 	
+	typedef struct{
+		string value;
+	}FileMode;
+	
 	struct __File{
-		file (* open)(string, string);
+		file (* open)(string, FileMode);
 		void (* close)(file);
 		void (* rewind)(file);
 		bool (* end)(file);
+		file (* stdInput)(void);
+		file (* stdOutput)(void);
+		file (* stdError)(void);
 		
 		const struct{
-			const string read;
-			const string write;
-			const string append;
+			const FileMode read;
+			const FileMode write;
+			const FileMode append;
 		}Mode;
 	};
 	
@@ -511,6 +516,8 @@
 		}Category;
 	};
 	
+	typedef int (* ApplicationMode)(register int, string[]);
+	
 	/* struct Resources */
 	struct Resources{
 		const struct{
@@ -535,15 +542,6 @@
 		const struct Locale Locale;
 		const pointer DefaultFunctionPointer;
 		
-		const struct{
-			u_char (* normalizeChar)(int);
-			string (* normalizeString)(string);
-			u_char (* upper)(int);
-			u_char (* lower)(int);
-			bool (* isupper)(int);
-			bool (* islower)(int);
-		}ASCII;
-		
 		void (*assert)(bool);
 		void (*checkErrno)(void);
 		string (*password)(int);
@@ -554,6 +552,11 @@
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
 		void (*initRandom)(void);
+		
+		const struct{
+			ApplicationMode Default;
+			ApplicationMode Loop;
+		}Mode;
 		
 		const struct{
 			void (* setMalloc)(P_pointer);

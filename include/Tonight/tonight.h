@@ -119,8 +119,6 @@
 			extern long_retString TONIGHT dlsf(double, int);
 			extern long_retString TONIGHT longFormated(const string, ...);
 			
-			extern int TONIGHT NO_CALL TonightMode(P_int, register int, string[]);
-			
 			extern INLINE void TONIGHT checkArgumentPointer(pointer);
 	
 #	ifdef __cplusplus

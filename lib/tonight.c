@@ -127,11 +127,11 @@ bool TONIGHT equal(register string const wrd_1, register string const wrd_2){
 	register string s1 = wrd_1, s2 = wrd_2;
 	while(*s1 && *s2){
 		if(*s1 != *s2){
-			if(ASCII_isUpper(*s1))
-				if(ASCII_toLower(*s1) != *s2)
+			if(isupper(*s1))
+				if(tolower(*s1) != *s2)
 					return false;
-			if(ASCII_isLower(*s1))
-				if(ASCII_toUpper(*s1) != *s2)
+			if(islower(*s1))
+				if(toupper(*s1) != *s2)
 					return false;
 		}
 		s1++; s2++;
@@ -441,53 +441,53 @@ static INLINE void TONIGHT __Scanner_ignoreChar(void){
 
 /* Functions to Tonight.std.file.input */
 static char TONIGHT $throws __Scanner_file_nextChar(file _file){
-	if(fscanf(_file, "%c", &c) != 1)
+	if(fscanf((FILE*)_file, "%c", &c) != 1)
 		throw(InputException, "Impossible to read a \"char\" from the file");
 	return c;
 }
 
 static int TONIGHT $throws __Scanner_file_nextInt(file _file){
-	if(fscanf(_file, "%i", &i) != 1)
+	if(fscanf((FILE*)_file, "%i", &i) != 1)
 		throw(InputException, "Impossible to read an \"int\" from the file");
 	return i;
 }
 
 static float TONIGHT $throws __Scanner_file_nextFloat(file _file){
-	if(fscanf(_file, "%f", &f) != 1)
+	if(fscanf((FILE*)_file, "%f", &f) != 1)
 		throw(InputException, "Impossible to read a \"float\" from the file");
 	return f;
 }
 
 static double TONIGHT $throws __Scanner_file_nextDouble(file _file){
-	if(fscanf(_file, "%lf", &d) != 1)
+	if(fscanf((FILE*)_file, "%lf", &d) != 1)
 		throw(InputException, "Impossible to read a \"double\" from the file");
 	return d;
 }
 
 static string TONIGHT $throws __Scanner_file_next(file _file){
-	if(fscanf(_file, "%1000s", str) != 1)
+	if(fscanf((FILE*)_file, "%1000s", str) != 1)
 		throw(InputException, "Impossible to read a \"string\" from the file");
 	return toString(str);
 }
 
 static string TONIGHT $throws __Scanner_file_nextLine(file _file){
-	if(fscanf(_file, " %1000[^\n]s", str) != 1)
+	if(fscanf((FILE*)_file, " %1000[^\n]s", str) != 1)
 		throw(InputException, "Impossible to read a \"string\" from the file");
 	return toString(str);
 }
 
 static INLINE void TONIGHT __Scanner_file_clear(file _file){
-	while(!feof(_file))
-		if(fgetc(_file) == '\n')
+	while(!feof((FILE*)_file))
+		if(fgetc((FILE*)_file) == '\n')
 			return;
 }
 
 static INLINE void TONIGHT __Scanner_file_ignore(file _file){
-	fscanf(_file, "%*s");
+	fscanf((FILE*)_file, "%*s");
 }
 
 static INLINE void TONIGHT __Scanner_file_ignoreChar(file _file){
-	fscanf(_file, "%*c");
+	fscanf((FILE*)_file, "%*c");
 }
 
 /* Functions to Tonight.std.string.input */
@@ -621,11 +621,11 @@ static INLINE string TONIGHT $throws __Scanner_Error_nextLine(void){
 
 /* Functions to Tonight.std.Console.output */
 static INLINE void TONIGHT __Screen_text(string txt){
-	__Recorder_text(stdout, txt);
+	__Recorder_text((file)stdout, txt);
 }
 
 static INLINE void TONIGHT __Screen_textln(string txt){
-	__Recorder_textln(stdout, txt);
+	__Recorder_textln((file)stdout, txt);
 }
 
 static void TONIGHT __Screen_print(string txt, ...){
@@ -677,7 +677,7 @@ static void TONIGHT __Screen_clear(void){
 /* Functions to Tonight.std.file.output */
 static INLINE void TONIGHT __Recorder_text(file _file, string txt){
 	for(;*txt;++txt)
-		fputc(*txt, _file);
+		fputc(*txt, (FILE*)_file);
 }
 
 static INLINE void TONIGHT __Recorder_textln(file _file, string txt){
@@ -714,20 +714,20 @@ static void TONIGHT __Recorder_printargln(file _file, string txt, ...){
 }
 
 static INLINE void TONIGHT __Recorder_nl(file __file){
-	fputc('\n', __file);
+	fputc('\n', (FILE*)__file);
 }
 
 static INLINE void TONIGHT __Recorder_nls(file __file, int qtd){
 	while(qtd--)
-		fputc('\n', __file);
+		fputc('\n', (FILE*)__file);
 }
 
 static void TONIGHT __Recorder_buffer(file __file){
-	setbuf(__file, __buffer);
+	setbuf((FILE*)__file, __buffer);
 }
 
 static void TONIGHT $throws __Recorder_clear(file __file){
-	if(!fflush(__file))
+	if(!fflush((FILE*)__file))
 		throw(GenericException, strerror(errno));
 }
 
@@ -996,8 +996,8 @@ static INLINE Painter TONIGHT __new_Painter(ColorCreate father){
 	return *(Painter*)&father;
 }
 
-static file TONIGHT $throws __new_File(string fName, string fMode){
-	file f = fopen(fName, fMode);
+static file TONIGHT $throws __new_File(string fName, FileMode fMode){
+	file f = (file)fopen(fName, fMode.value);
 	if(!f)
 		throw(FileOpenException, concat("Impossible to open the file \"", fName, "\"", $end));
 	return f;
@@ -1309,7 +1309,7 @@ static INLINE string TONIGHT String_concatenate(string str1, string str2){
 static string TONIGHT String_upper(const string str){
 	register string s, aux = toString(str);
 	for(s = aux; *s; s++){
-		ASCII_toUpper(*s);
+		toupper(*s);
 	}
 	return aux;
 }
@@ -1317,7 +1317,7 @@ static string TONIGHT String_upper(const string str){
 static string TONIGHT String_lower(const string str){
 	register string s, aux = toString(str);
 	for(s = aux; *s; s++){
-		ASCII_toLower(*s);
+		tolower(*s);
 	}
 	return aux;
 }
@@ -1436,22 +1436,53 @@ static string ARRAY __args = NULL;
 
 static void onExit(void){
 	if(__args){
-		Array.free(__args);
+		Array_free(__args);
 		__args = NULL;
 	}
 }
 
-int TONIGHT TonightMode(P_int func, register int argc, string argv[]){
+#pragma weak Main
+extern int Main(string*);
+#pragma weak Setup
+extern void Setup(string*);
+#pragma weak Loop
+extern bool Loop(void);
+
+static void TONIGHT __Base_TonightMode(register int argc, string argv[]){
 	register int i;
 	static int f;
-	string ARRAY arg = __args = Array.String(argc);
+	__args = __new_array_String(argc);
 	if(f++)
 		throw(ApplicationException, "Application previosly initialized");
 	for(i = 0; i < argc; i++)
-		arg[i] = argv[i];
+		__args[i] = argv[i];
 	atexit(onExit);
+}
+
+static int TONIGHT TonightModeDefault(register int argc, string argv[]){
+	P_int func = Main;
+	__Base_TonightMode(argc, argv);
 	try
-		return func(arg);
+		if(func)
+			return func(__args);
+		else
+			return EXIT_FAILURE;
+	catch(GenericException)
+		return EXIT_FAILURE;
+}
+
+static int TONIGHT TonightModeLoop(register int argc, string argv[]){
+	P_void func = Setup;
+	P_bool loop = Loop;
+	__Base_TonightMode(argc, argv);
+	try
+		if(func && loop){
+			func(__args);
+			while(loop());
+			return EXIT_SUCCESS;
+		}
+		else
+			return EXIT_FAILURE;
 	catch(GenericException)
 		return EXIT_FAILURE;
 }
@@ -1470,138 +1501,28 @@ INLINE void TONIGHT checkArgumentPointer(pointer arg){
 }
 
 static INLINE void TONIGHT File_close(file f){
-	if(f) fclose(f);
+	if(f) fclose((FILE*)f);
 }
 
 static INLINE bool TONIGHT File_end(file f){
-	if(f) return feof(f) ? true : false;
+	if(f) return feof((FILE*)f) ? true : false;
 	return false;
 }
 
 static INLINE void TONIGHT File_rewind(file f){
-	if(f) rewind(f);
+	if(f) rewind((FILE*)f);
 }
 
-#define CR(_case, _return)	case _case: return _return
-#define RC(_return, _case)	case _case: return _return
-#define	_FUNC	RC
-
-static unsigned char ASCII_normalizeChar(int input){
-	switch(input){
-		_FUNC('Ç', 128);_FUNC('ü', 129);
-		_FUNC('é', 130);_FUNC('â', 131);
-		_FUNC('ä', 132);_FUNC('à', 133);
-		_FUNC('å', 134);_FUNC('ç', 135);
-		_FUNC('ê', 136);_FUNC('ë', 137);
-		_FUNC('è', 138);_FUNC('ï', 139);
-		_FUNC('î', 140);_FUNC('ì', 141);
-		_FUNC('Ä', 142);_FUNC('Å', 143);
-		_FUNC('É', 144);_FUNC('æ', 145);
-		_FUNC('Æ', 146);_FUNC('ô', 147);
-		_FUNC('ö', 148);_FUNC('ò', 149);
-		_FUNC('û', 150);_FUNC('ù', 151);
-		_FUNC('ÿ', 152);_FUNC('Ö', 153);
-		_FUNC('Ü', 154);_FUNC('ø', 155);
-		_FUNC('£', 156);_FUNC('Ø', 157);
-		_FUNC('×', 158);_FUNC('ƒ', 159);
-		_FUNC('á', 160);_FUNC('í', 161);
-		_FUNC('ó', 162);_FUNC('ú', 163);
-		_FUNC('ñ', 164);_FUNC('Ñ', 165);
-		_FUNC('ª', 166);_FUNC('º', 167);
-		_FUNC('¿', 168);_FUNC('®', 169);
-		_FUNC('¬', 170);_FUNC('½', 171);
-		_FUNC('¼', 172);_FUNC('¡', 173);
-		_FUNC('«', 174);_FUNC('»', 175);
-		_FUNC('Á', 181);
-		_FUNC('Â', 182);_FUNC('À', 183);
-		_FUNC('©', 184);
-		_FUNC('¢', 189);
-		_FUNC('¥', 190);
-		_FUNC('ã', 198);_FUNC('Ã', 199);
-		_FUNC('¤', 207);
-		_FUNC('ð', 208);_FUNC('Ð', 209);
-		_FUNC('Ê', 210);_FUNC('Ë', 211);
-		_FUNC('È', 212);
-		_FUNC('Í', 214);_FUNC('Î', 215);
-		_FUNC('Ï', 216);
-		_FUNC('Ì', 222);
-		_FUNC('Ó', 224);_FUNC('ß', 225);
-		_FUNC('Ô', 226);_FUNC('Ò', 227);
-		_FUNC('õ', 228);_FUNC('Õ', 229);
-		_FUNC('µ', 230);_FUNC('þ', 231);
-		_FUNC('Þ', 232);_FUNC('Ú', 233);
-		_FUNC('Û', 234);_FUNC('Ù', 235);
-		_FUNC('ý', 236);_FUNC('Ý', 237);
-		_FUNC('´', 239);
-		_FUNC('±', 241);
-		_FUNC('¾', 243);
-		_FUNC('¶', 244);_FUNC('§', 245);
-		_FUNC('÷', 246);
-		_FUNC('°', 248);_FUNC('¨', 249);
-		_FUNC('¹', 251);
-		_FUNC('³', 252);_FUNC('²', 253);
-		_FUNC(' ', 255);
-		default: return input;
-	}
+static INLINE file TONIGHT File_stdInput(void){
+	return (file)stdin;
 }
 
-static string ASCII_normalizeString(string input){
-	register string aux;
-	for(aux = input; *aux; aux++)
-		*aux = ASCII_normalizeChar(*aux);
-	return input;
+static INLINE file TONIGHT File_stdOutput(void){
+	return (file)stdout;
 }
 
-#define UP_LOWER_FUNC(TMP, func, _in) \
-	switch(_in){\
-		TMP('ü', 'Ü');\
-		TMP('é', 'É');\
-		TMP('â', 'Â');\
-		TMP('ä', 'Ä');\
-		TMP('à', 'À');\
-		TMP('å', 'Å');\
-		TMP('ç', 'Ç');\
-		TMP('ê', 'Ê');\
-		TMP('ë', 'Ë');\
-		TMP('è', 'È');\
-		TMP('ï', 'Ï');\
-		TMP('î', 'Î');\
-		TMP('ì', 'Ì');\
-		TMP('ô', 'Ô');\
-		TMP('ö', 'Ö');\
-		TMP('ò', 'Ò');\
-		TMP('û', 'Û');\
-		TMP('ù', 'Ù');\
-		TMP('á', 'Á');\
-		TMP('í', 'Í');\
-		TMP('ó', 'Ó');\
-		TMP('ú', 'Ú');\
-		TMP('ñ', 'Ñ');\
-		TMP('ã', 'Ã');\
-		TMP('õ', 'Õ');\
-		TMP('ý', 'Ý');\
-		default:\
-			if(input <= 127) return func(input);\
-			else return input;\
-	}
-
-static u_char TONIGHT ASCII_toUpper(int input){
-	UP_LOWER_FUNC(CR, toupper, input)
-}
-
-static u_char TONIGHT ASCII_toLower(int input){
-	UP_LOWER_FUNC(RC, tolower, input)
-}
-
-#define	CT(_case, _null)	case _case: return true
-#define	TC(_null, _case)	case _case: return true
-
-static bool TONIGHT ASCII_isUpper(int input){
-	UP_LOWER_FUNC(TC, isupper, input)
-}
-
-static bool TONIGHT ASCII_isLower(int input){
-	UP_LOWER_FUNC(CT, islower, input)
+static INLINE file TONIGHT File_stdError(void){
+	return (file)stderr;
 }
 
 static INLINE Class TONIGHT Object_getClass(object obj){
