@@ -18,6 +18,7 @@
 
 #	include <setjmp.h>
 #	include <stddef.h>
+#	include <stdarg.h>
 
 #	ifdef __cplusplus
 		extern "C"{
@@ -35,7 +36,6 @@
 			extern const TONIGHT struct __File File;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
-			extern const TONIGHT struct __Object Object;
 			extern const TONIGHT struct Resources Tonight;
 			
 			/* Exceptions */
@@ -109,15 +109,15 @@
 			extern INLINE retString TONIGHT fpsf(float*, int);
 			extern INLINE retString TONIGHT dpsf(double*, int);
 			
-			extern long_retString TONIGHT longRetConcat(string, ...);
-			extern long_retString TONIGHT cls(char);
-			extern long_retString TONIGHT bls(bool);
-			extern long_retString TONIGHT ils(int);
-			extern long_retString TONIGHT fls(float);
-			extern long_retString TONIGHT dls(double);
-			extern long_retString TONIGHT flsf(float, int);
-			extern long_retString TONIGHT dlsf(double, int);
-			extern long_retString TONIGHT longFormated(const string, ...);
+			extern longRetString TONIGHT longRetConcat(string, ...);
+			extern longRetString TONIGHT cls(char);
+			extern longRetString TONIGHT bls(bool);
+			extern longRetString TONIGHT ils(int);
+			extern longRetString TONIGHT fls(float);
+			extern longRetString TONIGHT dls(double);
+			extern longRetString TONIGHT flsf(float, int);
+			extern longRetString TONIGHT dlsf(double, int);
+			extern longRetString TONIGHT longFormated(const string, ...);
 			
 			extern INLINE void TONIGHT checkArgumentPointer(pointer);
 	

@@ -94,8 +94,9 @@ static object pop_object(void){
 	return NULL;
 }
 
-INLINE void TONIGHT setCurrentObject(object obj){
+INLINE object TONIGHT setCurrentObject(object obj){
 	push_object(obj);
+	return obj;
 }
 
 INLINE object TONIGHT getCurrentObject(void){

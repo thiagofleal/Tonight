@@ -159,7 +159,6 @@ static INLINE Writer TONIGHT __new_Writer(Output);
 static INLINE Random TONIGHT __new_Random(RandomicMaker);
 static INLINE Timer TONIGHT __new_Timer(TimerCreate);
 static INLINE Painter TONIGHT __new_Painter(ColorCreate);
-static NORMAL object TONIGHT __new_Object(Class, ...);
 static NORMAL file TONIGHT $throws __new_File(string, FileMode);
 
 static NORMAL char* TONIGHT $throws __new_char(char);

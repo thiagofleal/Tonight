@@ -24,41 +24,53 @@
 
 /*	Declare classes and interfaces	*/
 
-#		ifdef Define_Class
-#			undef Define_Class
-#		endif
-#		ifdef class
-#			undef class
-#		endif
-#		ifdef interface
-#			undef interface
-#		endif
-#		ifdef $
-#			undef $
-#		endif
-#		ifdef type
-#			undef type
-#		endif
+#		define __Define_Class__(_Class, _super, _int, _intVal)	static INLINE _int _Class##_select(object obj){\
+																	setCurrentObject(obj);\
+																	return *_Class.implement.__interface;\
+																}\
+																static INLINE Class_##_Class* _Class##_cast(object obj){\
+																	return obj->data;\
+																}\
+																static INLINE void _Class##_ctor(object obj, pointer args){\
+																	setCurrentObject(obj);\
+																	__new_##_Class(args);\
+																}\
+																static INLINE void _Class##_dtor(object obj){\
+																	setCurrentObject(obj);\
+																	__del_##_Class();\
+																}\
+																const struct Interface_##_Class _Class = {\
+																	._ = (const struct str_Class){\
+																		.name = #_Class,\
+																		.super = (const Class*)&_super,\
+																		.size = sizeof(Class_##_Class),\
+																		.ctor = _Class##_ctor,\
+																		.dtor = _Class##_dtor\
+																	},\
+																	.class = (Class)&_Class,\
+																	.implement = (const Class_##_Class){\
+																		.__interface = &_intVal\
+																	},\
+																	.select = _Class##_select,\
+																	.cast = _Class##_cast\
+																}
+#		define __class__(_Class, _super, _int)			typedef struct{\
+															Class_##_super __super;\
+															_int *__interface;\
+															struct _Class __self;\
+														}Class_##_Class;\
+														extern const struct Interface_##_Class{\
+															const struct str_Class _;\
+															const Class class;\
+															const Class_##_Class implement;\
+															_int (*select)(object);\
+															object (*new)(OptionalArgs);\
+															Class_##_Class* (*cast)(object);\
+														}_Class
 
-#		define Define_Class(_Class, _int, _intVal)	static _int _Class##_select(object obj){\
-														setCurrentObject(obj);\
-														return *_Class.defaultInterface;\
-													}\
-													struct str_Class class_##_Class = {\
-														sizeof(struct _Class),\
-														__new_##_Class,\
-														__del_##_Class\
-													};\
-													const struct Define_##_Class _Class = {\
-														&class_##_Class,\
-														&_intVal,\
-														_Class##_select\
-													}
-#		define class(_Class, _int)	const struct Define_##_Class{\
-										const Class class;\
-										const _int *defaultInterface;\
-										_int (*select)(object);\
-									}_Class
+#		define class(__args__)	__class__(__args__)
+#		define Define_Class(__args__)	__Define_Class__(__args__)
+
 #		define interface(_int)			typedef struct _int _int
 #		define __select__(_obj, _Class)	_Class.select(_obj)
 #		define $(_args_)				__select__(_args_)
@@ -66,104 +78,82 @@
 
 /*	Access modifiers	*/
 
-#		ifdef private
-#			undef private
-#		endif
-#		ifdef protected
-#			undef protected
-#		endif
-#		ifdef public
-#			undef public
-#		endif
-
 #		define	private
 #		define	protected
 #		define	public
 
 /*	Inheritance	*/
 
-#		ifdef extend
-#			undef extend
-#		endif
-#		ifdef implement
-#			undef implement
-#		endif
-
-#		define extend(_father)	struct _father __super
-#		define implement(_int)	_int *__Int_##_int
+#		define $extends		,
+#		define $implements	,
 
 /*	Methods	*/
 
-#		ifdef CLASS
-#			undef CLASS
-#		endif
-#		ifdef this
-#			undef this
-#		endif
-#		ifdef nextConstrArg
-#			undef nextConstrArg
-#		endif
-#		ifdef setInterface
-#			undef setInterface
-#		endif
-#		ifdef getInterface
-#			undef getInterface
-#		endif
-
-#		define INTERN_METHOD				object self
-#		define CLASS(_Class)				struct _Class *This = self->obj
-#		define this							(*This)
-#		define nextConstrArg(type)			(__builtin_va_arg(*__construct_args, type))
-#		define setInterface(_int, _value)	This->__Int_##_int = &_value
-#		define getInterface(_int)			(*This->__Int_##_int)
-
-#		define INTERFACE_OF(_Class)					Intern_Object *self=getCurrentObject();\
-													struct _Class *This = self->obj
-#		define getFromInterface(_int, _met, _ret)	((_ret(*)())This->__Int_##_int->_met)
+#		define CLASS(_Class)		object self=getCurrentObject();\
+									Class_##_Class *This = self->data
+#		define this					(This->__self)
+#		define nextConstrArg(type)	(va_arg(*(va_list*)__construct_args, type))
+#		define setInterface(_value)	(This->__interface = &_value)
+#		define getInterface			(*This->__interface)
+#		define callInterface		(*(This = setCurrentObject(self)->data)->__interface)
 
 /*	Constructor and destructor	*/
 
-#		ifdef Constructor
-#			undef Constructor
-#		endif
-#		ifdef Destructor
-#			undef Destructor
-#		endif
-
-#		define Constructor(_Class)	void __new_##_Class(object self, __builtin_va_list *__construct_args)
-#		define Destructor(_Class)	void __del_##_Class(object self)
+#		define Constructor(_Class)	void __new_##_Class(pointer __construct_args)
+#		define Destructor(_Class)	void __del_##_Class(void)
 
 /*	Superclass' access	*/
 
-#		ifdef super
-#			undef super
-#		endif
-#		ifdef super_init
-#			undef super_init
-#		endif
-#		ifdef super_delete
-#			undef super_delete
-#		endif
-#		ifdef super_getInterface
-#			undef super_getInterface
-#		endif
-#		ifdef super_setInterface
-#			undef super_setInterface
-#		endif
+#		define	super(_act_)						super_##_act_(This->__super)
+#		define	super_construct(_super)				_super->ctor(self, __construct_args)
+#		define	super_delete(_super)				_super->dtor(self)
+#		define	super_getInterface(_super)			((_super)->cast(This)->__interface)
+#		define	super_setInterface(_super, _new)	((_super)->cast(This)->__interface = &new)
+#		define	super_cast(_super)					((_super)->cast(This)->__self)
 
-#		define	super					This->__super
-#		define	super_init(_super)		_super->ctor(self, __construct_args)
-#		define	super_delete(_super)	_super->dtor(self)
-#		define	super_getInterface(_super, _int)	(*((struct _super*)This)->__Int_##_int)
-#		define	super_setInterface(_super, _int, _new)	(((struct _super*)This)->__Int_##_int = &_new)
-#		define	cast_super(_Class)		(*((struct _Class*)This))
+/*	new and delete	*/
+extern object TONIGHT new(Class, ...);
+extern void TONIGHT delete(object);
 
-/*	delete(obj)	*/
-void delete(object);
+extern Class TONIGHT classOf(object);
+extern bool TONIGHT isType(object, Class);
+extern size_t TONIGHT sizeOf(object);
+extern object TONIGHT copy(object);
+extern bool TONIGHT compare(object, object);
+
+/* Base class */
+
+struct IObject{
+	bool (* equal)(object);
+	object (* copy)(void);
+	string (* toString)(void);
+	retString (* toRetString)(void);
+	longRetString (* toLongRetString)(void);
+};
+
+interface(IObject);
+
+struct Object{
+	const Class class;
+};
+
+typedef struct{
+	IObject *__interface;
+	struct Object __self;
+}Class_Object;
+
+extern const struct Interface_Object{
+	const struct str_Class _;
+	const Class class;
+	const Class_Object implement;
+	IObject (*select)(object);
+	object (*new)(OptionalArgs);
+	Class_Object* (*cast)(object);
+}Object;
 
 #	endif	// ifndef __cplusplus
 
-INLINE void TONIGHT setCurrentObject(object);
+INLINE object TONIGHT setCurrentObject(object);
 INLINE object TONIGHT getCurrentObject(void);
 
 #endif	// ifndef TONIGHT_OO_MACROS

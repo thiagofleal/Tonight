@@ -257,10 +257,10 @@ INLINE retString TONIGHT fs(float var){
 	return ds((double)var);
 }
 
-long_retString TONIGHT longRetConcat(string wrd_1, ...){
+longRetString TONIGHT longRetConcat(string wrd_1, ...){
 	va_list va;
 	string p;
-	static long_retString ret;
+	static longRetString ret;
 	*ret.Text = 0;
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, string))
@@ -297,57 +297,57 @@ INLINE retString TONIGHT dpsf(double *p, int d){
 	return dsf(*p, d);
 }
 
-long_retString TONIGHT cls(char var){
+longRetString TONIGHT cls(char var){
 	register char *s = s_cs(var);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	p_free(s);
 	return ret;
 }
 
-long_retString TONIGHT bls(bool var){
+longRetString TONIGHT bls(bool var){
 	register char *s = s_bs(var);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-long_retString TONIGHT ils(int var){
+longRetString TONIGHT ils(int var){
 	register char *s = s_is(var);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-long_retString TONIGHT fls(float var){
+longRetString TONIGHT fls(float var){
 	register char *s = s_fs(var);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-long_retString TONIGHT dls(double var){
+longRetString TONIGHT dls(double var){
 	register char *s = s_ds(var);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-long_retString TONIGHT flsf(float var, int d){
+longRetString TONIGHT flsf(float var, int d){
 	register char *s = s_fsf(var, d);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-long_retString TONIGHT dlsf(double var, int d){
+longRetString TONIGHT dlsf(double var, int d){
 	register char *s = s_dsf(var, d);
-	static long_retString ret;
+	static longRetString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
@@ -362,9 +362,9 @@ retString TONIGHT formated(const string format, ...){
 	return ret;
 }
 
-long_retString TONIGHT longFormated(const string format, ...){
+longRetString TONIGHT longFormated(const string format, ...){
 	va_list v;
-	long_retString ret;
+	longRetString ret;
 	va_start(v, format);
 	vsnprintf(ret.Text, sizeof ret, format, v);
 	va_end(v);
@@ -1003,25 +1003,6 @@ static file TONIGHT $throws __new_File(string fName, FileMode fMode){
 	return f;
 }
 
-static object TONIGHT __new_Object(Class name, ...){
-	va_list v;
-	object _new = Memory.alloc(sizeof(Intern_Object));
-	va_start(v, name);
-	_new->obj = Memory.alloc(name->size);
-	_new->class_pointer = name;
-	name->ctor(_new, &v);
-	va_end(v);
-	return _new;
-}
-
-void TONIGHT delete(object self){
-	if(!self)
-		return;
-	if(self->class_pointer->dtor)
-		self->class_pointer->dtor(self);
-	Memory.free(self);
-}
-
 /* Alloc pointers */
 static char* TONIGHT $throws __new_char(char value){
 	char* c = Memory.alloc(sizeof(char));
@@ -1536,7 +1517,7 @@ static INLINE size_t TONIGHT Object_getSize(object obj){
 static object TONIGHT Object_copy(object src){
 	object ret = Memory.alloc(sizeof(Intern_Object));
 	ret->class_pointer = src->class_pointer;
-	ret->obj = __memory_copy(src->obj);
+	ret->data = __memory_copy(src->data);
 	return ret;
 }
 

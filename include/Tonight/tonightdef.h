@@ -85,7 +85,6 @@
 #	ifndef __cplusplus
 #		define and	&&
 #		define or	||
-#		define new	New.
 #		define try	TRY
 #		define catch	CATCH
 #		define finally	FINALLY
@@ -126,6 +125,7 @@
 #	define $in		,
 #	define $as		,
 #	define $with	,
+#	define $from	,
 
 #	define	$c(arg)	getText(cs(arg))
 #	define	$b(arg)	getText(bs(arg))
@@ -133,6 +133,7 @@
 #	define	$f(arg)	getText(fs(arg))
 #	define	$d(arg)	getText(ds(arg))
 #	define	$s(arg)	getText(arg)
+#	define	$o(arg)	getText(Object.select(arg).toRetString())
 #	define	$ff(arg, n)	getText(fsf(arg, n))
 #	define	$df(arg, n)	getText(dsf(arg, n))
 #	define	$F(format, args...)	getText(formated(format, args))
@@ -152,6 +153,7 @@
 #	define	$lf(arg)	getText(fls(arg))
 #	define	$ld(arg)	getText(dls(arg))
 #	define	$ls(arg)	getText(arg)
+#	define	$lo(arg)	getText(Object.select(arg).toLongRetString())
 #	define	$lff(arg, n)	getText(flsf(arg, n))
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
 #	define	$lF(format, args...)	getText(longFormated(format, args))
@@ -183,10 +185,10 @@
 	
 	typedef struct{
 		char Text[1001];
-	}long_retString;
+	}longRetString;
 	
 	typedef retString (*P_retString)(OptionalArgs);
-	typedef long_retString (*P_long_retString)(OptionalArgs);
+	typedef longRetString (*P_longRetString)(OptionalArgs);
 	
 	typedef struct tm* Time;
 	typedef Time (*P_Time)(OptionalArgs);
@@ -201,14 +203,18 @@
 	};
 	
 	/* Objects structs */
-	typedef struct str_Class{
+	typedef struct str_Class *Class;
+	
+	struct str_Class{
+		const string name;
+		const Class super;
 		const size_t size;
-		void (* ctor)(object, __builtin_va_list *);
+		void (* ctor)(object, pointer);
 		void (* dtor)(object);
-	}*Class;
+	};
 	
 	struct str_Intern_Object{
-		pointer obj;
+		pointer data;
 		Class class_pointer;
 	};
 	
@@ -467,14 +473,6 @@
 			const FileMode write;
 			const FileMode append;
 		}Mode;
-	};
-	
-	struct __Object{
-		void (* free)(object);
-		object (* instance)(Class, ...);
-		Class (* getClass)(object);
-		size_t (* getSize)(object);
-		object (* copy)(object);
 	};
 	
 	/* Keys */

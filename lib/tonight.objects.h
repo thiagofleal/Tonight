@@ -229,7 +229,7 @@ const TONIGHT struct __New New = {
 	.Random = __new_Random,
 	.Timer = __new_Timer,
 	.Painter = __new_Painter,
-	.Object = __new_Object,
+	.Object = new,
 	
 	.Char = __new_char,
 	.Byte = __new_byte,
@@ -330,13 +330,4 @@ const struct __Exit Exit = {
 	.With = exit,
 	.WithSuccess = Exit_WithSuccess,
 	.WithFail = Exit_WithFail
-};
-
-/* Object */
-const struct __Object Object = {
-	.free = delete,
-	.instance = __new_Object,
-	.getClass = Object_getClass,
-	.getSize = Object_getSize,
-	.copy = Object_copy
 };
