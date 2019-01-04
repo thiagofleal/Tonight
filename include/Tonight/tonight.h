@@ -24,8 +24,9 @@
 		extern "C"{
 #	endif
 
-#			include "tonightdef.h"
-#			include "tonightOO.h"
+#			include "tonight.undef.h"
+#			include "tonight.def.h"
+#			include "tonight.OO.h"
 			
 			/* Objects */
 			extern const TONIGHT struct __New New;

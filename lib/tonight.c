@@ -81,7 +81,8 @@ static INLINE string TONIGHT __concatString(char dest[], char from[], int length
 }
 
 INLINE string TONIGHT toString(register pointer __array){
-	return (string)strcpy(Memory.alloc((strlen(__array) + 1) * sizeof(char)), __array);
+	register unsigned int size = (strlen(__array) + 1) * sizeof(char);
+	return memcpy(__new_memory(size), __array, size);
 }
 
 string TONIGHT concat(string wrd_1, ...){

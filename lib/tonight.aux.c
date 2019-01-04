@@ -1,4 +1,6 @@
-#include "tonight.proto.h"
+#include <string.h>
+
+#include "../include/Tonight/tonight.h"
 
 static struct ctxt{
 	int value;

@@ -1,7 +1,7 @@
 /*
 *	This file is part of the Tonight library
 *	
-*	File: tonightdef.h
+*	File: tonight.def.h
 *	This file defines the types and data structures.
 *	
 *	Copyright (C)  2018  Thiago Fernandes Leal.
@@ -24,31 +24,6 @@
 #	define	NO_CALL
 
 /* Definitions */
-#	ifdef key_right
-#		undef key_right
-#	endif
-#	ifdef key_left
-#		undef key_left
-#	endif
-#	ifdef key_up
-#		undef key_up
-#	endif
-#	ifdef key_down
-#		undef key_down
-#	endif
-#	ifdef key_ESC
-#		undef key_ESC
-#	endif
-#	ifdef key_ENTER
-#		undef key_ENTER
-#	endif
-#	ifdef key_SPACE
-#		undef key_SPACE
-#	endif
-#	ifdef key_BS
-#		undef key_BS
-#	endif
-
 #	ifdef _WIN32
 #		define key_right	295
 #		define key_left		293
@@ -79,8 +54,9 @@
 #	define TRY	setjmp(__create_try_context());while(__try_context())if(__function_try())
 #	define CATCH(exception)	else if(__function_catch(exception))
 #	define FINALLY	else if(__function_finally())
-#	define Define_Exception(exc, msg, super)	static EXCEPTION_DEFINE __##exc = {msg, &super};\
+#	define _Define_Exception_(exc, msg, super)	static EXCEPTION_DEFINE __##exc = {msg, &super};\
 												EXCEPTION exc = &__##exc
+#	define Define_Exception(_args_)	_Define_Exception_(_args_)
 
 #	ifndef __cplusplus
 #		define and	&&
@@ -122,10 +98,12 @@
 #	define	APPLICATION_MODE(_func)		int main(int argc, string argv[]){\
 											return _func(argc, argv);\
 										}
-#	define $in		,
-#	define $as		,
-#	define $with	,
-#	define $from	,
+#	define $in			,
+#	define $as			,
+#	define $with		,
+#	define $from		,
+#	define $extends		,
+#	define $implements	,
 
 #	define	$c(arg)	getText(cs(arg))
 #	define	$b(arg)	getText(bs(arg))

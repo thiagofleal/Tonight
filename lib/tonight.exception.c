@@ -1,4 +1,6 @@
-#include "tonight.proto.h"
+#include <stdlib.h>
+
+#include "../include/Tonight/tonight.h"
 
 typedef struct __struct_exception{
 	EXCEPTION exception;
@@ -9,17 +11,17 @@ typedef struct __struct_exception{
 static EXCEPTION_DEFINE ___GenericException = {"Generic exception throwed", NULL};
 EXCEPTION TONIGHT GenericException = &___GenericException;
 
-Define_Exception(AssertException, "Assert fail", GenericException);
-Define_Exception(ErrnoException, "Errno error", GenericException);
-Define_Exception(MemoryAllocException, "Memory allocate error", GenericException);
-Define_Exception(ArrayIndexBoundException, "Invalid array index", GenericException);
-Define_Exception(FileOpenException, "File open error", GenericException);
-Define_Exception(InputException, "Input error", GenericException);
-Define_Exception(ConvertException, "Convert error", GenericException);
-Define_Exception(NotImplementException, "Not implemented method error", GenericException);
-Define_Exception(ArgumentException, "Argument error", GenericException);
-Define_Exception(NullArgumentException, "Null argument error", ArgumentException);
-Define_Exception(ApplicationException, "Application error", ArgumentException);
+Define_Exception(AssertException $as "Assert fail" $extends GenericException);
+Define_Exception(ErrnoException $as "Errno error" $extends GenericException);
+Define_Exception(MemoryAllocException $as "Memory allocate error" $extends GenericException);
+Define_Exception(ArrayIndexBoundException $as "Invalid array index" $extends GenericException);
+Define_Exception(FileOpenException $as "File open error" $extends GenericException);
+Define_Exception(InputException $as "Input error" $extends GenericException);
+Define_Exception(ConvertException $as "Convert error" $extends GenericException);
+Define_Exception(NotImplementException $as "Not implemented method error" $extends GenericException);
+Define_Exception(ArgumentException $as "Argument error" $extends GenericException);
+Define_Exception(NullArgumentException $as "Null argument error" $extends ArgumentException);
+Define_Exception(ApplicationException $as "Application error" $extends ArgumentException);
 
 /* try - catch - throw */
 

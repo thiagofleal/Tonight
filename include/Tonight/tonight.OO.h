@@ -1,7 +1,7 @@
 /*
 *	This file is part of the Tonight library
 *	
-*	File: tonightOO.h
+*	File: tonight.OO.h
 *	This file defines the macros to use object-oriented-like programming.
 *	
 *	Copyright (C)  2018  Thiago Fernandes Leal.
@@ -42,7 +42,7 @@
 																const struct Interface_##_Class _Class = {\
 																	._ = (const struct str_Class){\
 																		.name = #_Class,\
-																		.super = (const Class*)&_super,\
+																		.super = (const Class)&_super,\
 																		.size = sizeof(Class_##_Class),\
 																		.ctor = _Class##_ctor,\
 																		.dtor = _Class##_dtor\
@@ -64,7 +64,6 @@
 															const Class class;\
 															const Class_##_Class implement;\
 															_int (*select)(object);\
-															object (*new)(OptionalArgs);\
 															Class_##_Class* (*cast)(object);\
 														}_Class
 
@@ -82,17 +81,12 @@
 #		define	protected
 #		define	public
 
-/*	Inheritance	*/
-
-#		define $extends		,
-#		define $implements	,
-
 /*	Methods	*/
 
 #		define CLASS(_Class)		object self=getCurrentObject();\
 									Class_##_Class *This = self->data
 #		define this					(This->__self)
-#		define nextConstrArg(type)	(va_arg(*(va_list*)__construct_args, type))
+#		define constructArg(type)	(va_arg(*(va_list*)__construct_args, type))
 #		define setInterface(_value)	(This->__interface = &_value)
 #		define getInterface			(*This->__interface)
 #		define callInterface		(*(This = setCurrentObject(self)->data)->__interface)
@@ -104,12 +98,12 @@
 
 /*	Superclass' access	*/
 
-#		define	super(_act_)						super_##_act_(This->__super)
-#		define	super_construct(_super)				_super->ctor(self, __construct_args)
-#		define	super_delete(_super)				_super->dtor(self)
-#		define	super_getInterface(_super)			((_super)->cast(This)->__interface)
-#		define	super_setInterface(_super, _new)	((_super)->cast(This)->__interface = &new)
-#		define	super_cast(_super)					((_super)->cast(This)->__self)
+#		define	super(_act_)						super_##_act_(self->class_pointer->super)
+#		define	super_construct(_super)				(_super)->ctor(self, __construct_args)
+#		define	super_delete(_super)				(_super)->dtor(self)
+#		define	super_getInterface(_super)			((_super)->cast(self)->__interface)
+#		define	super_setInterface(_super, _new)	((_super)->cast(self)->__interface = &new)
+#		define	super_cast(_super)					((_super)->cast(self)->__self)
 
 /*	new and delete	*/
 extern object TONIGHT new(Class, ...);
@@ -133,9 +127,7 @@ struct IObject{
 
 interface(IObject);
 
-struct Object{
-	const Class class;
-};
+struct Object{};
 
 typedef struct{
 	IObject *__interface;
@@ -147,13 +139,11 @@ extern const struct Interface_Object{
 	const Class class;
 	const Class_Object implement;
 	IObject (*select)(object);
-	object (*new)(OptionalArgs);
 	Class_Object* (*cast)(object);
 }Object;
-
-#	endif	// ifndef __cplusplus
 
 INLINE object TONIGHT setCurrentObject(object);
 INLINE object TONIGHT getCurrentObject(void);
 
+#	endif	// ifndef __cplusplus
 #endif	// ifndef TONIGHT_OO_MACROS

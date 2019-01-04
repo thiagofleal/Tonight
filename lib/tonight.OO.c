@@ -1,16 +1,14 @@
-#include "tonight.proto.h"
+#include <string.h>
+
+#include "../include/Tonight/tonight.h"
 
 object TONIGHT new(Class class, ...){
+	object _new;
 	va_list v;
-	struct Object obj = {
-		.class = class
-	};
-	object _new = Memory.alloc(sizeof(Intern_Object));
 	va_start(v, class);
+	_new = Memory.alloc(sizeof(Intern_Object));
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
-	memcpy(&((Class_Object*)_new->data)->__self, &obj, sizeof obj);
-	Object.class->ctor(_new, NULL);
 	class->ctor(_new, &v);
 	va_end(v);
 	return _new;
@@ -64,7 +62,7 @@ static object Object_clone(void){
 
 static string Object_toString(void){
 	CLASS(Object);
-	return String.formated("%s at 0x%p", this.class->name, self);
+	return String.formated("%s at 0x%p", self->class_pointer->name, self);
 }
 
 static retString Object_toRetString(void){
