@@ -234,9 +234,9 @@ static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);
 
-static INLINE Class TONIGHT Object_getClass(object);
-static INLINE size_t TONIGHT Object_getSize(object);
-static NORMAL object TONIGHT Object_copy(object);
+static INLINE ICollection * TONIGHT getICollection(pointer);
+static INLINE int TONIGHT Collection_lenght(pointer);
+static INLINE pointer TONIGHT Collection_access(pointer, int);
 
 static INLINE void TONIGHT Callback_setMalloc(P_pointer);
 static INLINE void TONIGHT Callback_setCalloc(P_pointer);

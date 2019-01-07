@@ -30,8 +30,8 @@ INLINE void TONIGHT initForeach(void){
 }
 
 bool TONIGHT foreachIterator(pointer var, pointer array){
-	if(++ fctxt->value < Array.length(array)){
-		*(pointer*)var = *(pointer*)Array.access(array, fctxt->value);
+	if(++ fctxt->value < Collection.length(array)){
+		*(pointer*)var = *(pointer*)Collection.access(array, fctxt->value);
 		return true;
 	}
 	else{

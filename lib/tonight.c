@@ -17,6 +17,18 @@ static P_void p_free = free;
 
 #include "tonight.sys.h"
 
+typedef struct{
+	size_t size;
+	char data[0];
+}MemoryData;
+
+typedef struct{
+	int length;
+	size_t size;
+	ICollection *collection;
+	char data[0];
+}ArrayData;
+
 /* Functions */
 
 static void __assert(bool test){
@@ -1054,44 +1066,52 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 }
 
 static pointer TONIGHT $throws __new_memory(size_t q){
-	pointer p = p_malloc(q + sizeof(size_t));
+	MemoryData *p = p_malloc(sizeof(MemoryData) + q);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
-	*(size_t*)p = q;
-	return p + sizeof(size_t);
+	p->size = q;
+	return p->data;
 }
 
 static pointer TONIGHT $throws __realloc_memory(pointer mem, size_t q){
-	pointer p = p_realloc(mem, q + sizeof(size_t));
+	MemoryData *p = p_realloc(mem - sizeof(MemoryData), sizeof(MemoryData) + q);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
-	*(size_t*)p = q;
-	return p + sizeof(size_t);
+	p->size = q;
+	return p->data;
 }
 
 static INLINE size_t TONIGHT __memory_size(pointer mem){
-	return *(size_t*)(mem - sizeof(size_t));
+	return ((MemoryData*)(mem - sizeof(MemoryData)))->size;
 }
 
 static INLINE pointer TONIGHT __memory_copy(pointer mem) {
-	size_t size = Memory.size(mem);
-	return memcpy(Memory.alloc(size), mem, size);
+	register size_t size = __memory_size(mem);
+	MemoryData *p = p_malloc(sizeof(MemoryData) + size);
+	p->size = size;
+	memcpy(p->data, mem, size);
+	return p->data;
 }
 
 static INLINE void TONIGHT __memory_free(pointer mem){
-	if(mem) p_free(mem - sizeof(size_t));
+	if(mem) p_free(mem - sizeof(MemoryData));
 }
 
 /* Initialize arrays */
 
+static ICollection __Array_collection = {
+	.length = Array_length,
+	.access = Array_access
+};
+
 static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
-	pointer p = p_malloc(sizeof(int) + sizeof(size_t) + size * lenght);
+	ArrayData *p = p_malloc(sizeof(ArrayData) + size * lenght);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
-	*(int*)p = lenght;
-	p += sizeof(int);
-	*(size_t*)p = size;
-	return p + sizeof(size_t);
+	p->length = lenght;
+	p->size = size;
+	p->collection = &__Array_collection;
+	return p->data;
 }
 
 static INLINE char* TONIGHT $throws __new_array_char(int q){
@@ -1362,12 +1382,12 @@ string String_trim(const string _str){
 /* Functions to Array */
 static INLINE int TONIGHT Array_length(pointer array){
 	checkArgumentPointer(array);
-	return *(int*)(array - sizeof(size_t) - sizeof(int));
+	return ((ArrayData*)(array - sizeof(ArrayData)))->length;
 }
 
 static INLINE size_t TONIGHT Array_size(pointer array){
 	checkArgumentPointer(array);
-	return *(size_t*)(array - sizeof(size_t));
+	return ((ArrayData*)(array - sizeof(ArrayData)))->size;
 }
 
 static pointer TONIGHT $throws Array_access(pointer array, int index){
@@ -1379,7 +1399,7 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 }
 
 static INLINE void TONIGHT Array_free(pointer array){
-	if(array) p_free(array - sizeof(int) - sizeof(size_t));
+	if(array) p_free(array - sizeof(ArrayData));
 }
 
 static void TONIGHT Matrix_free(pointer mtrx){
@@ -1475,6 +1495,18 @@ static INLINE void TONIGHT Exit_WithSuccess(void){
 
 static INLINE void TONIGHT Exit_WithFail(void){
 	exit(EXIT_FAILURE);
+}
+
+static INLINE ICollection* TONIGHT getICollection(pointer p){
+	return *(ICollection**)(p - sizeof(ICollection*));
+}
+
+static INLINE int TONIGHT Collection_lenght(pointer p){
+	return getICollection(p)->length(p);
+}
+
+static INLINE pointer TONIGHT Collection_access(pointer p, int i){
+	return getICollection(p)->access(p, i);
 }
 
 INLINE void TONIGHT checkArgumentPointer(pointer arg){

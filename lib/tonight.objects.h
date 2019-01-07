@@ -331,3 +331,9 @@ const struct __Exit Exit = {
 	.WithSuccess = Exit_WithSuccess,
 	.WithFail = Exit_WithFail
 };
+
+/* Collection */
+const ICollection Collection = {
+	.length = Collection_lenght,
+	.access = Collection_access
+};

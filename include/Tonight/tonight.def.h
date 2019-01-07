@@ -89,7 +89,7 @@
 											while(__function_using(&var, ((Freely){freely}).free))
 #	define USING(_arg_)		__using__(_arg_)
 
-#	define __forindex__(ind, array)	for(ind=0;ind<Array.length(array);ind++)
+#	define __forindex__(ind, array)	for(ind=0;ind<Collection.length(array);ind++)
 #	define	forindex(_args_)	__forindex__(_args_)
 
 #	define __foreach__(var, array)	for(initForeach(); foreachIterator(&var, array);)
@@ -373,6 +373,11 @@
 		string* (*String)(string);
 		pointer (*Pointer)(pointer);
 	};
+	
+	typedef struct{
+		int		(* length)(pointer);
+		pointer	(* access)(pointer, int);
+	}ICollection;
 	
 	typedef struct{
 		void (* free)(OptionalArgs);

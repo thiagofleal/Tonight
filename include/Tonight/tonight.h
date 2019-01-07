@@ -38,6 +38,7 @@
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
 			extern const TONIGHT struct Resources Tonight;
+			extern const TONIGHT ICollection Collection;
 			
 			/* Exceptions */
 			extern EXCEPTION TONIGHT GenericException;
