@@ -287,9 +287,6 @@
 #	ifdef $
 #		undef $
 #	endif
-#	ifdef type
-#		undef type
-#	endif
 
 #	ifdef private
 #		undef private

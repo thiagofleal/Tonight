@@ -96,11 +96,21 @@ static object pop_object(void){
 	return NULL;
 }
 
-INLINE object TONIGHT setCurrentObject(object obj){
+static object get_object(void){
+	if(objstk)
+		return objstk->value;
+	return NULL;
+}
+
+INLINE void TONIGHT setCurrentObject(object obj){
 	push_object(obj);
-	return obj;
 }
 
 INLINE object TONIGHT getCurrentObject(void){
 	return pop_object();
+}
+
+INLINE object TONIGHT checkCurrentObject(Class class){
+	object current = get_object();
+	return isType(current, class) ? current : NULL;
 }

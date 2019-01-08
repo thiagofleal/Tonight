@@ -137,6 +137,8 @@ static IList List_vtble = {
 	List_setFreeCallBack
 };
 
+static ICollection List_collection = {};
+
 static Constructor(List)
 {
 	CLASS(List);
@@ -160,44 +162,44 @@ static Destructor(List)
 
 static void IList_add(pointer value)
 {
-	CLASS(List);
-	callInterface.add(value);
+	CHECK_CLASS(List);
+	getInterface.add(value);
 }
 
 static void IList_addPos(pointer value, int index)
 {
-	CLASS(List);
-	callInterface.addPos(value, index);
+	CHECK_CLASS(List);
+	getInterface.addPos(value, index);
 }
 
 static void IList_remove(int index)
 {
-	CLASS(List);
-	callInterface.remove(index);
+	CHECK_CLASS(List);
+	getInterface.remove(index);
 }
 
 static pointer IList_get(int index)
 {
-	CLASS(List);
-	return callInterface.get(index);
+	CHECK_CLASS(List);
+	return getInterface.get(index);
 }
 
 static int IList_size(void)
 {
-	CLASS(List);
-	return callInterface.size();
+	CHECK_CLASS(List);
+	return getInterface.size();
 }
 
 static pointer IList_toArray(void)
 {
-	CLASS(List);
-	return callInterface.toArray();
+	CHECK_CLASS(List);
+	return getInterface.toArray();
 }
 
 static void IList_setFreeCallBack(P_freeCallBack freeCallBack)
 {
-	CLASS(List);
-	callInterface.setFreeCallBack(freeCallBack);
+	CHECK_CLASS(List);
+	return getInterface.setFreeCallBack(freeCallBack);
 }
 
 static IList iList = {

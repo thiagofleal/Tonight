@@ -4,13 +4,13 @@
 
 object TONIGHT new(Class class, ...){
 	object _new;
-	va_list v;
-	va_start(v, class);
+	static struct ConstructArgs args;
+	va_start(args.list, class);
 	_new = Memory.alloc(sizeof(Intern_Object));
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
-	class->ctor(_new, &v);
-	va_end(v);
+	class->ctor(_new, &args);
+	va_end(args.list);
 	return _new;
 }
 
@@ -88,28 +88,28 @@ static IObject Object_vtble = {
 };
 
 static bool IObject_equal(object obj){
-	CLASS(Object);
-	return callInterface.equal(obj);
+	CHECK_CLASS(Object);
+	return getInterface.equal(obj);
 }
 
 static object IObject_clone(void){
-	CLASS(Object);
-	return callInterface.copy();
+	CHECK_CLASS(Object);
+	return getInterface.copy();
 }
 
 static string IObject_toString(void){
-	CLASS(Object);
-	return callInterface.toString();
+	CHECK_CLASS(Object);
+	return getInterface.toString();
 }
 
 static retString IObject_toRetString(void){
-	CLASS(Object);
-	return callInterface.toRetString();
+	CHECK_CLASS(Object);
+	return getInterface.toRetString();
 }
 
 static longRetString IObject_toLongRetString(void){
-	CLASS(Object);
-	return callInterface.toLongRetString();
+	CHECK_CLASS(Object);
+	return getInterface.toLongRetString();
 }
 
 static IObject iObject = {
@@ -134,10 +134,6 @@ static INLINE IObject Object_select(object obj){
 	return *Object.implement.__interface;
 }
 
-static INLINE Class_Object* Object_cast(object obj){
-	return obj->data;
-}
-
 static void Object_ctor(object obj, pointer args){
 	setCurrentObject(obj);
 	new_Object(args);
@@ -160,6 +156,5 @@ const struct Interface_Object Object = {
 	.implement = (const Class_Object){
 		.__interface = &iObject
 	},
-	.select = Object_select,
-	.cast = Object_cast
+	.select = Object_select
 };

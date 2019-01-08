@@ -50,50 +50,50 @@ static Destructor(Socket)
 
 static void ISocket_accept(object socket)
 {
-	CLASS(Socket);
-	callInterface.accept(socket);
+	CHECK_CLASS(Socket);
+	getInterface.accept(socket);
 }
 
 static void ISocket_start(void)
 {
-	CLASS(Socket);
-	callInterface.start();
+	CHECK_CLASS(Socket);
+	getInterface.start();
 }
 
 static void ISocket_connect(void)
 {
-	CLASS(Socket);
-	callInterface.connect();
+	CHECK_CLASS(Socket);
+	getInterface.connect();
 }
 
 static void ISocket_bind(void)
 {
-	CLASS(Socket);
-	callInterface.bind();
+	CHECK_CLASS(Socket);
+	getInterface.bind();
 }
 
 static void ISocket_listen(int backlog)
 {
-	CLASS(Socket);
-	callInterface.listen(backlog);
+	CHECK_CLASS(Socket);
+	getInterface.listen(backlog);
 }
 
 static void ISocket_send(Package message)
 {
-	CLASS(Socket);
-	callInterface.send(message);
+	CHECK_CLASS(Socket);
+	getInterface.send(message);
 }
 
 static Package ISocket_receive(void)
 {
-	CLASS(Socket);
-	callInterface.receive();
+	CHECK_CLASS(Socket);
+	getInterface.receive();
 }
 
 static void ISocket_close(void)
 {
-	CLASS(Socket);
-	callInterface.close();
+	CHECK_CLASS(Socket);
+	getInterface.close();
 }
 
 static ISocket iSock = {

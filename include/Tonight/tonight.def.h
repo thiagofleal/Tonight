@@ -87,13 +87,13 @@
 #	define	__using__(var, from, freely...)	__create_using_context(sizeof var, &var);\
 											var = from;\
 											while(__function_using(&var, ((Freely){freely}).free))
-#	define USING(_arg_)		__using__(_arg_)
+#	define USING(_arg_)						__using__(_arg_)
 
-#	define __forindex__(ind, array)	for(ind=0;ind<Collection.length(array);ind++)
-#	define	forindex(_args_)	__forindex__(_args_)
+#	define __forindex__(ind, collect)	for(ind=0;ind<Collection.length(collect);ind++)
+#	define forindex(_args_)				__forindex__(_args_)
 
-#	define __foreach__(var, array)	for(initForeach(); foreachIterator(&var, array);)
-#	define	foreach(_args_)		__foreach__(_args_)
+#	define __foreach__(var, collect)	for(initForeach(); foreachIterator(&var, collect);)
+#	define foreach(_args_)				__foreach__(_args_)
 
 #	define	APPLICATION_MODE(_func)		int main(int argc, string argv[]){\
 											return _func(argc, argv);\

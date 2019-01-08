@@ -28,9 +28,6 @@
 																	setCurrentObject(obj);\
 																	return *_Class.implement.__interface;\
 																}\
-																static INLINE Class_##_Class* _Class##_cast(object obj){\
-																	return obj->data;\
-																}\
 																static INLINE void _Class##_ctor(object obj, pointer args){\
 																	setCurrentObject(obj);\
 																	__new_##_Class(args);\
@@ -51,8 +48,7 @@
 																	.implement = (const Class_##_Class){\
 																		.__interface = &_intVal\
 																	},\
-																	.select = _Class##_select,\
-																	.cast = _Class##_cast\
+																	.select = _Class##_select\
 																}
 #		define __class__(_Class, _super, _int)			typedef struct{\
 															Class_##_super __super;\
@@ -64,7 +60,6 @@
 															const Class class;\
 															const Class_##_Class implement;\
 															_int (*select)(object);\
-															Class_##_Class* (*cast)(object);\
 														}_Class
 
 #		define class(__args__)	__class__(__args__)
@@ -73,7 +68,6 @@
 #		define interface(_int)			typedef struct _int _int
 #		define __select__(_obj, _Class)	_Class.select(_obj)
 #		define $(_args_)				__select__(_args_)
-#		define type(_obj)				(_obj)->class_pointer
 
 /*	Access modifiers	*/
 
@@ -83,17 +77,22 @@
 
 /*	Methods	*/
 
-#		define CLASS(_Class)		object self=getCurrentObject();\
+#		define CLASS(_Class)	object self=getCurrentObject();\
+								Class_##_Class *This = self->data
+#		define CHECK_CLASS(_Class)	object self=checkCurrentObject(_Class.class);\
+									checkArgumentPointer(self);\
 									Class_##_Class *This = self->data
-#		define this					(This->__self)
-#		define constructArg(type)	(va_arg(*(va_list*)__construct_args, type))
-#		define setInterface(_value)	(This->__interface = &_value)
-#		define getInterface			(*This->__interface)
-#		define callInterface		(*(This = setCurrentObject(self)->data)->__interface)
+#		define this							(This->__self)
+#		define constructArg(type)			(va_arg(__construct_args->list, type))
+#		define getInterface							(*This->__interface)
+#		define setInterface(_new)					(This->__interface = &_new)
+#		define getClassInterface(_class)			(*((Class_##_class*)self)->__interface)
+#		define setClassInterface(_class, _new)		(((Class_##_class*)self)->__interface = &new)
+#		define cast(_super)							(((Class_##_class*)self)->__self)
 
 /*	Constructor and destructor	*/
 
-#		define Constructor(_Class)	void __new_##_Class(pointer __construct_args)
+#		define Constructor(_Class)	void __new_##_Class(ConstructArgs __construct_args)
 #		define Destructor(_Class)	void __del_##_Class(void)
 
 /*	Superclass' access	*/
@@ -101,9 +100,10 @@
 #		define	super(_act_)						super_##_act_(self->class_pointer->super)
 #		define	super_construct(_super)				(_super)->ctor(self, __construct_args)
 #		define	super_delete(_super)				(_super)->dtor(self)
-#		define	super_getInterface(_super)			((_super)->cast(self)->__interface)
-#		define	super_setInterface(_super, _new)	((_super)->cast(self)->__interface = &new)
-#		define	super_cast(_super)					((_super)->cast(self)->__self)
+
+typedef struct ConstructArgs{
+	va_list list;
+}*ConstructArgs;
 
 /*	new and delete	*/
 extern object TONIGHT new(Class, ...);
@@ -139,11 +139,11 @@ extern const struct Interface_Object{
 	const Class class;
 	const Class_Object implement;
 	IObject (*select)(object);
-	Class_Object* (*cast)(object);
 }Object;
 
-INLINE object TONIGHT setCurrentObject(object);
+INLINE void TONIGHT setCurrentObject(object);
 INLINE object TONIGHT getCurrentObject(void);
+INLINE object TONIGHT checkCurrentObject(Class);
 
 #	endif	// ifndef __cplusplus
 #endif	// ifndef TONIGHT_OO_MACROS

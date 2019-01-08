@@ -19,6 +19,7 @@ static P_void p_free = free;
 
 typedef struct{
 	size_t size;
+	ICollection *collection;
 	char data[0];
 }MemoryData;
 
@@ -1065,11 +1066,17 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 	return p;
 }
 
+static ICollection notImplemented = {
+	(pointer)__Default_void_function,
+	(pointer)__Default_void_function
+};
+
 static pointer TONIGHT $throws __new_memory(size_t q){
 	MemoryData *p = p_malloc(sizeof(MemoryData) + q);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	p->size = q;
+	p->collection = &notImplemented;
 	return p->data;
 }
 
@@ -1078,6 +1085,7 @@ static pointer TONIGHT $throws __realloc_memory(pointer mem, size_t q){
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	p->size = q;
+	p->collection = &notImplemented;
 	return p->data;
 }
 
@@ -1087,10 +1095,7 @@ static INLINE size_t TONIGHT __memory_size(pointer mem){
 
 static INLINE pointer TONIGHT __memory_copy(pointer mem) {
 	register size_t size = __memory_size(mem);
-	MemoryData *p = p_malloc(sizeof(MemoryData) + size);
-	p->size = size;
-	memcpy(p->data, mem, size);
-	return p->data;
+	return memcpy(__new_memory(size), mem, size);
 }
 
 static INLINE void TONIGHT __memory_free(pointer mem){
