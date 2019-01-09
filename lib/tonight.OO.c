@@ -4,13 +4,13 @@
 
 object TONIGHT new(Class class, ...){
 	object _new;
-	static struct ConstructArgs args;
-	va_start(args.list, class);
+	va_list args;
+	va_start(args, class);
 	_new = Memory.alloc(sizeof(Intern_Object));
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
 	class->ctor(_new, &args);
-	va_end(args.list);
+	va_end(args);
 	return _new;
 }
 
@@ -158,3 +158,66 @@ const struct Interface_Object Object = {
 	},
 	.select = Object_select
 };
+
+/* Set */
+
+static int Set_ICollection_length(pointer collect){
+	return $(collect $as Set).getCollection()->length(collect);
+}
+
+static pointer Set_ICollection_access(pointer collect, int index){
+	return $(collect $as Set).getCollection()->access(collect, index);
+}
+
+static ICollection Set_ICollection = {
+	.length = Set_ICollection_length,
+	.access = Set_ICollection_access
+};
+
+static ICollection * Set_getCollection(void){
+	CLASS(Set);
+	return this.collection;
+}
+
+static void Set_setCollection(ICollection value){
+	CLASS(Set);
+	*this.collection = value;
+}
+
+static ISet Set_vtble = {
+	.getCollection = Set_getCollection,
+	.setCollection = Set_setCollection
+};
+
+static Constructor(Set){
+	CLASS(Set);
+	static ICollection _default;
+	construct(super());
+	_default = *getICollection(self);
+	this.collection = Memory.alloc(sizeof _default);
+	*this.collection = _default;
+	setInterface(Set_vtble);
+	*getICollection(self) = Set_ICollection;
+}
+
+static Destructor(Set){
+	CLASS(Set);
+	Memory.free(this.collection);
+}
+
+static ICollection * ISet_getCollection(void){
+	CHECK_CLASS(Set);
+	return getInterface.getCollection();
+}
+
+static void ISet_setCollection(ICollection value){
+	CHECK_CLASS(Set);
+	getInterface.setCollection(value);
+}
+
+static ISet iSet = {
+	.getCollection = ISet_getCollection,
+	.setCollection = ISet_setCollection
+};
+
+Define_Class(Set $extends Object $implements ISet $as iSet);

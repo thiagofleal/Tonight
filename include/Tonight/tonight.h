@@ -122,6 +122,7 @@
 			extern longRetString TONIGHT longFormated(const string, ...);
 			
 			extern INLINE void TONIGHT checkArgumentPointer(pointer);
+			extern INLINE ICollection * TONIGHT getICollection(pointer);
 	
 #	ifdef __cplusplus
 		}

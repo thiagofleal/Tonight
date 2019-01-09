@@ -44,6 +44,6 @@
 		P_freeCallBack freeCallBack;
 	};
 	
-	class(List $extends Object $implements IList);
+	class(List $extends Set $implements IList);
 	
 #endif

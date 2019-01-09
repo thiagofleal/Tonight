@@ -137,17 +137,31 @@ static IList List_vtble = {
 	List_setFreeCallBack
 };
 
-static ICollection List_collection = {};
+static int List_ICollection_length(pointer collect)
+{
+	return $(collect $as List).size();
+}
+
+static pointer List_ICollection_access(pointer collect, int index)
+{
+	return $(collect $as List).get(index);
+}
+
+static ICollection List_collection = {
+	.length = List_ICollection_length,
+	.access = List_ICollection_access
+};
 
 static Constructor(List)
 {
 	CLASS(List);
 	
-	super(construct);
+	construct(super());
 	this.list = NULL;
 	this.size = 0;
 	this.freeCallBack = NULL;
 	setInterface(List_vtble);
+	$(self $as Set).setCollection(List_collection);
 }
 
 static Destructor(List)
@@ -158,6 +172,8 @@ static Destructor(List)
 	{
 		$(self $as List).remove(0);
 	}
+	
+	destruct(super());
 }
 
 static void IList_add(pointer value)
@@ -212,4 +228,4 @@ static IList iList = {
 	IList_setFreeCallBack
 };
 
-Define_Class(List $extends Object $implements IList $with iList);
+Define_Class(List $extends Set $implements IList $with iList);

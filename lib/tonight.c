@@ -1502,7 +1502,7 @@ static INLINE void TONIGHT Exit_WithFail(void){
 	exit(EXIT_FAILURE);
 }
 
-static INLINE ICollection* TONIGHT getICollection(pointer p){
+INLINE ICollection* TONIGHT getICollection(pointer p){
 	return *(ICollection**)(p - sizeof(ICollection*));
 }
 

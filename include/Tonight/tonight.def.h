@@ -84,9 +84,9 @@
 #		define OptionalArgs
 #	endif
 
-#	define	__using__(var, from, freely...)	__create_using_context(sizeof var, &var);\
+#	define	__using__(var, from, iFree...)	__create_using_context(sizeof var, &var);\
 											var = from;\
-											while(__function_using(&var, ((Freely){freely}).free))
+											while(__function_using(&var, ((IFree){iFree}).free))
 #	define USING(_arg_)						__using__(_arg_)
 
 #	define __forindex__(ind, collect)	for(ind=0;ind<Collection.length(collect);ind++)
@@ -381,7 +381,7 @@
 	
 	typedef struct{
 		void (* free)(OptionalArgs);
-	}Freely;
+	}IFree;
 	
 	struct __Array{
 		void	(* free)(pointer);

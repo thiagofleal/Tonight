@@ -234,7 +234,6 @@ static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);
 
-static INLINE ICollection * TONIGHT getICollection(pointer);
 static INLINE int TONIGHT Collection_lenght(pointer);
 static INLINE pointer TONIGHT Collection_access(pointer, int);
 
