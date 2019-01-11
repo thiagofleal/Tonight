@@ -3,3 +3,4 @@
 *.win
 *.a
 *.bat
+makefile

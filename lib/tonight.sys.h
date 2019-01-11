@@ -100,5 +100,9 @@
 	static void TONIGHT __clearScreen(void){
 		printf("\e[2J\e[H");
 	}
+	
+	INLINE void TONIGHT __Colors_textbackground(int _tcolor, int _bcolor){
+		printf("\033[%im\033[%im", _bcolor + 39, _tcolor + 29);
+	}
 
 #endif
