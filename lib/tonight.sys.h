@@ -26,15 +26,15 @@
 		return result;
 	}
 	
-	INLINE void TONIGHT __sleep(unsigned int miliseconds){
+	static INLINE void TONIGHT __sleep(unsigned int miliseconds){
 		Sleep(miliseconds);
 	}
 	
-	INLINE void TONIGHT cursor_position(int x, int y){
+	static INLINE void TONIGHT cursor_position(int x, int y){
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), (COORD){x, y});
 	}
 	
-	INLINE void TONIGHT __clearScreen(void){
+	static INLINE void TONIGHT __clearScreen(void){
 		system("cls");
 	}
 	
@@ -43,10 +43,23 @@
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), w);
 	}
 	
+	static INLINE pointer TONIGHT __Shared_open(string path){
+		return (pointer)LoadLibrary(path);
+	}
+	
+	static INLINE void TONIGHT __Shared_close(pointer lib){
+		if(lib)	FreeLibrary(lib);
+	}
+	
+	static INLINE pointer TONIGHT __Shared_get(pointer lib, string proc){
+		return (pointer)GetProcAddress(lib, proc);
+	}
+	
 #else
 #	include <termios.h>
 #	include <unistd.h>
 #	include <fcntl.h>
+#	include <dlfcn.h>
 #	include <sys/select.h>
 #	include <sys/ioctl.h>
 #	include <stropts.h>
@@ -89,11 +102,11 @@
 		return i;
 	}
 	
-	INLINE void TONIGHT __sleep(unsigned int miliseconds){
+	static INLINE void TONIGHT __sleep(unsigned int miliseconds){
 		usleep(miliseconds * 1000);
 	}
 	
-	INLINE void TONIGHT cursor_position(int x, int y){
+	static INLINE void TONIGHT cursor_position(int x, int y){
 		printf("\033[%d;%dH", y, x);
 	}
 	
@@ -101,8 +114,20 @@
 		printf("\e[2J\e[H");
 	}
 	
-	INLINE void TONIGHT __Colors_textbackground(int _tcolor, int _bcolor){
+	static INLINE void TONIGHT __Colors_textbackground(int _tcolor, int _bcolor){
 		printf("\033[%im\033[%im", _bcolor + 39, _tcolor + 29);
+	}
+	
+	static INLINE pointer TONIGHT __Shared_open(string path){
+		return (pointer)dlopen(path, RTLD_LAZY);
+	}
+	
+	static INLINE void TONIGHT __Shared_close(pointer lib){
+		if(lib)	dlclose(lib);
+	}
+	
+	static INLINE pointer TONIGHT __Shared_get(pointer lib, string proc){
+		return (pointer)dlsym(lib, proc);
 	}
 
 #endif

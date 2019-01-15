@@ -219,6 +219,12 @@ const TONIGHT struct Resources Tonight = {
 		.setCalloc = Callback_setCalloc,
 		.setRealloc = Callback_setRealloc,
 		.setFree = Callback_setFree
+	},
+	
+	.Shared = {
+		.close = __Shared_close,
+		.open = __Shared_open,
+		.get = __Shared_get
 	}
 };
 

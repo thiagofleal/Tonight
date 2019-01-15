@@ -546,6 +546,12 @@
 			void (* setRealloc)(P_pointer);
 			void (* setFree)(P_void);
 		}Callback;
+		
+		const struct{
+			void (* close)(pointer);
+			pointer (* open)(string);
+			pointer (* get)(pointer, string);
+		}Shared;
 	};
 	
 #endif

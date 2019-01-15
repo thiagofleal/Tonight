@@ -241,3 +241,7 @@ static INLINE void TONIGHT Callback_setMalloc(P_pointer);
 static INLINE void TONIGHT Callback_setCalloc(P_pointer);
 static INLINE void TONIGHT Callback_setRealloc(P_pointer);
 static INLINE void TONIGHT Callback_setFree(P_void);
+
+static INLINE void TONIGHT __Shared_close(pointer);
+static INLINE pointer TONIGHT __Shared_open(string path);
+static INLINE pointer TONIGHT __Shared_get(pointer, string);
