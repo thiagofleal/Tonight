@@ -1333,7 +1333,7 @@ static INLINE string TONIGHT byte_toString(byte b){
 	return s_is((int)b);
 }
 
-string TONIGHT sepstr(register string *stringp, register const string delim){
+static string TONIGHT String_sep(register string *stringp, register const string delim){
 	register string s;
 	register string spanp;
 	register int c, sc;
@@ -1363,13 +1363,13 @@ static string ARRAY String_split(string src, string lim)
 	string ARRAY ret = NULL;
 	string aux, aux2;
 	
-	for(aux2 = aux = toString(src), i = 0; strsep(&aux, lim); i++);
+	for(aux2 = aux = toString(src), i = 0; String_sep(&aux, lim); i++);
 	__memory_free(aux2);
 	ret_len = i;
 	ret = __new_array_String(ret_len);
 	aux = src;
 	for(aux2 = aux = toString(src), i = 0; i < ret_len; i++)
-		ret[i] = toString(sepstr(&aux, lim));
+		ret[i] = toString(String_sep(&aux, lim));
 	__memory_free(aux2);
 	return ret;
 }

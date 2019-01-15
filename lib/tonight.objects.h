@@ -222,7 +222,7 @@ const TONIGHT struct Resources Tonight = {
 	}
 };
 
-/* New (new) */
+/* New */
 const TONIGHT struct __New New = {
 	.Scanner = __new_Scanner,
 	.Writer = __new_Writer,
@@ -277,6 +277,7 @@ const struct __Matrix Matrix = {
 	.Generic = __new_matrix_generic
 };
 
+/* Memory */
 const struct __Memory Memory = {
 	.alloc = __new_memory,
 	.size = __memory_size,
@@ -284,6 +285,7 @@ const struct __Memory Memory = {
 	.free = __memory_free
 };
 
+/* String */
 const struct __String String = {
 	.formated = String_formated,
 	.copy = (pointer)toString,
@@ -292,6 +294,7 @@ const struct __String String = {
 	.lower = String_lower,
 	.length = (pointer)strlen,
 	.compare = (pointer)strcmp,
+	.sep = String_sep,
 	.split = String_split,
 	.trim = String_trim,
 	.free = (pointer)__memory_free

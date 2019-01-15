@@ -214,7 +214,7 @@ static NORMAL string TONIGHT String_upper(const string str);
 static NORMAL string TONIGHT String_lower(const string str);
 static NORMAL string* TONIGHT String_split(const string, const string);
 static NORMAL string TONIGHT String_trim(const string);
-NORMAL string TONIGHT sepstr(register string*, register const string);
+static NORMAL string TONIGHT String_sep(register string*, register const string);
 
 static INLINE void TONIGHT File_close(file);
 static INLINE bool TONIGHT File_end(file);

@@ -433,6 +433,7 @@
 		string (* upper)(const string);
 		string (* lower)(const string);
 		string (* trim)(const string);
+		string (* sep)(string*, const string);
 		string* (* split)(const string, const string);
 		size_t (* length)(const string);
 		int (* compare)(const string, const string);
