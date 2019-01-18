@@ -8,6 +8,8 @@
 #include <locale.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <fcntl.h>
+#include <io.h>
 
 #include "../include/Tonight/tonight.h"
 
@@ -91,6 +93,10 @@ static NORMAL void TONIGHT __Screen_nl(void);
 static NORMAL void TONIGHT __Screen_nls(int);
 static NORMAL void TONIGHT __Screen_buffer(void);
 static NORMAL void TONIGHT __Screen_clear(void);
+
+static NORMAL void TONIGHT __print_args(file, string, va_list);
+static NORMAL void TONIGHT __println_args(file, string, va_list);
+static NORMAL void TONIGHT __printargln_args(file, string, va_list);
 
 static NORMAL void TONIGHT __Recorder_text(file, string);
 static INLINE void TONIGHT __Recorder_textln(file, string);

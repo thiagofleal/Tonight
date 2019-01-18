@@ -644,29 +644,22 @@ static INLINE void TONIGHT __Screen_textln(string txt){
 
 static void TONIGHT __Screen_print(string txt, ...){
 	va_list t;
-	register string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		__Screen_text(s);
+	__print_args((file)stdout, txt, t);
 	va_end(t);
 }
 
 static void TONIGHT __Screen_println(string txt, ...){
 	va_list t;
-	register string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		__Screen_text(s);
+	__println_args((file)stdout, txt, t);
 	va_end(t);
-	__Screen_text("\n");
 }
 
 static void TONIGHT __Screen_printargln(string txt, ...){
 	va_list t;
-	register string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		__Screen_textln(s);
+	__printargln_args((file)stdout, txt, t);
 	va_end(t);
 }
 
@@ -688,42 +681,60 @@ static void TONIGHT __Screen_clear(void){
 		throw(GenericException, strerror(errno));
 }
 
+/* Output base functions */
+static NORMAL void TONIGHT __print_args(file _file, string first, va_list args){
+	string s;
+	for(s = first; s; s = va_arg(args, string))
+		__Recorder_text(_file, s);
+}
+
+static NORMAL void TONIGHT __println_args(file _file, string first, va_list args){
+	string s;
+	for(s = first; s; s = va_arg(args, string))
+		__Recorder_text(_file, s);
+	__Recorder_text(_file, "\n");
+}
+
+static NORMAL void TONIGHT __printargln_args(file _file, string first, va_list args){
+	string s;
+	for(s = first; s; s = va_arg(args, string))
+		__Recorder_textln(_file, s);
+}
+
 /* Functions to Tonight.std.file.output */
-static INLINE void TONIGHT __Recorder_text(file _file, string txt){
-	for(;*txt;++txt)
-		fputc(*txt, (FILE*)_file);
+static void TONIGHT __Recorder_text(file _file, string txt){
+	register int size = strlen(txt) + 1;
+	wchar_t *w = malloc(size * sizeof(wchar_t));
+	_setmode(fileno((FILE*)_file), _O_U8TEXT);
+	swprintf(w, size, L"%hs", txt);
+	fwprintf((FILE*)_file, L"%ls", w);
+	free(w);
+	_setmode(fileno((FILE*)_file), _O_TEXT);
 }
 
 static INLINE void TONIGHT __Recorder_textln(file _file, string txt){
-	__Recorder_text(_file, txt);
-	__Recorder_text(_file, "\n");
+	__Recorder_text(_file, txt = concat(txt, "\n", NULL));
+	__memory_free(txt);
 }
 
 static void TONIGHT __Recorder_print(file _file, string txt, ...){
 	va_list t;
-	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		__Recorder_text(_file, s);
+	__print_args(_file, txt, t);
 	va_end(t);
 }
 
 static void TONIGHT __Recorder_println(file _file, string txt, ...){
 	va_list t;
-	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		__Recorder_text(_file, s);
+	__println_args(_file, txt, t);
 	va_end(t);
-	__Recorder_text(_file, "\n");
 }
 
 static void TONIGHT __Recorder_printargln(file _file, string txt, ...){
 	va_list t;
-	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		__Recorder_textln(_file, s);
+	__printargln_args(_file, txt, t);
 	va_end(t);
 }
 
@@ -747,38 +758,31 @@ static void TONIGHT $throws __Recorder_clear(file __file){
 
 /* Functions to Tonight.std.error */
 static void TONIGHT __Error_text(string txt){
-	fprintf(stderr, "%s", txt);
+	__Recorder_text((file)stderr, txt);
 }
 
 static INLINE void TONIGHT __Error_textln(string txt){
-	fprintf(stderr, "%s\n", txt);
+	__Recorder_textln((file)stderr, txt);
 }
 
 static void TONIGHT __Error_print(string txt, ...){
 	va_list t;
-	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		fprintf(stderr, "%s", s);
+	__print_args((file)stderr, txt, t);
 	va_end(t);
 }
 
 static void TONIGHT __Error_println(string txt, ...){
 	va_list t;
-	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		fprintf(stderr, "%s", s);
+	__println_args((file)stderr, txt, t);
 	va_end(t);
-	putc('\n', stderr);
 }
 
 static void TONIGHT __Error_printargln(string txt, ...){
 	va_list t;
-	string s;
 	va_start(t, txt);
-	for(s = txt; s; s = va_arg(t, string))
-		fprintf(stderr, "%s\n", s);
+	__printargln_args((file)stderr, txt, t);
 	va_end(t);
 }
 
