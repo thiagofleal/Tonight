@@ -301,11 +301,6 @@ const TONIGHT struct Resources Tonight = {
 	.enableASCII = __enableASCII,
 	.enableUTF8 = __enableUTF8,
 	
-	.Mode = {
-		.Default = TonightModeDefault,
-		.Loop = TonightModeLoop
-	},
-	
 	.Callback = {
 		.setMalloc = Callback_setMalloc,
 		.setCalloc = Callback_setCalloc,
@@ -347,6 +342,7 @@ const struct __Array Array = {
 	.free = Array_free,
 	.toString = Array_toString,
 	.convert = Array_convert,
+	.select = Array_select,
 	
 	.Char = __new_array_char,
 	.Byte = __new_array_byte,
@@ -380,7 +376,9 @@ const struct __String String = {
 	.sep = (pointer)String_sep,
 	.split = (pointer)String_split,
 	.trim = (pointer)String_trim,
-	.free = (pointer)__memory_free
+	.free = (pointer)__memory_free,
+	.toString = (pointer)toString,
+	.toWide = stringToWide
 };
 
 const struct __String WideString = {
@@ -394,7 +392,9 @@ const struct __String WideString = {
 	.sep = (pointer)WString_sep,
 	.split = (pointer)WString_split,
 	.trim = (pointer)WString_trim,
-	.free = (pointer)__memory_free
+	.free = (pointer)__memory_free,
+	.toString = wideToString,
+	.toWide = (pointer)toWide
 };
 
 /* File */

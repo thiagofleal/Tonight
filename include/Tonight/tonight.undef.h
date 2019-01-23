@@ -145,10 +145,6 @@
 #		undef foreach
 #	endif
 
-#	ifdef APPLICATION_MODE
-#		undef APPLICATION_MODE
-#	endif
-
 #	ifdef $in
 #		undef $in
 #	endif
@@ -263,6 +259,13 @@
 #	endif
 #	ifdef DefineCast
 #		undef DefineCast
+#	endif
+
+#	ifdef __CONDITION__
+#		undef __DefineCast__
+#	endif
+#	ifdef DefineCast
+#		undef DeclareCondition
 #	endif
 
 #	ifdef __Define_Class__

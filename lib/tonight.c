@@ -1,3 +1,5 @@
+#define __USE_MAIN__
+
 #include "tonight.proto.h"
 #include "tonight.objects.h"
 
@@ -89,24 +91,34 @@ INLINE static void __initRandom(void){
 	srand((unsigned int)time(NULL));
 }
 
-static void TONIGHT __enableASCII(void){
-	_setmode(fileno((FILE*)stdin), _O_TEXT);
-	_setmode(fileno((FILE*)stdout), _O_TEXT);
-	_setmode(fileno((FILE*)stderr), _O_TEXT);
+static INLINE void TONIGHT __enableASCII(file src){
+	_setmode(fileno((FILE*)src), _O_TEXT);
 }
 
-static void TONIGHT __enableUTF8(void){
-	_setmode(fileno((FILE*)stdin), _O_U8TEXT);
-	_setmode(fileno((FILE*)stdout), _O_U8TEXT);
-	_setmode(fileno((FILE*)stderr), _O_U8TEXT);
+static INLINE void TONIGHT __enableUTF8(file src){
+	_setmode(fileno((FILE*)src), _O_U8TEXT);
 }
 
 static INLINE string TONIGHT __concatString(char dest[], char from[], int length){
 	return strncat(dest, from, length - strlen(dest) - 1);
 }
 
+static INLINE pstring TONIGHT __wconcatString(wchar_t dest[], wchar_t from[], int length){
+	return wcsncat(dest, from, length - wcslen(dest) - 1);
+}
+
 static INLINE pstring TONIGHT __concatWString(wchar_t dest[], wchar_t from[], int length){
 	return wcsncat(dest, from, length - wcslen(dest) - 1);
+}
+
+static INLINE pstring TONIGHT stringToWide(pstring s){
+	swprintf(wstr, strlen(s) + 1, L"%hs", s);
+	return toWide(wstr);
+}
+
+static INLINE pstring TONIGHT wideToString(pstring s){
+	sprintf(str, "%ls", s);
+	return toString(str);
 }
 
 INLINE string TONIGHT toString(register pointer __array){
@@ -133,10 +145,8 @@ string TONIGHT concat(string wrd_1, ...){
 
 string TONIGHT nconcat(int size, string wrd_1, ...){
 	va_list va;
-	static char ARRAY s = NULL;
+	char ARRAY s = NULL;
 	static string p;
-	if(s)
-		Array_free(s);
 	s = __new_array_char(size + 1);
 	*s = 0;
 	va_start(va, wrd_1);
@@ -144,6 +154,33 @@ string TONIGHT nconcat(int size, string wrd_1, ...){
 		strcat(s, p);
 	va_end(va);
 	p = toString(s);
+	Array_free(s);
+	return p;
+}
+
+pstring TONIGHT wconcat(pstring wrd_1, ...){
+	va_list va;
+	static wchar_t s[1001];
+	static pstring p;
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, pstring))
+		__wconcatString(s, p, sizeof s);
+	va_end(va);
+	return toWide(s);
+}
+
+pstring TONIGHT nwconcat(int size, pstring wrd_1, ...){
+	va_list va;
+	wchar_t ARRAY s = NULL;
+	static pstring p;
+	s = __new_array_generic(sizeof(wchar_t), size + 1);
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		wcscat(s, p);
+	va_end(va);
+	p = toWide(s);
 	Array_free(s);
 	return p;
 }
@@ -158,35 +195,6 @@ retString TONIGHT retConcat(string wrd_1, ...){
 		__concatString(ret.Text, p, sizeof ret);
 	va_end(va);
 	return ret;
-}
-
-pstring TONIGHT wconcat(pstring wrd_1, ...){
-	va_list va;
-	static wchar_t s[1001];
-	static pstring p;
-	*s = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, pstring))
-		__concatWString(s, p, ARRAY_LENGTH(s));
-	va_end(va);
-	return toWide(s);
-}
-
-pstring TONIGHT wnconcat(int size, pstring wrd_1, ...){
-	va_list va;
-	static wchar_t ARRAY s = NULL;
-	static pstring p;
-	if(s)
-		Array_free(s);
-	s = __new_array_generic(sizeof(wchar_t), size + 1);
-	*s = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, string))
-		wcscat(s, p);
-	va_end(va);
-	p = toWide(s);
-	Array_free(s);
-	return p;
 }
 
 retWideString TONIGHT wretConcat(pstring wrd_1, ...){
@@ -1830,26 +1838,42 @@ static INLINE void TONIGHT Array_free(pointer array){
 }
 
 static string TONIGHT Array_toString(pointer array, P_retString method, string sep){
-	static char ARRAY str = NULL;
-	register int i, length = Array.length(array);
-	if(str)
-		Array.free(str);
-	str = Array.Char((Array.size(array) * 3 + strlen(sep)) * Array.length(array));
+	char ARRAY str = __new_array_char((Array_size(array) * 3 + strlen(sep)) * Array_length(array));
+	register int i, length = Array_length(array);
+	string ret;
 	*str = 0;
 	checkArgumentPointer(method);
-	for(i=0;i<length;i++)
+	for(i=0; i<length; i++)
 		strcat(strcat(str, getText(method(Array_access(array, i)))), sep);
 	str[strlen(str) - strlen(sep)] = 0;
-	return toString(str);
+	ret = toString(str);
+	Array_free(str);
+	return ret;
 }
 
 static pointer TONIGHT Array_convert(pointer array, cast casting){
-	register int i, length = Array.length(array);
-	pointer ret = Array.Generic(casting.result, length);
-	size_t size_array = Array.size(array);
-	for(i=0;i<length;i++){
-		casting.parse(Array.access(array, i), Array.access(ret, i));
+	register int i, length=Array.length(array);
+	pointer ret = __new_array_generic(casting.result, length);
+	for(i=0;i<length;i++)
+		casting.parse(Array_access(array, i), Array_access(ret, i));
+	return ret;
+}
+
+static pointer TONIGHT $throws Array_select(pointer array, condition where){
+	register int i, j, length=Array_length(array);
+	size_t size = Array_size(array);
+	pointer ret=NULL, aux, arr=__new_array_generic(size, length);
+	for(i=0, j=0; i<length; i++){
+		aux=Array_access(array, i);
+		if(where(aux)){
+			memcpy(Array_access(arr, j), aux, size);
+			j++;
+		}
 	}
+	ret = __new_array_generic(size, j);
+	for(i=0; i<j; i++)
+		memcpy(Array_access(ret, i), Array_access(arr, i), size);
+	Array_free(arr);
 	return ret;
 }
 
@@ -1862,6 +1886,8 @@ static void onExit(void){
 	}
 }
 
+#pragma weak __main__
+extern int __main__();
 #pragma weak Main
 extern int Main(string*);
 #pragma weak Setup
@@ -1906,6 +1932,15 @@ static int TONIGHT TonightModeLoop(register int argc, string argv[]){
 			return EXIT_FAILURE;
 	catch(GenericException)
 		return EXIT_FAILURE;
+}
+
+int main(int argc, string argv[]){
+	if((pointer)__main__)
+		return __main__(argc, argv);
+	if((pointer)Main)
+		return TonightModeDefault(argc, argv);
+	if((pointer)Setup)
+		return TonightModeLoop(argc, argv);
 }
 
 static INLINE void TONIGHT Exit_WithSuccess(void){

@@ -44,6 +44,10 @@
 #		define key_BS		127
 #	endif
 
+#	ifndef	__USE_MAIN__
+#		define main	__main__
+#	endif
+
 #	define $Empty(Type)	((Type){0})
 #	define $end			((string)0)
 #	define ARRAY		*
@@ -95,9 +99,6 @@
 #	define __foreach__(var, collect)	for(initForeach(); foreachIterator(&var, collect);)
 #	define foreach(_args_)				__foreach__(_args_)
 
-#	define	APPLICATION_MODE(_func)		int main(int argc, string argv[]){\
-											return _func(argc, argv);\
-										}
 #	define $in			,
 #	define $as			,
 #	define $with		,
@@ -222,6 +223,14 @@
 															sizeof(typeTo),\
 															_cast##_##cast}
 #	define DefineCast(__args__)	__DefineCast__(__args__)
+
+	typedef bool (* condition)(pointer);
+	
+#	define __CONDITION__(_name, _cond, _arg, _type)	bool _name(pointer __arg){\
+														_type _arg = *(_type*)__arg;\
+														return (_cond) ? true : false;\
+													}
+#	define DeclareCondition(args)	__CONDITION__(args)
 	
 	/* "Class" Input */
 	typedef struct{
@@ -393,8 +402,6 @@
 		void (* free)(OptionalArgs);
 	}IFree;
 	
-	typedef bool (* condition)(pointer);
-	
 	struct __Array{
 		void	(* free)(pointer);
 		int		(* length)(pointer);
@@ -499,8 +506,6 @@
 		}Category;
 	};
 	
-	typedef int (* ApplicationMode)(register int, string[]);
-	
 	/* struct Resources */
 	struct Resources{
 		const struct{
@@ -542,13 +547,8 @@
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
 		void (*initRandom)(void);
-		void (*enableASCII)(void);
-		void (*enableUTF8)(void);
-		
-		const struct{
-			ApplicationMode Default;
-			ApplicationMode Loop;
-		}Mode;
+		void (*enableASCII)(file);
+		void (*enableUTF8)(file);
 		
 		const struct{
 			void (* setMalloc)(P_pointer);

@@ -34,10 +34,12 @@ static INLINE void TONIGHT __setName(string);
 static INLINE int TONIGHT getKeyEcho(void);
 static INLINE double TONIGHT decimal(double n);
 static INLINE void TONIGHT __initRandom(void);
-static NORMAL void TONIGHT __enableASCII(void);
-static NORMAL void TONIGHT __enableUTF8(void);
+static INLINE void TONIGHT __enableASCII(file);
+static INLINE void TONIGHT __enableUTF8(file);
 static INLINE string TONIGHT $throws __concatString(char[], char[], int);
 static INLINE pstring TONIGHT $throws __concatWString(wchar_t[], wchar_t[], int);
+static INLINE pstring TONIGHT stringToWide(pstring);
+static INLINE pstring TONIGHT wideToString(pstring);
 
 static NORMAL char TONIGHT $throws __Scanner_nextChar(void);
 static NORMAL int TONIGHT $throws __Scanner_nextInt(void);
@@ -304,9 +306,9 @@ static INLINE int TONIGHT Array_length(pointer);
 static INLINE size_t TONIGHT Array_size(pointer);
 static NORMAL pointer TONIGHT $throws Array_access(pointer, int);
 static INLINE void TONIGHT Array_free(pointer);
-static NORMAL void TONIGHT Matrix_free(pointer);
 static NORMAL string TONIGHT $throws Array_toString(pointer, P_retString, string);
 static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
+static NORMAL pointer TONIGHT $throws Array_select(pointer, condition);
 
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);

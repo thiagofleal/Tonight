@@ -79,6 +79,10 @@
 			extern pstring TONIGHT toWide(pointer);
 			extern string TONIGHT concat(string, ...);
 			extern string TONIGHT nconcat(int, string, ...);
+			extern retString TONIGHT retConcat(string, ...);
+			extern pstring TONIGHT wconcat(pstring, ...);
+			extern pstring TONIGHT nwconcat(int, pstring, ...);
+			extern retWideString TONIGHT wretConcat(pstring, ...);
 			extern string TONIGHT s_cs(char);
 			extern string TONIGHT s_bs(bool);
 			extern string TONIGHT s_is(int);
