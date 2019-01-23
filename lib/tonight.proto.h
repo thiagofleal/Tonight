@@ -34,7 +34,10 @@ static INLINE void TONIGHT __setName(string);
 static INLINE int TONIGHT getKeyEcho(void);
 static INLINE double TONIGHT decimal(double n);
 static INLINE void TONIGHT __initRandom(void);
+static NORMAL void TONIGHT __enableASCII(void);
+static NORMAL void TONIGHT __enableUTF8(void);
 static INLINE string TONIGHT $throws __concatString(char[], char[], int);
+static INLINE pstring TONIGHT $throws __concatWString(wchar_t[], wchar_t[], int);
 
 static NORMAL char TONIGHT $throws __Scanner_nextChar(void);
 static NORMAL int TONIGHT $throws __Scanner_nextInt(void);
@@ -91,21 +94,19 @@ static NORMAL void TONIGHT __Screen_println(string, ...);
 static NORMAL void TONIGHT __Screen_printargln(string, ...);
 static NORMAL void TONIGHT __Screen_nl(void);
 static NORMAL void TONIGHT __Screen_nls(int);
-static NORMAL void TONIGHT __Screen_buffer(void);
 static NORMAL void TONIGHT __Screen_clear(void);
 
 static NORMAL void TONIGHT __print_args(file, string, va_list);
 static NORMAL void TONIGHT __println_args(file, string, va_list);
 static NORMAL void TONIGHT __printargln_args(file, string, va_list);
 
-static NORMAL void TONIGHT __Recorder_text(file, string);
+static INLINE void TONIGHT __Recorder_text(file, string);
 static INLINE void TONIGHT __Recorder_textln(file, string);
 static NORMAL void TONIGHT __Recorder_print(file, string, ...);
 static NORMAL void TONIGHT __Recorder_println(file, string, ...);
 static NORMAL void TONIGHT __Recorder_printargln(file, string, ...);
 static INLINE void TONIGHT __Recorder_nl(file);
 static INLINE void TONIGHT __Recorder_nls(file, int);
-static NORMAL void TONIGHT __Recorder_buffer(file);
 static NORMAL void TONIGHT __Recorder_clear(file);
 
 static NORMAL void TONIGHT __Error_text(string);
@@ -114,8 +115,7 @@ static NORMAL void TONIGHT __Error_print(string, ...);
 static NORMAL void TONIGHT __Error_println(string, ...);
 static NORMAL void TONIGHT __Error_printargln(string, ...);
 static INLINE void TONIGHT __Error_nl(void);
-static INLINE void TONIGHT __Error_nls(int qtd);
-static NORMAL void TONIGHT __Error_buffer(void);
+static INLINE void TONIGHT __Error_nls(int);
 static NORMAL void TONIGHT __Error_clear(void);
 
 static NORMAL void TONIGHT __String_text(char*, string);
@@ -129,9 +129,83 @@ static INLINE void TONIGHT __Object_textln(IWriter, object, string);
 static NORMAL void TONIGHT __Object_print(IWriter, object, string, ...);
 static NORMAL void TONIGHT __Object_println(IWriter, object, string, ...);
 static NORMAL void TONIGHT __Object_printargln(IWriter, object, string, ...);
-static NORMAL void TONIGHT __Object_nl(IWriter, object);
-static NORMAL void TONIGHT __Object_nls(IWriter, object, int);
+static INLINE void TONIGHT __Object_nl(IWriter, object);
+static INLINE void TONIGHT __Object_nls(IWriter, object, int);
 static NORMAL void TONIGHT __Object_clear(IWriter, object);
+
+static NORMAL char TONIGHT $throws __Scanner_Wide_nextChar(void);
+static NORMAL int TONIGHT $throws __Scanner_Wide_nextInt(void);
+static NORMAL float TONIGHT $throws __Scanner_Wide_nextFloat(void);
+static NORMAL double TONIGHT $throws __Scanner_Wide_nextDouble(void);
+static NORMAL pstring TONIGHT $throws __Scanner_Wide_next(void);
+static NORMAL pstring TONIGHT $throws __Scanner_Wide_nextLine(void);
+static INLINE void TONIGHT __Scanner_Wide_clear(void);
+static INLINE void TONIGHT __Scanner_Wide_ignore(void);
+static INLINE void TONIGHT __Scanner_Wide_ignoreChar(void);
+
+static NORMAL char TONIGHT $throws __Scanner_Wide_file_nextChar(file);
+static NORMAL int TONIGHT $throws __Scanner_Wide_file_nextInt(file);
+static NORMAL float TONIGHT $throws __Scanner_Wide_file_nextFloat(file);
+static NORMAL double TONIGHT $throws __Scanner_Wide_file_nextDouble(file);
+static NORMAL pstring TONIGHT $throws __Scanner_Wide_file_next(file);
+static NORMAL pstring TONIGHT $throws __Scanner_Wide_file_nextLine(file);
+static INLINE void TONIGHT $throws __Scanner_Wide_file_clear(file);
+static INLINE void TONIGHT __Scanner_Wide_file_ignore(file);
+static INLINE void TONIGHT __Scanner_Wide_file_ignoreChar(file);
+
+static NORMAL char TONIGHT $throws __Scanner_Wide_string_nextChar(pstring);
+static NORMAL int TONIGHT $throws __Scanner_Wide_string_nextInt(pstring);
+static NORMAL float TONIGHT $throws __Scanner_Wide_string_nextFloat(pstring);
+static NORMAL double TONIGHT $throws __Scanner_Wide_string_nextDouble(pstring);
+static NORMAL pstring TONIGHT $throws __Scanner_Wide_string_next(pstring);
+static NORMAL pstring TONIGHT $throws __Scanner_Wide_string_nextLine(pstring);
+static NORMAL void TONIGHT $throws __Scanner_Wide_string_clear(pstring);
+static NORMAL void TONIGHT __Scanner_Wide_string_ignore(pstring);
+static NORMAL void TONIGHT __Scanner_Wide_string_ignoreChar(pstring);
+
+static INLINE char TONIGHT __Scanner_Wide_Error_nextChar(void);
+static INLINE int TONIGHT __Scanner_Wide_Error_nextInt(void);
+static INLINE float TONIGHT __Scanner_Wide_Error_nextFloat(void);
+static INLINE double TONIGHT __Scanner_Wide_Error_nextDouble(void);
+static INLINE pstring TONIGHT $throws __Scanner_Wide_Error_next(void);
+static INLINE pstring TONIGHT $throws __Scanner_Wide_Error_nextLine(void);
+
+static INLINE void TONIGHT __Screen_Wide_text(pstring);
+static INLINE void TONIGHT __Screen_Wide_textln(pstring);
+static NORMAL void TONIGHT __Screen_Wide_print(pstring, ...);
+static NORMAL void TONIGHT __Screen_Wide_println(pstring, ...);
+static NORMAL void TONIGHT __Screen_Wide_printargln(pstring, ...);
+static NORMAL void TONIGHT __Screen_Wide_nl(void);
+static NORMAL void TONIGHT __Screen_Wide_nls(int);
+static NORMAL void TONIGHT __Screen_Wide_clear(void);
+
+static NORMAL void TONIGHT __print_Wide_args(file, pstring, va_list);
+static NORMAL void TONIGHT __println_Wide_args(file, pstring, va_list);
+static NORMAL void TONIGHT __printargln_Wide_args(file, pstring, va_list);
+
+static INLINE void TONIGHT __Recorder_Wide_text(file, pstring);
+static INLINE void TONIGHT __Recorder_Wide_textln(file, pstring);
+static NORMAL void TONIGHT __Recorder_Wide_print(file, pstring, ...);
+static NORMAL void TONIGHT __Recorder_Wide_println(file, pstring, ...);
+static NORMAL void TONIGHT __Recorder_Wide_printargln(file, pstring, ...);
+static INLINE void TONIGHT __Recorder_Wide_nl(file);
+static INLINE void TONIGHT __Recorder_Wide_nls(file, int);
+static NORMAL void TONIGHT __Recorder_Wide_clear(file);
+
+static NORMAL void TONIGHT __Error_Wide_text(pstring);
+static INLINE void TONIGHT __Error_Wide_textln(pstring);
+static NORMAL void TONIGHT __Error_Wide_print(pstring, ...);
+static NORMAL void TONIGHT __Error_Wide_println(pstring, ...);
+static NORMAL void TONIGHT __Error_Wide_printargln(pstring, ...);
+static INLINE void TONIGHT __Error_Wide_nl(void);
+static INLINE void TONIGHT __Error_Wide_nls(int qtd);
+static NORMAL void TONIGHT __Error_Wide_clear(void);
+
+static NORMAL void TONIGHT __String_Wide_text(wchar_t[], pstring);
+static NORMAL void TONIGHT __String_Wide_textln(wchar_t[], pstring);
+static NORMAL void TONIGHT __String_Wide_print(wchar_t[], pstring, ...);
+static NORMAL void TONIGHT __String_Wide_println(wchar_t[], pstring, ...);
+static NORMAL void TONIGHT __String_Wide_printargln(wchar_t[], pstring, ...);
 
 static NORMAL char TONIGHT __Random_simple_nextChar(void);
 static INLINE int TONIGHT __Random_simple_nextInt(void);
@@ -173,7 +247,7 @@ static NORMAL bool* TONIGHT $throws __new_bool(bool);
 static NORMAL int* TONIGHT $throws __new_int(int);
 static NORMAL float* TONIGHT $throws __new_float(float);
 static NORMAL double* TONIGHT $throws __new_double(double);
-static NORMAL string* TONIGHT $throws __new_String(string);
+static NORMAL pstring TONIGHT $throws __new_String(pstring);
 static NORMAL pointer TONIGHT $throws __new_pointer(pointer);
 
 static NORMAL pointer TONIGHT $throws __new_memory(size_t);
@@ -194,17 +268,6 @@ static INLINE object* TONIGHT $throws __new_array_Object(int);
 static INLINE pointer* TONIGHT $throws __new_array_pointer(int);
 static INLINE pointer TONIGHT $throws __new_array_generic(size_t, int);
 
-static NORMAL char** TONIGHT $throws __new_matrix_char(int, int);
-static NORMAL byte** TONIGHT $throws __new_matrix_byte(int, int);
-static NORMAL bool** TONIGHT $throws __new_matrix_bool(int, int);
-static NORMAL int** TONIGHT $throws __new_matrix_int(int, int);
-static NORMAL float** TONIGHT $throws __new_matrix_float(int, int);
-static NORMAL double** TONIGHT $throws __new_matrix_double(int, int);
-static NORMAL string** TONIGHT $throws __new_matrix_String(int, int);
-static NORMAL object** TONIGHT $throws __new_matrix_Object(int, int);
-static NORMAL pointer** TONIGHT $throws __new_matrix_pointer(int, int);
-static NORMAL pointer TONIGHT $throws __new_matrix_generic(size_t, int, int);
-
 static NORMAL char TONIGHT char_fromString(string);
 static NORMAL byte TONIGHT $throws byte_fromString(string);
 static NORMAL bool TONIGHT $throws bool_fromString(string);
@@ -216,11 +279,19 @@ static NORMAL string TONIGHT $throws string_fromDate(Time);
 
 static NORMAL string TONIGHT String_formated(const string, ...);
 static INLINE string TONIGHT String_concatenate(string, string);
-static NORMAL string TONIGHT String_upper(const string str);
-static NORMAL string TONIGHT String_lower(const string str);
+static NORMAL string TONIGHT String_upper(const string);
+static NORMAL string TONIGHT String_lower(const string);
 static NORMAL string* TONIGHT String_split(const string, const string);
 static NORMAL string TONIGHT String_trim(const string);
 static NORMAL string TONIGHT String_sep(register string*, register const string);
+
+static NORMAL pstring TONIGHT WString_formated(const pstring, ...);
+static INLINE pstring TONIGHT WString_concatenate(pstring, pstring);
+static NORMAL pstring TONIGHT WString_upper(const pstring);
+static NORMAL pstring TONIGHT WString_lower(const pstring);
+static NORMAL pstring* TONIGHT WString_split(const pstring, const pstring);
+static NORMAL pstring TONIGHT WString_trim(const pstring);
+static NORMAL pstring TONIGHT WString_sep(register pstring*, register const pstring);
 
 static INLINE void TONIGHT File_close(file);
 static INLINE bool TONIGHT File_end(file);

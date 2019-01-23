@@ -6,8 +6,8 @@ static int i;
 static float f;
 static double d;
 static char str[1001];
+static wchar_t wstr[1001];
 
-static char __buffer[1024];
 static int text_color = 7, background_color = 0;
 
 static P_pointer p_malloc = malloc;
@@ -89,12 +89,33 @@ INLINE static void __initRandom(void){
 	srand((unsigned int)time(NULL));
 }
 
+static void TONIGHT __enableASCII(void){
+	_setmode(fileno((FILE*)stdin), _O_TEXT);
+	_setmode(fileno((FILE*)stdout), _O_TEXT);
+	_setmode(fileno((FILE*)stderr), _O_TEXT);
+}
+
+static void TONIGHT __enableUTF8(void){
+	_setmode(fileno((FILE*)stdin), _O_U8TEXT);
+	_setmode(fileno((FILE*)stdout), _O_U8TEXT);
+	_setmode(fileno((FILE*)stderr), _O_U8TEXT);
+}
+
 static INLINE string TONIGHT __concatString(char dest[], char from[], int length){
 	return strncat(dest, from, length - strlen(dest) - 1);
 }
 
+static INLINE pstring TONIGHT __concatWString(wchar_t dest[], wchar_t from[], int length){
+	return wcsncat(dest, from, length - wcslen(dest) - 1);
+}
+
 INLINE string TONIGHT toString(register pointer __array){
 	register unsigned int size = (strlen(__array) + 1) * sizeof(char);
+	return memcpy(__new_memory(size), __array, size);
+}
+
+INLINE pstring TONIGHT toWide(register pointer __array){
+	register unsigned int size = (wcslen(__array) + 1) * sizeof(wchar_t);
 	return memcpy(__new_memory(size), __array, size);
 }
 
@@ -115,14 +136,16 @@ string TONIGHT nconcat(int size, string wrd_1, ...){
 	static char ARRAY s = NULL;
 	static string p;
 	if(s)
-		Array.free(s);
-	s = Array.Char(size + 1);
+		Array_free(s);
+	s = __new_array_char(size + 1);
 	*s = 0;
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, string))
 		strcat(s, p);
 	va_end(va);
-	return toString(s);
+	p = toString(s);
+	Array_free(s);
+	return p;
 }
 
 retString TONIGHT retConcat(string wrd_1, ...){
@@ -133,6 +156,47 @@ retString TONIGHT retConcat(string wrd_1, ...){
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, string))
 		__concatString(ret.Text, p, sizeof ret);
+	va_end(va);
+	return ret;
+}
+
+pstring TONIGHT wconcat(pstring wrd_1, ...){
+	va_list va;
+	static wchar_t s[1001];
+	static pstring p;
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, pstring))
+		__concatWString(s, p, ARRAY_LENGTH(s));
+	va_end(va);
+	return toWide(s);
+}
+
+pstring TONIGHT wnconcat(int size, pstring wrd_1, ...){
+	va_list va;
+	static wchar_t ARRAY s = NULL;
+	static pstring p;
+	if(s)
+		Array_free(s);
+	s = __new_array_generic(sizeof(wchar_t), size + 1);
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		wcscat(s, p);
+	va_end(va);
+	p = toWide(s);
+	Array_free(s);
+	return p;
+}
+
+retWideString TONIGHT wretConcat(pstring wrd_1, ...){
+	va_list va;
+	pstring p;
+	static retWideString ret;
+	*ret.Text = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, pstring))
+		__concatWString(ret.Text, p, sizeof ret);
 	va_end(va);
 	return ret;
 }
@@ -532,13 +596,13 @@ static double TONIGHT $throws __Scanner_string_nextDouble(string str){
 static string TONIGHT $throws __Scanner_string_next(string s){
 	if(sscanf(s, "%1000s", str) != 1)
 		throw(InputException, "Impossible to read a \"string\" from the string");
-	return toString(s);
+	return toString(str);
 }
 
 static string TONIGHT $throws __Scanner_string_nextLine(string s){
 	if(sscanf(s, " %1000[^\n]s", str) != 1)
 		throw(InputException, "Impossible to read a \"string\" from the string");
-	return toString(s);
+	return toString(str);
 }
 
 static void TONIGHT __Scanner_string_clear(string str){
@@ -672,10 +736,6 @@ static void TONIGHT __Screen_nls(int qtd){
 		putchar('\n');
 }
 
-static void TONIGHT __Screen_buffer(void){
-	setbuf(stdout, __buffer);
-}
-
 static void TONIGHT __Screen_clear(void){
 	if(!fflush(stdout))
 		throw(GenericException, strerror(errno));
@@ -702,19 +762,12 @@ static NORMAL void TONIGHT __printargln_args(file _file, string first, va_list a
 }
 
 /* Functions to Tonight.std.file.output */
-static void TONIGHT __Recorder_text(file _file, string txt){
-	register int size = strlen(txt) + 1;
-	wchar_t *w = malloc(size * sizeof(wchar_t));
-	_setmode(fileno((FILE*)_file), _O_U8TEXT);
-	swprintf(w, size, L"%hs", txt);
-	fwprintf((FILE*)_file, L"%ls", w);
-	free(w);
-	_setmode(fileno((FILE*)_file), _O_TEXT);
+static INLINE void TONIGHT __Recorder_text(file _file, string txt){
+	fprintf((FILE*)_file, "%s", txt);
 }
 
 static INLINE void TONIGHT __Recorder_textln(file _file, string txt){
-	__Recorder_text(_file, txt = concat(txt, "\n", NULL));
-	__memory_free(txt);
+	fprintf((FILE*)_file, "%s\n", txt);
 }
 
 static void TONIGHT __Recorder_print(file _file, string txt, ...){
@@ -745,10 +798,6 @@ static INLINE void TONIGHT __Recorder_nl(file __file){
 static INLINE void TONIGHT __Recorder_nls(file __file, int qtd){
 	while(qtd--)
 		fputc('\n', (FILE*)__file);
-}
-
-static void TONIGHT __Recorder_buffer(file __file){
-	setbuf((FILE*)__file, __buffer);
 }
 
 static void TONIGHT $throws __Recorder_clear(file __file){
@@ -795,10 +844,6 @@ static INLINE void TONIGHT __Error_nls(int qtd){
 		fputc('\n', stderr);
 }
 
-static void TONIGHT __Error_buffer(void){
-	setbuf(stderr, __buffer);
-}
-
 static void TONIGHT $throws __Error_clear(void){
 	if(!fflush(stderr))
 		throw(GenericException, strerror(errno));
@@ -823,8 +868,13 @@ static void TONIGHT __String_print(char *str, string txt, ...){
 }
 
 static void TONIGHT __String_println(char *str, string txt, ...){
-	__String_print(str, txt);
-	sprintf(str, "%s\n", str);
+	string s;
+	va_list v;
+	va_start(v, txt);
+	for(s = txt; s; s = va_arg(v, string))
+		strcat(str, s);
+	strcat(str, "\n");
+	va_end(v);
 }
 
 static void TONIGHT __String_printargln(char *str, string txt, ...){
@@ -892,6 +942,373 @@ static void TONIGHT __Object_nls(IWriter iWrt, object obj, int qtd){
 
 static void TONIGHT __Object_clear(IWriter iWrt, object obj){
 	iWrt.clear(obj);
+}
+
+
+/* Functions to Tonight.Wide.Console.input */
+static char TONIGHT $throws __Scanner_Wide_nextChar(void){
+	if(wscanf(L"%c", &c) != 1)
+		throw(InputException, "Impossible to read a \"char\" from the standard input");
+	return c;
+}
+
+static int TONIGHT $throws __Scanner_Wide_nextInt(void){
+	if(wscanf(L"%i", &i) != 1)
+		throw(InputException, "Impossible to read an \"int\" from the standard input");
+	return i;
+}
+
+static float TONIGHT $throws __Scanner_Wide_nextFloat(void){
+	if(wscanf(L"%f", &f) != 1)
+		throw(InputException, "Impossible to read a \"float\" from the standard input");
+	return f;
+}
+
+static double TONIGHT $throws __Scanner_Wide_nextDouble(void){
+	if(wscanf(L"%lf", &d) != 1)
+		throw(InputException, "Impossible to read a \"double\" from the standard input");
+	return d;
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_next(void){
+	if(wscanf(L"%l1000s", wstr) != 1)
+		throw(InputException, "Impossible to read a \"string\" from the standard input");
+	return toWide(wstr);
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_nextLine(void){
+	if(wscanf(L" %1000l[^\n]s", wstr) != 1)
+		throw(InputException, "Impossible to read a \"string\" from the standard input");
+	return toWide(wstr);
+}
+
+static INLINE void TONIGHT  __Scanner_Wide_clear(void){
+	while(!feof(stdin))
+		if(fgetc(stdin) == L'\n')
+			return;
+}
+
+static INLINE void TONIGHT __Scanner_Wide_ignore(void){
+	wscanf(L"%*ls");
+}
+
+static INLINE void TONIGHT __Scanner_Wide_ignoreChar(void){
+	wscanf(L"%*c");
+}
+
+/* Functions to Tonight.Wide.File.Input */
+static char TONIGHT $throws __Scanner_Wide_file_nextChar(file _file){
+	if(fwscanf((FILE*)_file, L"%c", &c) != 1)
+		throw(InputException, "Impossible to read a \"char\" from the file");
+	return c;
+}
+
+static int TONIGHT $throws __Scanner_Wide_file_nextInt(file _file){
+	if(fwscanf((FILE*)_file, L"%i", &i) != 1)
+		throw(InputException, "Impossible to read an \"int\" from the file");
+	return i;
+}
+
+static float TONIGHT $throws __Scanner_Wide_file_nextFloat(file _file){
+	if(fwscanf((FILE*)_file, L"%f", &f) != 1)
+		throw(InputException, "Impossible to read a \"float\" from the file");
+	return f;
+}
+
+static double TONIGHT $throws __Scanner_Wide_file_nextDouble(file _file){
+	if(fwscanf((FILE*)_file, L"%lf", &d) != 1)
+		throw(InputException, "Impossible to read a \"double\" from the file");
+	return d;
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_file_next(file _file){
+	if(fwscanf((FILE*)_file, L"%1000s", wstr) != 1)
+		throw(InputException, "Impossible to read a \"string\" from the file");
+	return toWide(wstr);
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_file_nextLine(file _file){
+	if(fwscanf((FILE*)_file, L" %1000[^\n]s", wstr) != 1)
+		throw(InputException, "Impossible to read a \"string\" from the file");
+	return toWide(wstr);
+}
+
+static INLINE void TONIGHT __Scanner_Wide_file_clear(file _file){
+	while(!feof((FILE*)_file))
+		if(fgetc((FILE*)_file) == L'\n')
+			return;
+}
+
+static INLINE void TONIGHT __Scanner_Wide_file_ignore(file _file){
+	fwscanf((FILE*)_file, L"%*s");
+}
+
+static INLINE void TONIGHT __Scanner_Wide_file_ignoreChar(file _file){
+	fwscanf((FILE*)_file, L"%*c");
+}
+
+/* Functions to Tonight.Wide.String.Input */
+static char TONIGHT $throws __Scanner_Wide_string_nextChar(pstring str){
+	if(swscanf(str, L"%c", &c) != 1)
+		throw(InputException, "Impossible to read a \"char\" from the string");
+	return c;
+}
+
+static int TONIGHT $throws __Scanner_Wide_string_nextInt(pstring str){
+	if(swscanf(str, L"%i", &i) != 1)
+		throw(InputException, "Impossible to read an \"int\" from the string");
+	return i;
+}
+
+static float TONIGHT $throws __Scanner_Wide_string_nextFloat(pstring str){
+	if(swscanf(str, L"%f", &f) != 1)
+		throw(InputException, "Impossible to read a \"float\" from the string");
+	return f;
+}
+
+static double TONIGHT $throws __Scanner_Wide_string_nextDouble(pstring str){
+	if(swscanf(str, L"%lf", &d) != 1)
+		throw(InputException, "Impossible to read a \"double\" from the string");
+	return d;
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_string_next(pstring s){
+	if(swscanf(s, L"%1000ls", wstr) != 1)
+		throw(InputException, "Impossible to read a \"string\" from the string");
+	return toWide(wstr);
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_string_nextLine(pstring s){
+	if(swscanf(s, L" %1000l[^\n]s", wstr) != 1)
+		throw(InputException, "Impossible to read a \"string\" from the string");
+	return toWide(wstr);
+}
+
+static void TONIGHT __Scanner_Wide_string_clear(pstring str){
+	while(*(wchar_t*)str != L'\n')
+		++ str;
+}
+
+static void TONIGHT __Scanner_Wide_string_ignore(pstring str){
+	swscanf(str, L"%*s");
+}
+
+static void TONIGHT __Scanner_Wide_string_ignoreChar(pstring str){
+	swscanf(str, L"%*c");
+}
+
+/* Functions to Tonight.Wide.Error.Input */
+static INLINE char TONIGHT __Scanner_Wide_Error_nextChar(void){
+	return (char)errno;
+}
+
+static INLINE int TONIGHT __Scanner_Wide_Error_nextInt(void){
+	return errno;
+}
+
+static INLINE float TONIGHT __Scanner_Wide_Error_nextFloat(void){
+	return (float)errno;
+}
+
+static double TONIGHT __Scanner_Wide_Error_nextDouble(void){
+	return (double)errno;
+}
+
+static pstring TONIGHT $throws __Scanner_Wide_Error_next(void){
+	return __Scanner_Wide_string_next(strerror(errno));
+}
+
+static INLINE pstring TONIGHT $throws __Scanner_Wide_Error_nextLine(void){
+	return __Scanner_Wide_string_nextLine(strerror(errno));
+}
+
+/* Functions to Tonight.Wide.Console.Output */
+static INLINE void TONIGHT __Screen_Wide_text(pstring txt){
+	__Recorder_Wide_text((file)stdout, txt);
+}
+
+static INLINE void TONIGHT __Screen_Wide_textln(pstring txt){
+	__Recorder_Wide_textln((file)stdout, txt);
+}
+
+static void TONIGHT __Screen_Wide_print(pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__print_Wide_args((file)stdout, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Screen_Wide_println(pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__println_Wide_args((file)stdout, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Screen_Wide_printargln(pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__printargln_Wide_args((file)stdout, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Screen_Wide_nl(void){
+	putchar(L'\n');
+}
+
+static void TONIGHT __Screen_Wide_nls(int qtd){
+	while(qtd--)
+		putchar(L'\n');
+}
+
+static void TONIGHT __Screen_Wide_clear(void){
+	if(!fflush(stdout))
+		throw(GenericException, strerror(errno));
+}
+
+/* Output base functions */
+static NORMAL void TONIGHT __print_Wide_args(file _file, pstring first, va_list args){
+	pstring s;
+	for(s = first; s; s = va_arg(args, pstring))
+		__Recorder_Wide_text(_file, s);
+}
+
+static NORMAL void TONIGHT __println_Wide_args(file _file, pstring first, va_list args){
+	pstring s;
+	for(s = first; s; s = va_arg(args, pstring))
+		__Recorder_Wide_text(_file, s);
+	__Recorder_Wide_text(_file, L"\n");
+}
+
+static NORMAL void TONIGHT __printargln_Wide_args(file _file, pstring first, va_list args){
+	pstring s;
+	for(s = first; s; s = va_arg(args, pstring))
+		__Recorder_Wide_textln(_file, s);
+}
+
+/* Functions to Tonight.std.file.output */
+static void TONIGHT __Recorder_Wide_text(file _file, pstring txt){
+	fwprintf((FILE*)_file, L"%ls", txt);
+}
+
+static INLINE void TONIGHT __Recorder_Wide_textln(file _file, pstring txt){
+	fwprintf((FILE*)_file, L"%ls\n", txt);
+}
+
+static void TONIGHT __Recorder_Wide_print(file _file, pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__print_Wide_args(_file, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Recorder_Wide_println(file _file, pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__println_Wide_args(_file, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Recorder_Wide_printargln(file _file, pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__printargln_Wide_args(_file, txt, t);
+	va_end(t);
+}
+
+static INLINE void TONIGHT __Recorder_Wide_nl(file __file){
+	fputc(L'\n', (FILE*)__file);
+}
+
+static INLINE void TONIGHT __Recorder_Wide_nls(file __file, int qtd){
+	while(qtd--)
+		fputc(L'\n', (FILE*)__file);
+}
+
+static void TONIGHT $throws __Recorder_Wide_clear(file __file){
+	if(!fflush((FILE*)__file))
+		throw(GenericException, strerror(errno));
+}
+
+/* Functions to Tonight.Wide.Error.Output */
+static void TONIGHT __Error_Wide_text(pstring txt){
+	__Recorder_Wide_text((file)stderr, txt);
+}
+
+static INLINE void TONIGHT __Error_Wide_textln(pstring txt){
+	__Recorder_Wide_textln((file)stderr, txt);
+}
+
+static void TONIGHT __Error_Wide_print(pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__print_Wide_args((file)stderr, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Error_Wide_println(pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__println_Wide_args((file)stderr, txt, t);
+	va_end(t);
+}
+
+static void TONIGHT __Error_Wide_printargln(pstring txt, ...){
+	va_list t;
+	va_start(t, txt);
+	__printargln_Wide_args((file)stderr, txt, t);
+	va_end(t);
+}
+
+static INLINE void TONIGHT __Error_Wide_nl(void){
+	fputc(L'\n', stderr);
+}
+
+static INLINE void TONIGHT __Error_Wide_nls(int qtd){
+	while(qtd--)
+		fputc(L'\n', stderr);
+}
+
+static void TONIGHT $throws __Error_Wide_clear(void){
+	if(!fflush(stderr))
+		throw(GenericException, strerror(errno));
+}
+
+/* Functions to Tonight.Wide.String.Output */
+static void TONIGHT __String_Wide_text(wchar_t str[], pstring txt){
+	swprintf(str, wcslen(txt), L"%ls", txt);
+}
+
+static void TONIGHT __String_Wide_textln(wchar_t str[], pstring txt){
+	swprintf(str, wcslen(txt), L"%ls\n", txt);
+}
+
+static void TONIGHT __String_Wide_print(wchar_t str[], pstring txt, ...){
+	pstring s;
+	va_list v;
+	va_start(v, txt);
+	for(s = txt; s; s = va_arg(v, pstring))
+		wcscat(str, s);
+	va_end(v);
+}
+
+static void TONIGHT __String_Wide_println(wchar_t str[], pstring txt, ...){
+	pstring s;
+	va_list v;
+	va_start(v, txt);
+	for(s = txt; s; s = va_arg(v, pstring))
+		wcscat(str, s);
+	wcscat(str, L"\n");
+	va_end(v);
+}
+
+static void TONIGHT __String_Wide_printargln(wchar_t str[], pstring txt, ...){
+	pstring s;
+	va_list v;
+	va_start(v, txt);
+	for(s = txt; s; s = va_arg(v, pstring))
+		wcscat(wcscat(str, s), L"\n");
+	va_end(v);
 }
 
 /* Functions to the Random class */
@@ -1058,8 +1475,8 @@ static double* TONIGHT $throws __new_double(double value){
 	return d;
 }
 
-static string* TONIGHT $throws __new_String(string value){
-	string *s = Memory.alloc(sizeof(string));
+static pstring TONIGHT $throws __new_String(pstring value){
+	pstring *s = Memory.alloc(sizeof(pstring));
 	*s = value;
 	return s;
 }
@@ -1163,87 +1580,6 @@ static INLINE pointer TONIGHT $throws __new_array_generic(size_t size, int q){
 	return alloc_array(size, q);
 }
 
-/* Initialize matrixes */
-static char** TONIGHT $throws __new_matrix_char(int l, int c){
-	char** m = alloc_array(sizeof(char*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_char(c);
-	return m;
-}
-
-static byte** TONIGHT $throws __new_matrix_byte(int l, int c){
-	byte** m = alloc_array(sizeof(byte*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_byte(c);
-	return m;
-}
-
-static bool** TONIGHT $throws __new_matrix_bool(int l, int c){
-	bool** m = alloc_array(sizeof(bool*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_bool(c);
-	return m;
-}
-
-static int** TONIGHT $throws __new_matrix_int(int l, int c){
-	int** m = alloc_array(sizeof(int*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_int(c);
-	return m;
-}
-
-static float** TONIGHT $throws __new_matrix_float(int l, int c){
-	float** m = alloc_array(sizeof(float*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_float(c);
-	return m;
-}
-
-static double** TONIGHT $throws __new_matrix_double(int l, int c){
-	double** m = alloc_array(sizeof(double*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_double(c);
-	return m;
-}
-
-static string** TONIGHT $throws __new_matrix_String(int l, int c){
-	string** m = alloc_array(sizeof(string*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_String(c);
-	return m;
-}
-
-static object** TONIGHT $throws __new_matrix_Object(int l, int c){
-	object** m = alloc_array(sizeof(object*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_Object(c);
-	return m;
-}
-
-static pointer** TONIGHT $throws __new_matrix_pointer(int l, int c){
-	pointer** m = alloc_array(sizeof(pointer*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_pointer(c);
-	return m;
-}
-
-static pointer TONIGHT $throws __new_matrix_generic(size_t size, int l, int c){
-	pointer** m = alloc_array(sizeof(pointer*), l);
-	register int i;
-	for(i = 0; i < l; i++)
-		m[i] = __new_array_generic(size, c);
-	return m;
-}
-
 /* Functions to Convert */
 static char TONIGHT char_fromString(string s){
 	char ret = *s;
@@ -1304,6 +1640,7 @@ static string TONIGHT $throws string_fromDate(Time t){
 	return toString(s);
 }
 
+/* Functions to String */
 static string TONIGHT String_formated(const string frmt, ...){
 	static char s[1001];
 	va_list v;
@@ -1355,7 +1692,7 @@ static string TONIGHT String_sep(register string *stringp, register const string
 				else
 					s[-1] = 0;
 				*stringp = s;
-				return (tok);
+				return tok;
 			}
 		} while (sc != 0);
 	}
@@ -1378,9 +1715,90 @@ static string ARRAY String_split(string src, string lim)
 	return ret;
 }
 
-string String_trim(const string _str){
+static string String_trim(const string _str){
 	string str = toString(_str);
 	register string aux = str + strlen(str) - 1;
+	while(isspace(*str))
+		++str;
+	while(isspace(*aux))
+		*aux-- = 0;
+	return str;
+}
+
+/* Functions to WideString */
+static pstring TONIGHT WString_formated(const pstring frmt, ...){
+	static wchar_t w[1001];
+	va_list v;
+	va_start(v, frmt);
+	vswprintf(w, sizeof w, frmt, v);
+	va_end(v);
+	return toWide(w);
+}
+
+static INLINE pstring TONIGHT WString_concatenate(pstring str1, pstring str2){
+	return wconcat(str1, str2, $end);
+}
+
+static pstring TONIGHT WString_upper(const pstring str){
+	register pstring s, aux = toWide(str);
+	for(s = aux; *(wchar_t*)s; s++){
+		toupper(*(wchar_t*)s);
+	}
+	return aux;
+}
+
+static pstring TONIGHT WString_lower(const pstring str){
+	register pstring s, aux = toWide(str);
+	for(s = aux; *(wchar_t*)s; s++){
+		tolower(*(wchar_t*)s);
+	}
+	return aux;
+}
+
+static pstring TONIGHT WString_sep(register pstring *stringp, register const pstring delim){
+	register wchar_t* s;
+	register wchar_t* spanp;
+	register int c, sc;
+	pstring tok;
+	
+	if (!(s = *stringp))
+		return NULL;
+	for (tok = s;;) {
+		c = *s++;
+		spanp = delim;
+		do {
+			if ((sc = *spanp++) == c){
+				if (!c)
+					s = NULL;
+				else
+					s[-1] = 0;
+				*stringp = s;
+				return tok;
+			}
+		} while (sc != 0);
+	}
+}
+
+static pstring ARRAY WString_split(pstring src, pstring lim)
+{
+	register int i, ret_len;
+	wchar_t* ARRAY ret = NULL;
+	pstring aux, aux2;
+	
+	for(aux2 = aux = toWide(src), i = 0; WString_sep(&aux, lim); i++);
+	__memory_free(aux2);
+	ret_len = i;
+	ret = __new_array_generic(sizeof(wchar_t), ret_len);
+	aux = src;
+	for(aux2 = aux = toWide(src), i = 0; i < ret_len; i++)
+		ret[i] = toWide(WString_sep(&aux, lim));
+	__memory_free(aux2);
+	return (pstring)ret;
+}
+
+static pstring WString_trim(const pstring _str){
+	wchar_t* str = toWide(_str);
+	register wchar_t* aux = str + wcslen(str) - 1;
 	while(isspace(*str))
 		++str;
 	while(isspace(*aux))
@@ -1409,14 +1827,6 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 
 static INLINE void TONIGHT Array_free(pointer array){
 	if(array) p_free(array - sizeof(ArrayData));
-}
-
-static void TONIGHT Matrix_free(pointer mtrx){
-	if(mtrx){
-		register int i, length = Array_length(mtrx);
-		for(i=0;i<length;i++)
-			Array_free(Array_access(mtrx, i));
-	}
 }
 
 static string TONIGHT Array_toString(pointer array, P_retString method, string sep){

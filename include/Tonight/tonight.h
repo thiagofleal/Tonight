@@ -34,6 +34,7 @@
 			extern const TONIGHT struct __Matrix Matrix;
 			extern const TONIGHT struct __Memory Memory;
 			extern const TONIGHT struct __String String;
+			extern const TONIGHT struct __String WideString;
 			extern const TONIGHT struct __File File;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
@@ -75,6 +76,7 @@
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);
 			extern string TONIGHT toString(pointer);
+			extern pstring TONIGHT toWide(pointer);
 			extern string TONIGHT concat(string, ...);
 			extern string TONIGHT nconcat(int, string, ...);
 			extern string TONIGHT s_cs(char);

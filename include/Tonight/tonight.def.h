@@ -144,7 +144,7 @@
 #	endif
 	typedef unsigned char u_char, byte;
 	typedef	char *string;
-	typedef void *pointer;
+	typedef void *pointer, *pstring;
 	typedef struct {} *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
 	typedef void (*P_void)	(OptionalArgs);
@@ -165,8 +165,19 @@
 		char Text[1001];
 	}longRetString;
 	
+	typedef struct{
+		wchar_t Text[101];
+	}retWideString;
+	
+	typedef struct{
+		wchar_t Text[1001];
+	}longRetWideString;
+	
 	typedef retString (*P_retString)(OptionalArgs);
 	typedef longRetString (*P_longRetString)(OptionalArgs);
+	
+	typedef retWideString (*P_retWideString)(OptionalArgs);
+	typedef longRetWideString (*P_longRetWideString)(OptionalArgs);
 	
 	typedef struct tm* Time;
 	typedef Time (*P_Time)(OptionalArgs);
@@ -234,7 +245,6 @@
 		pointer Writeargln;
 		pointer newLine;
 		pointer newMultipleLines;
-		pointer SetBuffer;
 		pointer ClearOutputBuffer;
 	}Output;
 	
@@ -250,8 +260,8 @@
 		int (*nextInt)(OptionalArgs);
 		float (*nextFloat)(OptionalArgs);
 		double (*nextDouble)(OptionalArgs);
-		string (*next)(OptionalArgs);
-		string (*nextLine)(OptionalArgs);
+		pstring (*next)(OptionalArgs);
+		pstring (*nextLine)(OptionalArgs);
 		void (*clear)(OptionalArgs);
 		void (*ignore)(OptionalArgs);
 		void (*ignoreChar)(OptionalArgs);
@@ -370,18 +380,20 @@
 		int* (*Int)(int);
 		float* (*Float)(float);
 		double* (*Double)(double);
-		string* (*String)(string);
+		pstring (*String)(pstring);
 		pointer (*Pointer)(pointer);
 	};
 	
 	typedef struct{
-		int		(* length)(pointer);
-		pointer	(* access)(pointer, int);
+		int (* length)(pointer);
+		pointer (* access)(pointer, int);
 	}ICollection;
 	
 	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
+	
+	typedef bool (* condition)(pointer);
 	
 	struct __Array{
 		void	(* free)(pointer);
@@ -390,6 +402,7 @@
 		pointer	(* access)(pointer, int);
 		string	(* toString)(pointer, P_retString, string);
 		pointer	(* convert)(pointer, cast);
+		pointer (* select)(pointer, condition);
 		
 		char* (*Char)(int);
 		byte* (*Byte)(int);
@@ -403,20 +416,6 @@
 		pointer	(*Generic)(size_t, int);
 	};
 	
-	struct __Matrix{
-		void (* free)(pointer);
-		char** (*Char)(int, int);
-		byte** (*Byte)(int, int);
-		bool** (*Bool)(int, int);
-		int** (*Int)(int, int);
-		float** (*Float)(int, int);
-		double** (*Double)(int, int);
-		string** (*String)(int, int);
-		object** (*Object)(int, int);
-		pointer** (*Pointer)(int, int);
-		pointer	(*Generic)(size_t, int, int);
-	};
-	
 	struct __Memory{
 		void	(* free)(pointer);
 		pointer	(* alloc)(size_t);
@@ -426,17 +425,19 @@
 	};
 	
 	struct __String{
-		void (* free)(string);
-		string (* formated)(const string, ...);
-		string (* copy)(string);
-		string (* concatenate)(string, string);
-		string (* upper)(const string);
-		string (* lower)(const string);
-		string (* trim)(const string);
-		string (* sep)(string*, const string);
-		string* (* split)(const string, const string);
-		size_t (* length)(const string);
-		int (* compare)(const string, const string);
+		void (* free)(pstring);
+		pstring (* formated)(const pstring, ...);
+		pstring (* copy)(pstring);
+		pstring (* concatenate)(pstring, pstring);
+		pstring (* upper)(const pstring);
+		pstring (* lower)(const pstring);
+		pstring (* trim)(const pstring);
+		pstring (* sep)(pstring*, const pstring);
+		pstring* (* split)(const pstring, const pstring);
+		size_t (* length)(const pstring);
+		int (* compare)(const pstring, const pstring);
+		pstring (* toString)(const pstring);
+		pstring (* toWide)(const pstring);
 	};
 	
 	typedef struct{
@@ -517,6 +518,13 @@
 		}Std;
 		
 		const struct{
+			const struct IO Console;
+			const struct IO File;
+			const struct IO String;
+			const struct IO Error;
+		}Wide;
+		
+		const struct{
 			ColorCreate Color;
 		}Resources;
 		
@@ -534,6 +542,8 @@
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
 		void (*initRandom)(void);
+		void (*enableASCII)(void);
+		void (*enableUTF8)(void);
 		
 		const struct{
 			ApplicationMode Default;
