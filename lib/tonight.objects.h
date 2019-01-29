@@ -298,8 +298,11 @@ const TONIGHT struct Resources Tonight = {
 	.sleep = __sleep,
 	.position = cursor_position,
 	.initRandom = __initRandom,
-	.enableASCII = __enableASCII,
-	.enableUTF8 = __enableUTF8,
+	
+	.Encode = {
+		.enableSTD = __enableASCII,
+		.enableUTF8 = __enableUTF8,	
+	},
 	
 	.Callback = {
 		.setMalloc = Callback_setMalloc,
@@ -343,6 +346,7 @@ const struct __Array Array = {
 	.toString = Array_toString,
 	.convert = Array_convert,
 	.select = Array_select,
+	.contains = Array_contains,
 	
 	.Char = __new_array_char,
 	.Byte = __new_array_byte,
@@ -435,5 +439,6 @@ const struct __Exit Exit = {
 /* Collection */
 const ICollection Collection = {
 	.length = Collection_lenght,
+	.size = Collection_size,
 	.access = Collection_access
 };

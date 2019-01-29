@@ -29,9 +29,9 @@ INLINE void TONIGHT initForeach(void){
 	push(-1);
 }
 
-bool TONIGHT foreachIterator(pointer var, pointer array){
-	if(++ fctxt->value < Collection.length(array)){
-		*(pointer*)var = *(pointer*)Collection.access(array, fctxt->value);
+bool TONIGHT foreachIterator(pointer var, pointer collect){
+	if(++ fctxt->value < Collection.length(collect)){
+		memcpy(var, Collection.access(collect, fctxt->value), Collection.size(collect));
 		return true;
 	}
 	else{

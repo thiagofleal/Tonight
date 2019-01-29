@@ -120,6 +120,33 @@
 #		undef ARRAY_LENGTH
 #	endif
 
+#	ifdef SELECT
+#		undef SELECT
+#	endif
+
+#	ifdef DOWN_10
+#		undef DOWN_10
+#	endif
+#	ifdef DOWN_20
+#		undef DOWN_20
+#	endif
+#	ifdef DOWN_30
+#		undef DOWN_30
+#	endif
+#	ifdef DOWN_40
+#		undef DOWN_40
+#	endif
+#	ifdef DOWN_50
+#		undef DOWN_50
+#	endif
+
+#	ifdef COUNT
+#		undef COUNT
+#	endif
+#	ifdef NEW_ARRAY
+#		undef NEW_ARRAY
+#	endif
+
 #	ifdef OptionalArgs
 #		undef OptionalArgs
 #	endif
@@ -153,6 +180,9 @@
 #	endif
 #	ifdef $with
 #		undef $with
+#	endif
+#	ifdef $where
+#		undef $where
 #	endif
 #	ifdef $from
 #		undef $from

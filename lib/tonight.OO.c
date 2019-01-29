@@ -165,12 +165,17 @@ static int Set_ICollection_length(pointer collect){
 	return $(collect $as Set).getCollection()->length(collect);
 }
 
+static size_t Set_ICollection_size(pointer collect){
+	return $(collect $as Set).getCollection()->size(collect);
+}
+
 static pointer Set_ICollection_access(pointer collect, int index){
 	return $(collect $as Set).getCollection()->access(collect, index);
 }
 
 static ICollection Set_ICollection = {
 	.length = Set_ICollection_length,
+	.size = Set_ICollection_size,
 	.access = Set_ICollection_access
 };
 

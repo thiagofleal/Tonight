@@ -309,11 +309,13 @@ static INLINE void TONIGHT Array_free(pointer);
 static NORMAL string TONIGHT $throws Array_toString(pointer, P_retString, string);
 static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
 static NORMAL pointer TONIGHT $throws Array_select(pointer, condition);
+static NORMAL bool TONIGHT $throws Array_contains(pointer, pointer);
 
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);
 
 static INLINE int TONIGHT Collection_lenght(pointer);
+static INLINE size_t TONIGHT Collection_size(pointer);
 static INLINE pointer TONIGHT Collection_access(pointer, int);
 
 static INLINE void TONIGHT Callback_setMalloc(P_pointer);

@@ -63,6 +63,8 @@
 			extern bool TONIGHT NO_CALL __function_catch(EXCEPTION);
 			extern bool TONIGHT NO_CALL __function_finally(void);
 			
+			extern pointer TONIGHT NO_CALL __create_array(size_t, int, pointer);
+			
 			extern INLINE Exception TONIGHT getException(void);
 			extern INLINE string TONIGHT Error(Exception);
 			extern INLINE string TONIGHT Message(Exception);

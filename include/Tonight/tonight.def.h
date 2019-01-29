@@ -44,9 +44,7 @@
 #		define key_BS		127
 #	endif
 
-#	ifndef	__USE_MAIN__
-#		define main	__main__
-#	endif
+#	define main	__main__
 
 #	define $Empty(Type)	((Type){0})
 #	define $end			((string)0)
@@ -82,6 +80,17 @@
 #	define	NORMAL
 #	define	ARRAY_LENGTH(array)	(sizeof array / sizeof array[0])
 
+#	define SELECT(_ind, values...)	((int[]){values})[_ind]
+
+#	define DOWN_10	10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+#	define DOWN_20	20, 19, 18, 17, 16, 15, 14, 13, 12, 11, DOWN_10
+#	define DOWN_30	30, 29, 28, 27, 26, 25, 24, 23, 22, 21, DOWN_20
+#	define DOWN_40	40, 39, 38, 37, 36, 35, 34, 33, 32, 31, DOWN_30
+#	define DOWN_50	50, 49, 48, 47, 46, 45, 44, 43, 42, 41, DOWN_40
+
+#	define COUNT(arg, args...)	SELECT(50 + arg, args, DOWN_50)
+#	define NEW_ARRAY(type, values...)	__create_array(sizeof(type), COUNT(0, values), (type[]){values})
+
 #	ifdef __cplusplus
 #		define OptionalArgs	...
 #	else
@@ -102,6 +111,7 @@
 #	define $in			,
 #	define $as			,
 #	define $with		,
+#	define $where		,
 #	define $from		,
 #	define $extends		,
 #	define $implements	,
@@ -226,7 +236,7 @@
 
 	typedef bool (* condition)(pointer);
 	
-#	define __CONDITION__(_name, _cond, _arg, _type)	bool _name(pointer __arg){\
+#	define __CONDITION__(_name, _arg, _type, _cond)	bool _name(pointer __arg){\
 														_type _arg = *(_type*)__arg;\
 														return (_cond) ? true : false;\
 													}
@@ -395,6 +405,7 @@
 	
 	typedef struct{
 		int (* length)(pointer);
+		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
 	}ICollection;
 	
@@ -403,13 +414,14 @@
 	}IFree;
 	
 	struct __Array{
-		void	(* free)(pointer);
-		int		(* length)(pointer);
-		size_t	(* size)(pointer);
-		pointer	(* access)(pointer, int);
-		string	(* toString)(pointer, P_retString, string);
-		pointer	(* convert)(pointer, cast);
+		void (* free)(pointer);
+		int (* length)(pointer);
+		size_t (* size)(pointer);
+		pointer (* access)(pointer, int);
+		string (* toString)(pointer, P_retString, string);
+		pointer (* convert)(pointer, cast);
 		pointer (* select)(pointer, condition);
+		bool (* contains)(pointer, pointer);
 		
 		char* (*Char)(int);
 		byte* (*Byte)(int);
@@ -547,8 +559,11 @@
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
 		void (*initRandom)(void);
-		void (*enableASCII)(file);
-		void (*enableUTF8)(file);
+		
+		const struct{
+			void (*enableSTD)(file);
+			void (*enableUTF8)(file);
+		}Encode;
 		
 		const struct{
 			void (* setMalloc)(P_pointer);

@@ -1,7 +1,7 @@
-#define __USE_MAIN__
-
 #include "tonight.proto.h"
 #include "tonight.objects.h"
+
+#undef main
 
 static char c;
 static int i;
@@ -1497,6 +1497,7 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 
 static ICollection notImplemented = {
 	(pointer)__Default_void_function,
+	(pointer)__Default_void_function,
 	(pointer)__Default_void_function
 };
 
@@ -1535,6 +1536,7 @@ static INLINE void TONIGHT __memory_free(pointer mem){
 
 static ICollection __Array_collection = {
 	.length = Array_length,
+	.size = Array_size,
 	.access = Array_access
 };
 
@@ -1546,6 +1548,14 @@ static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
 	p->size = size;
 	p->collection = &__Array_collection;
 	return p->data;
+}
+
+pointer TONIGHT NO_CALL __create_array(size_t size, int length, pointer array){
+	pointer ret = __new_array_generic(size, length);
+	register int i;
+	for(i=0; i<length; i++)
+		memcpy(Array_access(ret, i), array + i * size, size);
+	return ret;
 }
 
 static INLINE char* TONIGHT $throws __new_array_char(int q){
@@ -1841,6 +1851,8 @@ static string TONIGHT Array_toString(pointer array, P_retString method, string s
 	char ARRAY str = __new_array_char((Array_size(array) * 3 + strlen(sep)) * Array_length(array));
 	register int i, length = Array_length(array);
 	string ret;
+	if(!length)
+		return toString("");
 	*str = 0;
 	checkArgumentPointer(method);
 	for(i=0; i<length; i++)
@@ -1875,6 +1887,11 @@ static pointer TONIGHT $throws Array_select(pointer array, condition where){
 		memcpy(Array_access(ret, i), Array_access(arr, i), size);
 	Array_free(arr);
 	return ret;
+}
+
+/* Function to be implemented */
+static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
+	return false;
 }
 
 static string ARRAY __args = NULL;
@@ -1957,6 +1974,10 @@ INLINE ICollection* TONIGHT getICollection(pointer p){
 
 static INLINE int TONIGHT Collection_lenght(pointer p){
 	return getICollection(p)->length(p);
+}
+
+static INLINE size_t TONIGHT Collection_size(pointer p){
+	return getICollection(p)->size(p);
 }
 
 static INLINE pointer TONIGHT Collection_access(pointer p, int i){

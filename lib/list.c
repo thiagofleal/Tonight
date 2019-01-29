@@ -142,13 +142,21 @@ static int List_ICollection_length(pointer collect)
 	return $(collect $as List).size();
 }
 
+static size_t List_ICollection_size(pointer collect)
+{
+	return sizeof(pointer);
+}
+
 static pointer List_ICollection_access(pointer collect, int index)
 {
-	return $(collect $as List).get(index);
+	static pointer ret = NULL;
+	ret = $(collect $as List).get(index);
+	return &ret;
 }
 
 static ICollection List_collection = {
 	.length = List_ICollection_length,
+	.size = List_ICollection_size,
 	.access = List_ICollection_access
 };
 
