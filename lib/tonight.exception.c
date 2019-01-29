@@ -163,7 +163,7 @@ bool TONIGHT __function_finally(void){
 	return false;
 }
 
-void TONIGHT THROW(EXCEPTION __exc, string message){
+void TONIGHT Throw(EXCEPTION __exc, string message){
 	if(except.current->inside_try){
 		static _Exception exc;
 		exc.exception = __exc;

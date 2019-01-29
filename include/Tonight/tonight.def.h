@@ -53,9 +53,9 @@
 #	define getText(str) ((string)&((str).Text)[0])
 
 #	define $throws
-#	define TRY	setjmp(__create_try_context());while(__try_context())if(__function_try())
-#	define CATCH(exception)	else if(__function_catch(exception))
-#	define FINALLY	else if(__function_finally())
+#	define Try	setjmp(__create_try_context());while(__try_context())if(__function_try())
+#	define Catch(exception)	else if(__function_catch(exception))
+#	define Finally	else if(__function_finally())
 #	define _Define_Exception_(exc, msg, super)	static EXCEPTION_DEFINE __##exc = {msg, &super};\
 												EXCEPTION exc = &__##exc
 #	define Define_Exception(_args_)	_Define_Exception_(_args_)
@@ -63,11 +63,11 @@
 #	ifndef __cplusplus
 #		define and	&&
 #		define or	||
-#		define try	TRY
-#		define catch	CATCH
-#		define finally	FINALLY
-#		define throw	THROW
-#		define using	USING
+#		define try	Try
+#		define catch	Catch
+#		define finally	Finally
+#		define throw	Throw
+#		define using	Using
 #	endif
 
 #	if (defined __GNUC_GNU_INLINE || defined __cplusplus)
@@ -77,19 +77,19 @@
 #		define inline
 #	endif
 
-#	define	NORMAL
-#	define	ARRAY_LENGTH(array)	(sizeof array / sizeof array[0])
+#	define NORMAL
+#	define ARRAY_LENGTH(array)	(sizeof array / sizeof array[0])
 
 #	define SELECT(_ind, values...)	((int[]){values})[_ind]
 
-#	define DOWN_10	10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+#	define DOWN_10	10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0
 #	define DOWN_20	20, 19, 18, 17, 16, 15, 14, 13, 12, 11, DOWN_10
 #	define DOWN_30	30, 29, 28, 27, 26, 25, 24, 23, 22, 21, DOWN_20
 #	define DOWN_40	40, 39, 38, 37, 36, 35, 34, 33, 32, 31, DOWN_30
 #	define DOWN_50	50, 49, 48, 47, 46, 45, 44, 43, 42, 41, DOWN_40
 
 #	define COUNT(arg, args...)	SELECT(50 + arg, args, DOWN_50)
-#	define NEW_ARRAY(type, values...)	__create_array(sizeof(type), COUNT(0, values), (type[]){values})
+#	define New_Array(type, values...)	__create_array(sizeof(type), COUNT(0, values), (type[]){values})
 
 #	ifdef __cplusplus
 #		define OptionalArgs	...
@@ -100,13 +100,13 @@
 #	define	__using__(var, from, iFree...)	__create_using_context(sizeof var, &var);\
 											var = from;\
 											while(__function_using(&var, ((IFree){iFree}).free))
-#	define USING(_arg_)						__using__(_arg_)
+#	define Using(_arg_)						__using__(_arg_)
 
-#	define __forindex__(ind, collect)	for(ind=0;ind<Collection.length(collect);ind++)
-#	define forindex(_args_)				__forindex__(_args_)
+#	define __forindex__(ind, collect, type...)	for(type ind=0;ind<Collection.length(collect);ind++)
+#	define forindex(_args_)						__forindex__(_args_)
 
-#	define __foreach__(var, collect)	for(initForeach(); foreachIterator(&var, collect);)
-#	define foreach(_args_)				__foreach__(_args_)
+#	define __foreach__(var, collect, type...)	if(initForeach())for(type var; foreachIterator(&var, collect);)
+#	define foreach(_args_)						__foreach__(_args_)
 
 #	define $in			,
 #	define $as			,
@@ -153,7 +153,7 @@
 #		define true	0x1
 #		define false	0x0
 #	endif
-	typedef unsigned char u_char, byte;
+	typedef unsigned char uchar, byte;
 	typedef	char *string;
 	typedef void *pointer, *pstring;
 	typedef struct {} *file;
@@ -236,11 +236,20 @@
 
 	typedef bool (* condition)(pointer);
 	
-#	define __CONDITION__(_name, _arg, _type, _cond)	bool _name(pointer __arg){\
-														_type _arg = *(_type*)__arg;\
+#	define __CONDITION__(_name, _cond, _arg, _type)	inline bool _name(pointer __arg__){\
+														_type _arg = *(_type*)__arg__;\
 														return (_cond) ? true : false;\
 													}
 #	define DeclareCondition(args)	__CONDITION__(args)
+
+#	define __Condition__(cond, arg, type)	(condition)({\
+												bool __cond__(pointer __arg__){\
+													type arg = *(type*)__arg__;\
+													return cond ? true : false;\
+												}\
+												__cond__;\
+											})
+#	define Where(args)	__Condition__(args)
 	
 	/* "Class" Input */
 	typedef struct{
@@ -402,6 +411,12 @@
 		pstring (*String)(pstring);
 		pointer (*Pointer)(pointer);
 	};
+	
+#	define Scanner(arg)	New.Scanner(arg)
+#	define Writer(arg)	New.Writer(arg)
+#	define Random(arg)	New.Random(arg)
+#	define Timer(arg)	New.Timer(arg)
+#	define Painter(arg)	New.Painter(arg)
 	
 	typedef struct{
 		int (* length)(pointer);

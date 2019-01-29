@@ -25,8 +25,9 @@ static int pop(void){
 	return 0;
 }
 
-INLINE void TONIGHT initForeach(void){
+INLINE bool TONIGHT initForeach(void){
 	push(-1);
+	return true;
 }
 
 bool TONIGHT foreachIterator(pointer var, pointer collect){

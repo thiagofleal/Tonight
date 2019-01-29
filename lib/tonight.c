@@ -83,7 +83,7 @@ static INLINE void TONIGHT __setName(string name){
 }
 
 INLINE static pointer __Default_void_function(){
-	THROW(NotImplementException, "Function not implemented");
+	Throw(NotImplementException, "Function not implemented");
 	return NULL;
 }
 
@@ -1889,9 +1889,23 @@ static pointer TONIGHT $throws Array_select(pointer array, condition where){
 	return ret;
 }
 
-/* Function to be implemented */
 static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
-	return false;
+	register int array_lenth = Array_length(array);
+	register int sub_lenth = Array_length(sub);
+	register int array_size = Array_size(array);
+	register int sub_size = Array_size(sub);
+	register int i, j;
+	if(array_size != sub_size)
+		return false;
+	for(i=0; i<sub_lenth; i++){
+		bool part = false;
+		for(j=0; j<array_lenth; j++)
+			if(!memcmp(Array_access(sub, i), Array_access(array, j), array_size))
+				part = true;
+		if(!part)
+			return false;
+	}
+	return true;
 }
 
 static string ARRAY __args = NULL;

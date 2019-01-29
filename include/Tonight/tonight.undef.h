@@ -72,14 +72,14 @@
 #	ifdef $throws
 #		undef $throws
 #	endif
-#	ifdef TRY
-#		undef TRY
+#	ifdef Try
+#		undef Try
 #	endif
-#	ifdef CATCH
-#		undef CATCH
+#	ifdef Catch
+#		undef Catch
 #	endif
-#	ifdef FINALLY
-#		undef FINALLY
+#	ifdef Finally
+#		undef Finally
 #	endif
 #	ifdef Define_Exception
 #		undef Define_Exception
@@ -143,8 +143,8 @@
 #	ifdef COUNT
 #		undef COUNT
 #	endif
-#	ifdef NEW_ARRAY
-#		undef NEW_ARRAY
+#	ifdef New_Array
+#		undef New_Array
 #	endif
 
 #	ifdef OptionalArgs
@@ -154,8 +154,8 @@
 #	ifdef __using__
 #		undef __using__
 #	endif
-#	ifdef USING
-#		undef USING
+#	ifdef Using
+#		undef Using
 #	endif
 
 #	ifdef __forindex__
@@ -275,6 +275,49 @@
 #		undef $lF
 #	endif
 
+#	ifdef Writer
+#		undef Writer
+#	endif
+#	ifdef Scanner
+#		undef Scanner
+#	endif
+#	ifdef Random
+#		undef Random
+#	endif
+#	ifdef Timer
+#		undef Timer
+#	endif
+#	ifdef Painter
+#		undef Painter
+#	endif
+#	ifdef Object
+#		undef Object
+#	endif
+#	ifdef Char
+#		undef Char
+#	endif
+#	ifdef Byte
+#		undef Byte
+#	endif
+#	ifdef Bool
+#		undef Bool
+#	endif
+#	ifdef Int
+#		undef Int
+#	endif
+#	ifdef Float
+#		undef Float
+#	endif
+#	ifdef Double
+#		undef Double
+#	endif
+#	ifdef String
+#		undef String
+#	endif
+#	ifdef Pointer
+#		undef Pointer
+#	endif
+
 #	ifndef __cplusplus
 #		ifdef true
 #			undef true
@@ -293,6 +336,12 @@
 
 #	ifdef __CONDITION__
 #		undef __DefineCast__
+#	endif
+#	ifdef __Condition__
+#		undef __Condition__
+#	endif
+#	ifdef Where
+#		undef Where
 #	endif
 #	ifdef DefineCast
 #		undef DeclareCondition
