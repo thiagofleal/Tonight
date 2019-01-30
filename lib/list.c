@@ -89,9 +89,8 @@ static void List_remove(int index)
 	this.size--;
 }
 
-static pointer List_get(int index)
+static private struct Node * List_getNode(Class_List *This, int index)
 {
-	CLASS(List);
 	int i;
 	struct Node *node = this.list;
 	
@@ -99,26 +98,52 @@ static pointer List_get(int index)
 		throw(IndexException, concat("Impossible to access the index ", is(index), $end));
 	}
 	for(i = 0; i < index && node->next; i++, node = node->next);
-	return node->value;
+	return node;
 }
 
-static int List_size(INTERN_METHOD)
+static pointer List_get(int index)
+{
+	CLASS(List);
+	return List_getNode(self->data, index)->value;
+}
+
+static int List_size(void)
 {
 	CLASS(List);
 	return this.size;
 }
 
-static pointer List_toArray(INTERN_METHOD)
+static pointer List_toArray(void)
 {
 	CLASS(List);
 	int i;
 	pointer ARRAY ret = Array.Pointer(this.size);
-	IList iL = getInterface;
+	
 	for(i = 0; i < this.size; i++)
 	{
 		ret[i] = $(self $as List).get(i);
 	}
 	return ret;
+}
+
+static object List_select(condition where)
+{
+	CLASS(List);
+	object sel = new(List.class);
+	register int i, length = $(self $as List).size();
+	pointer current;
+	
+	for(i = 0; i < length; i++)
+	{
+		current = $(self $as List).get(i);
+		
+		if(where(current))
+		{
+			$(sel $as List).add(current);
+		}
+	}
+	
+	return sel;
 }
 
 static void List_setFreeCallBack(P_freeCallBack freeCallBack)
@@ -128,13 +153,14 @@ static void List_setFreeCallBack(P_freeCallBack freeCallBack)
 }
 
 static IList List_vtble = {
-	List_add,
-	List_addPos,
-	List_remove,
-	List_get,
-	List_size,
-	List_toArray,
-	List_setFreeCallBack
+	.add = List_add,
+	.addPos = List_addPos,
+	.remove = List_remove,
+	.get = List_get,
+	.size = List_size,
+	.toArray = List_toArray,
+	.select = List_select,
+	.setFreeCallBack = List_setFreeCallBack
 };
 
 static int List_ICollection_length(pointer collect)
@@ -149,9 +175,7 @@ static size_t List_ICollection_size(pointer collect)
 
 static pointer List_ICollection_access(pointer collect, int index)
 {
-	static pointer ret = NULL;
-	ret = $(collect $as List).get(index);
-	return &ret;
+	return &List_getNode(((object)collect)->data, index)->value;
 }
 
 static ICollection List_collection = {
@@ -220,6 +244,12 @@ static pointer IList_toArray(void)
 	return getInterface.toArray();
 }
 
+static object IList_select(condition where)
+{
+	CHECK_CLASS(List);
+	return getInterface.select(where);
+}
+
 static void IList_setFreeCallBack(P_freeCallBack freeCallBack)
 {
 	CHECK_CLASS(List);
@@ -227,13 +257,14 @@ static void IList_setFreeCallBack(P_freeCallBack freeCallBack)
 }
 
 static IList iList = {
-	IList_add,
-	IList_addPos,
-	IList_remove,
-	IList_get,
-	IList_size,
-	IList_toArray,
-	IList_setFreeCallBack
+	.add = IList_add,
+	.addPos = IList_addPos,
+	.remove = IList_remove,
+	.get = IList_get,
+	.size = IList_size,
+	.toArray = IList_toArray,
+	.select = IList_select,
+	.setFreeCallBack = IList_setFreeCallBack
 };
 
 Define_Class(List $extends Set $implements IList $with iList);

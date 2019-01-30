@@ -24,7 +24,7 @@
 
 /*	Declare classes and interfaces	*/
 
-#		define __Define_Class__(_Class, _super, _int, _intVal)	static INLINE _int _Class##_select(object obj){\
+#		define __Define_Class__(_Class, _super, _int, _intVal)	static INLINE _int __##_Class##_select(object obj){\
 																	setCurrentObject(obj);\
 																	return *_Class.implement.__interface;\
 																}\
@@ -48,7 +48,7 @@
 																	.implement = (const Class_##_Class){\
 																		.__interface = &_intVal\
 																	},\
-																	.select = _Class##_select\
+																	.select = __##_Class##_select\
 																}
 #		define __class__(_Class, _super, _int)			typedef struct{\
 															Class_##_super __super;\

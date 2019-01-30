@@ -26,13 +26,14 @@
 	
 	struct IList
 	{
-		void	(* add) (pointer value);
-		void	(* addPos) (pointer value, int index);
-		void	(* remove) (int index);
-		pointer	(* get) (int index);
-		int		(* size) (void);
-		pointer	(* toArray) (void);
-		void	(* setFreeCallBack) (P_freeCallBack);
+		void (* add) (pointer value);
+		void (* addPos) (pointer value, int index);
+		void (* remove) (int index);
+		pointer (* get) (int index);
+		int (* size) (void);
+		pointer (* toArray) (void);
+		object (* select) (condition);
+		void (* setFreeCallBack) (P_freeCallBack);
 	};
 	
 	interface(IList);

@@ -333,18 +333,35 @@
 #	ifdef DefineCast
 #		undef DefineCast
 #	endif
+#	ifdef __DefineCastPointer__
+#		undef __DefineCastPointer__
+#	endif
+#	ifdef DefineCastPointer
+#		undef DefineCastPointer
+#	endif
+
+#	ifdef __Cast__
+#		undef __Cast__
+#	endif
+#	ifdef Cast
+#		undef Cast
+#	endif
+#	ifdef __CastPointer__
+#		undef __CastPointer__
+#	endif
+#	ifdef CastPointer
+#		undef CastPointer
+#	endif
 
 #	ifdef __CONDITION__
-#		undef __DefineCast__
+#		undef __CONDITION__
 #	endif
+
 #	ifdef __Condition__
 #		undef __Condition__
 #	endif
 #	ifdef Where
 #		undef Where
-#	endif
-#	ifdef DefineCast
-#		undef DeclareCondition
 #	endif
 
 #	ifdef __Define_Class__

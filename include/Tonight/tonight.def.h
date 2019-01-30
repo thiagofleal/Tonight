@@ -226,13 +226,50 @@
 	}cast, (* P_cast)(OptionalArgs);
 	
 #	define __DefineCast__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
-															(pointer from, pointer to)\
-															{*(typeTo*)to = (typeTo)(*(typeFrom*)from);}\
+															(pointer from, pointer to){\
+																*(typeTo*)to = (typeTo)(*(typeFrom*)from);\
+															}\
 															_arg cast _cast = (cast){\
-															sizeof(typeFrom),\
-															sizeof(typeTo),\
-															_cast##_##cast}
+																sizeof(typeFrom),\
+																sizeof(typeTo),\
+																_cast##_##cast\
+															}
 #	define DefineCast(__args__)	__DefineCast__(__args__)
+
+#	define __DefineCastPointer__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
+																	(pointer from, pointer to){\
+																		*(typeTo*)to = (typeTo)(**(typeFrom*)from);\
+																	}\
+																	_arg cast _cast = (cast){\
+																		sizeof(typeFrom),\
+																		sizeof(typeTo),\
+																		_cast##_##cast\
+																	}
+#	define DefineCastPointer(__args__)	__DefineCastPointer__(__args__)
+
+#	define	__Cast__(typeFrom, typeTo)	(cast)({\
+											void _cast(pointer from, pointer to){\
+												*(typeTo*)to = (typeTo)(*(typeFrom*)from);\
+											}\
+											(cast){\
+												sizeof(typeFrom),\
+												sizeof(typeTo),\
+												_cast\
+											};\
+										})
+#	define	Cast(args)	__Cast__(args)
+
+#	define	__CastPointer__(typeFrom, typeTo)	(cast)({\
+													void _cast(pointer from, pointer to){\
+														*(typeTo*)to = (typeTo)(**(typeFrom*)from);\
+													}\
+													(cast){\
+														sizeof(typeFrom),\
+														sizeof(typeTo),\
+														_cast\
+													};\
+												})
+#	define	CastPointer(args)	__CastPointer__(args)
 
 	typedef bool (* condition)(pointer);
 	
