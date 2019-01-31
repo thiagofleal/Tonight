@@ -92,11 +92,15 @@ INLINE static void __initRandom(void){
 }
 
 static INLINE void TONIGHT __enableASCII(file src){
-	_setmode(fileno((FILE*)src), _O_TEXT);
+	#ifdef _WIN32
+		_setmode(fileno((FILE*)src), _O_TEXT);
+	#endif
 }
 
 static INLINE void TONIGHT __enableUTF8(file src){
-	_setmode(fileno((FILE*)src), _O_U8TEXT);
+	#ifdef _WIN32
+		_setmode(fileno((FILE*)src), _O_U8TEXT);
+	#endif
 }
 
 static INLINE string TONIGHT __concatString(char dest[], char from[], int length){
@@ -117,7 +121,7 @@ static INLINE pstring TONIGHT stringToWide(pstring s){
 }
 
 static INLINE pstring TONIGHT wideToString(pstring s){
-	sprintf(str, "%ls", s);
+	sprintf(str, "%ls", (wchar_t*)s);
 	return toString(str);
 }
 

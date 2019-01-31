@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include <ctype.h>
 #include <time.h>
 #include <math.h>
@@ -9,7 +10,10 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>
-#include <io.h>
+
+#ifdef _WIN32
+#	include <io.h>
+#endif
 
 #include "../include/Tonight/tonight.h"
 
