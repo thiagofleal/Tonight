@@ -16,30 +16,28 @@
 	
 	EXCEPTION IndexException;
 	
-	struct Node
-	{
+	struct Node{
 		pointer value;
 		pointer next;
 	};
 	
 	typedef void (* P_freeCallBack)(pointer);
 	
-	struct IList
-	{
-		void (* add) (pointer value);
-		void (* addPos) (pointer value, int index);
-		void (* remove) (int index);
-		pointer (* get) (int index);
-		int (* size) (void);
-		pointer (* toArray) (void);
-		object (* select) (condition);
-		void (* setFreeCallBack) (P_freeCallBack);
+	struct IList{
+		void (* add)(pointer value);
+		void (* addPos)(pointer value, int index);
+		void (* remove)(int index);
+		pointer (* get)(int index);
+		int (* size)(void);
+		pointer (* toArray)(void);
+		object (* select)(condition);
+		string (* toString)(P_retString, string);
+		void (* setFreeCallBack)(P_freeCallBack);
 	};
 	
 	interface(IList);
 	
-	struct List
-	{
+	struct List{
 		struct Node *list;
 		int size;
 		P_freeCallBack freeCallBack;

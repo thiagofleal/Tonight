@@ -9,8 +9,7 @@ static pointer iterator(struct Node *node){
 	return i;
 }
 
-static void List_add(pointer value)
-{
+static void List_add(pointer value){
 	CLASS(List);
 	struct Node *node;
 	
@@ -30,8 +29,7 @@ static void List_add(pointer value)
 	this.size++;
 }
 
-static void List_addPos(pointer value, int index)
-{
+static void List_addPos(pointer value, int index){
 	CLASS(List);
 	int i;
 	struct Node *node = this.list, *newNode;
@@ -55,8 +53,7 @@ static void List_addPos(pointer value, int index)
 	this.size++;
 }
 
-static void List_remove(int index)
-{
+static void List_remove(int index){
 	CLASS(List);
 	int i;
 	struct Node *node = this.list, *aux;
@@ -67,10 +64,6 @@ static void List_remove(int index)
 		if(error)	Memory.free(error);
 		error = concat("Impossible to access the index ", is(index), $end);
 		throw(IndexException, error);
-	}
-	
-	if(this.freeCallBack){
-		this.freeCallBack($(self $as List).get(index));
 	}
 	
 	if(!index){
@@ -85,60 +78,58 @@ static void List_remove(int index)
 		aux = *p;
 		*p = (*p)->next;
 	}
+	
+	if(this.freeCallBack){
+		this.freeCallBack(aux->value);
+	}
+	
 	Memory.free(aux);
 	this.size--;
 }
 
-static private struct Node * List_getNode(Class_List *This, int index)
-{
+static private struct Node * List_getNode(object self, int index){
 	int i;
+	Class_List *This = self->data;
 	struct Node *node = this.list;
 	
 	if(index >= this.size || index < 0){
-		throw(IndexException, concat("Impossible to access the index ", is(index), $end));
+		throw(IndexException, concat("Impossible to access the index ", $i(index), $end));
 	}
 	for(i = 0; i < index && node->next; i++, node = node->next);
 	return node;
 }
 
-static pointer List_get(int index)
-{
+static pointer List_get(int index){
 	CLASS(List);
-	return List_getNode(self->data, index)->value;
+	return List_getNode(self, index)->value;
 }
 
-static int List_size(void)
-{
+static int List_size(void){
 	CLASS(List);
 	return this.size;
 }
 
-static pointer List_toArray(void)
-{
+static pointer List_toArray(void){
 	CLASS(List);
 	int i;
 	pointer ARRAY ret = Array.Pointer(this.size);
 	
-	for(i = 0; i < this.size; i++)
-	{
+	for(i = 0; i < this.size; i++){
 		ret[i] = $(self $as List).get(i);
 	}
 	return ret;
 }
 
-static object List_select(condition where)
-{
+static object List_select(condition where){
 	CLASS(List);
 	object sel = new(List.class);
-	register int i, length = $(self $as List).size();
+	register int i, length = this.size;
 	pointer current;
 	
-	for(i = 0; i < length; i++)
-	{
-		current = $(self $as List).get(i);
+	for(i = 0; i < length; i++){
+		current = List_getNode(self, i)->value;
 		
-		if(where(current))
-		{
+		if(where(&current)){
 			$(sel $as List).add(current);
 		}
 	}
@@ -146,8 +137,25 @@ static object List_select(condition where)
 	return sel;
 }
 
-static void List_setFreeCallBack(P_freeCallBack freeCallBack)
-{
+static string List_toString(P_retString method, string sep){
+	CLASS(List);
+	Writer write = Writer(Tonight.Std.String.Output);
+	register int i, length = this.size;
+	char ARRAY str = Array.Char((sizeof(retString) + String.length(sep)) * length);
+	string ret;
+	if(!length)
+		return toString("");
+	*str = 0;
+	checkArgumentPointer(method);
+	for(i=0; i<length; i++)
+		write.print(str, getText(method(List_getNode(self, i)->value)), sep, $end);
+	str[String.length(str) - String.length(sep)] = 0;
+	ret = toString(str);
+	Array.free(str);
+	return ret;
+}
+
+static void List_setFreeCallBack(P_freeCallBack freeCallBack){
 	CLASS(List);
 	this.freeCallBack = freeCallBack;
 }
@@ -160,22 +168,20 @@ static IList List_vtble = {
 	.size = List_size,
 	.toArray = List_toArray,
 	.select = List_select,
+	.toString = List_toString,
 	.setFreeCallBack = List_setFreeCallBack
 };
 
-static int List_ICollection_length(pointer collect)
-{
+static inline int List_ICollection_length(pointer collect){
 	return $(collect $as List).size();
 }
 
-static size_t List_ICollection_size(pointer collect)
-{
+static inline size_t List_ICollection_size(pointer collect){
 	return sizeof(pointer);
 }
 
-static pointer List_ICollection_access(pointer collect, int index)
-{
-	return &List_getNode(((object)collect)->data, index)->value;
+static inline pointer List_ICollection_access(pointer collect, int index){
+	return &List_getNode(collect, index)->value;
 }
 
 static ICollection List_collection = {
@@ -184,8 +190,7 @@ static ICollection List_collection = {
 	.access = List_ICollection_access
 };
 
-static Constructor(List)
-{
+static Constructor(List){
 	CLASS(List);
 	
 	construct(super());
@@ -196,62 +201,57 @@ static Constructor(List)
 	$(self $as Set).setCollection(List_collection);
 }
 
-static Destructor(List)
-{
+static Destructor(List){
 	CLASS(List);
 	
-	while(this.size)
-	{
+	while(this.size){
 		$(self $as List).remove(0);
 	}
 	
 	destruct(super());
 }
 
-static void IList_add(pointer value)
-{
+static void IList_add(pointer value){
 	CHECK_CLASS(List);
 	getInterface.add(value);
 }
 
-static void IList_addPos(pointer value, int index)
-{
+static void IList_addPos(pointer value, int index){
 	CHECK_CLASS(List);
 	getInterface.addPos(value, index);
 }
 
-static void IList_remove(int index)
-{
+static void IList_remove(int index){
 	CHECK_CLASS(List);
 	getInterface.remove(index);
 }
 
-static pointer IList_get(int index)
-{
+static pointer IList_get(int index){
 	CHECK_CLASS(List);
 	return getInterface.get(index);
 }
 
-static int IList_size(void)
-{
+static int IList_size(void){
 	CHECK_CLASS(List);
 	return getInterface.size();
 }
 
-static pointer IList_toArray(void)
-{
+static pointer IList_toArray(void){
 	CHECK_CLASS(List);
 	return getInterface.toArray();
 }
 
-static object IList_select(condition where)
-{
+static object IList_select(condition where){
 	CHECK_CLASS(List);
 	return getInterface.select(where);
 }
 
-static void IList_setFreeCallBack(P_freeCallBack freeCallBack)
-{
+static string IList_toString(P_retString method, string sep){
+	CHECK_CLASS(List);
+	return getInterface.toString(method, sep);
+}
+
+static void IList_setFreeCallBack(P_freeCallBack freeCallBack){
 	CHECK_CLASS(List);
 	return getInterface.setFreeCallBack(freeCallBack);
 }
@@ -264,6 +264,7 @@ static IList iList = {
 	.size = IList_size,
 	.toArray = IList_toArray,
 	.select = IList_select,
+	.toString = IList_toString,
 	.setFreeCallBack = IList_setFreeCallBack
 };
 

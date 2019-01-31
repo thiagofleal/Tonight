@@ -26,8 +26,7 @@ struct socketResources SocketResources = {
 	.inet = AF_INET
 };
 
-static Constructor(Socket)
-{
+static Constructor(Socket){
 	CLASS(Socket);
 	static ISocket iSock;
 	
@@ -43,55 +42,46 @@ static Constructor(Socket)
 	setInterface(iSock);
 }
 
-static Destructor(Socket)
-{
+static Destructor(Socket){
 	CLASS(Socket);
 }
 
-static void ISocket_accept(object socket)
-{
+static void ISocket_accept(object socket){
 	CHECK_CLASS(Socket);
 	getInterface.accept(socket);
 }
 
-static void ISocket_start(void)
-{
+static void ISocket_start(void){
 	CHECK_CLASS(Socket);
 	getInterface.start();
 }
 
-static void ISocket_connect(void)
-{
+static void ISocket_connect(void){
 	CHECK_CLASS(Socket);
 	getInterface.connect();
 }
 
-static void ISocket_bind(void)
-{
+static void ISocket_bind(void){
 	CHECK_CLASS(Socket);
 	getInterface.bind();
 }
 
-static void ISocket_listen(int backlog)
-{
+static void ISocket_listen(int backlog){
 	CHECK_CLASS(Socket);
 	getInterface.listen(backlog);
 }
 
-static void ISocket_send(Package message)
-{
+static void ISocket_send(Package message){
 	CHECK_CLASS(Socket);
 	getInterface.send(message);
 }
 
-static Package ISocket_receive(void)
-{
+static Package ISocket_receive(void){
 	CHECK_CLASS(Socket);
 	getInterface.receive();
 }
 
-static void ISocket_close(void)
-{
+static void ISocket_close(void){
 	CHECK_CLASS(Socket);
 	getInterface.close();
 }

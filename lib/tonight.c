@@ -1848,8 +1848,8 @@ static INLINE void TONIGHT Array_free(pointer array){
 }
 
 static string TONIGHT Array_toString(pointer array, P_retString method, string sep){
-	char ARRAY str = __new_array_char((Array_size(array) * 3 + strlen(sep)) * Array_length(array));
 	register int i, length = Array_length(array);
+	char ARRAY str = __new_array_char((Array_size(array) * 3 + strlen(sep)) * length);
 	string ret;
 	if(!length)
 		return toString("");
