@@ -1,9 +1,9 @@
 /*
 *	This file is part of the Tonight library
-*	
+*
 *	File: tonight.OO.h
 *	This file defines the macros to use object-oriented-like programming.
-*	
+*
 *	Copyright (C)  2018  Thiago Fernandes Leal.
 *	Permission is granted to copy, distribute and/or modify this document
 *	under the terms of the GNU Free Documentation License, Version 1.3
@@ -79,7 +79,7 @@
 
 #		define CLASS(_Class)	object self=getCurrentObject();\
 								Class_##_Class *This = self->data;\
-								Class class = _Class.class
+								self->class_pointer = _Class.class
 #		define CHECK_CLASS(_Class)	object self=checkCurrentObject(_Class.class);\
 									checkArgumentPointer(self);\
 									Class_##_Class *This = self->data
@@ -97,7 +97,7 @@
 
 /*	Superclass' access	*/
 
-#		define	super()				(class->super)
+#		define	super()				(self->class_pointer->super)
 #		define	Super(_class)		(_class.class)
 #		define	cast_super(_super)	(((Class_##_super*)self)->__self)
 #		define	construct(_super)	(_super)->ctor(self, __construct_args)

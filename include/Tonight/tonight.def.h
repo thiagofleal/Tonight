@@ -1,9 +1,9 @@
 /*
 *	This file is part of the Tonight library
-*	
+*
 *	File: tonight.def.h
 *	This file defines the types and data structures.
-*	
+*
 *	Copyright (C)  2018  Thiago Fernandes Leal.
 *	Permission is granted to copy, distribute and/or modify this document
 *	under the terms of the GNU Free Documentation License, Version 1.3
@@ -53,7 +53,7 @@
 #	define getText(str) ((string)&((str).Text)[0])
 
 #	define $throws
-#	define Try	setjmp(__create_try_context());while(__try_context())if(__function_try())
+#	define Try	if(setjmp(__create_try_context())||1)while(__try_context())if(__function_try())
 #	define Catch(exception)	else if(__function_catch(exception))
 #	define Finally	else if(__function_finally())
 #	define _Define_Exception_(exc, msg, super)	static EXCEPTION_DEFINE __##exc = {msg, &super};\
@@ -167,44 +167,44 @@
 	typedef char* (*P_string)	(OptionalArgs);
 	typedef void* (*P_pointer)(OptionalArgs);
 	typedef object (*P_object)	(OptionalArgs);
-	
+
 	typedef struct{
 		char Text[101];
 	}retString;
-	
+
 	typedef struct{
 		char Text[1001];
 	}longRetString;
-	
+
 	typedef struct{
 		wchar_t Text[101];
 	}retWideString;
-	
+
 	typedef struct{
 		wchar_t Text[1001];
 	}longRetWideString;
-	
+
 	typedef retString (*P_retString)(OptionalArgs);
 	typedef longRetString (*P_longRetString)(OptionalArgs);
-	
+
 	typedef retWideString (*P_retWideString)(OptionalArgs);
 	typedef longRetWideString (*P_longRetWideString)(OptionalArgs);
-	
+
 	typedef struct tm* Time;
 	typedef Time (*P_Time)(OptionalArgs);
-	
+
 	/* Exceptions */
 	typedef struct str_EXCEPTION EXCEPTION_DEFINE, *EXCEPTION;
 	typedef struct __struct_exception *Exception;
-	
+
 	struct str_EXCEPTION{
 		const string error_name;
 		EXCEPTION *_super;
 	};
-	
+
 	/* Objects structs */
 	typedef struct str_Class *Class;
-	
+
 	struct str_Class{
 		const string name;
 		const Class super;
@@ -212,19 +212,19 @@
 		void (* ctor)(object, pointer);
 		void (* dtor)(object);
 	};
-	
+
 	struct str_Intern_Object{
 		pointer data;
 		Class class_pointer;
 	};
-	
+
 	/* cast */
 	typedef struct{
 		size_t original;
 		size_t result;
 		void (* parse)(pointer, pointer);
 	}cast, (* P_cast)(OptionalArgs);
-	
+
 #	define __DefineCast__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
 															(pointer from, pointer to){\
 																*(typeTo*)to = (typeTo)(*(typeFrom*)from);\
@@ -272,7 +272,7 @@
 #	define	CastPointer(args)	__CastPointer__(args)
 
 	typedef bool (* condition)(pointer);
-	
+
 #	define __CONDITION__(_name, _cond, _arg, _type)	inline bool _name(pointer __arg__){\
 														_type _arg = *(_type*)__arg__;\
 														return (_cond) ? true : false;\
@@ -287,7 +287,7 @@
 												__cond__;\
 											})
 #	define Where(args)	__Condition__(args)
-	
+
 	/* "Class" Input */
 	typedef struct{
 		pointer ReadChar;
@@ -300,7 +300,7 @@
 		pointer IgnoreString;
 		pointer IgnoreChar;
 	}Input;
-	
+
 	/* "Class" Output */
 	typedef struct{
 		pointer WriteText;
@@ -312,13 +312,13 @@
 		pointer newMultipleLines;
 		pointer ClearOutputBuffer;
 	}Output;
-	
+
 	/* struct IO */
 	struct IO{
 		Input Input;
 		Output Output;
 	};
-	
+
 	/* Class Scanner */
 	typedef struct{
 		char (*nextChar)(OptionalArgs);
@@ -331,7 +331,7 @@
 		void (*ignore)(OptionalArgs);
 		void (*ignoreChar)(OptionalArgs);
 	}Scanner;
-	
+
 	/* Class Writer */
 	typedef struct{
 		void (*text)(OptionalArgs);
@@ -344,19 +344,19 @@
 		void (*buffer)(OptionalArgs);
 		void (*clear)(OptionalArgs);
 	}Writer;
-	
+
 	/* Interface IScanner */
 	typedef struct{
 		string (*getString)(object);
 		void (*setString)(object, string);
 	}IScanner;
-	
+
 	/* Interface IWriter */
 	typedef struct{
 		void (*addText)(object, string);
 		void (*clear)(object);
 	}IWriter;
-	
+
 	/* Class RandomicMaker */
 	typedef struct{
 		pointer MakeRandomicChar;
@@ -364,7 +364,7 @@
 		pointer MakeRandomicFloat;
 		pointer MakeRandomicDouble;
 	}RandomicMaker;
-	
+
 	/* Class Random */
 	typedef struct{
 		char (*nextChar)(OptionalArgs);
@@ -372,7 +372,7 @@
 		float (*nextFloat)(OptionalArgs);
 		double (*nextDouble)(OptionalArgs);
 	}Random;
-	
+
 	/* Class Timer */
 	typedef struct{
 		pointer GetTime;
@@ -385,7 +385,7 @@
 		pointer TimeDay_year;
 		pointer TimeYear;
 	}TimerCreate;
-	
+
 	/* Class Time */
 	typedef struct{
 		Time (*getTime)(OptionalArgs);
@@ -398,21 +398,21 @@
 		int (*day_year)(OptionalArgs);
 		int (*year)(OptionalArgs);
 	}Timer;
-	
+
 	/* Class CreateColor */
 	typedef struct{
 		pointer textColor;
 		pointer backgroundColor;
 		pointer bothColors;
 	}ColorCreate;
-	
+
 	/* Class Colors */
 	typedef struct{
 		void (*text)(OptionalArgs);
 		void (*background)(OptionalArgs);
 		void (*both)(OptionalArgs);
 	}Painter;
-	
+
 	/* Conversor */
 	typedef struct{
 		char (*toChar)(string);
@@ -429,7 +429,7 @@
 		string (*fromDouble)(double);
 		string (*fromTime)(Time);
 	}Conversor;
-	
+
 	/* Constructors */
 	struct __New{
 		Scanner (*Scanner)(Input);
@@ -438,7 +438,7 @@
 		Timer (*Timer)(TimerCreate);
 		Painter (*Painter)(ColorCreate);
 		object (*Object)(Class, ...);
-		
+
 		char* (*Char)(char);
 		byte* (*Byte)(byte);
 		bool* (*Bool)(bool);
@@ -448,23 +448,23 @@
 		pstring (*String)(pstring);
 		pointer (*Pointer)(pointer);
 	};
-	
+
 #	define Scanner(arg)	New.Scanner(arg)
 #	define Writer(arg)	New.Writer(arg)
 #	define Random(arg)	New.Random(arg)
 #	define Timer(arg)	New.Timer(arg)
 #	define Painter(arg)	New.Painter(arg)
-	
+
 	typedef struct{
 		int (* length)(pointer);
 		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
 	}ICollection;
-	
+
 	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
-	
+
 	struct __Array{
 		void (* free)(pointer);
 		int (* length)(pointer);
@@ -474,7 +474,7 @@
 		pointer (* convert)(pointer, cast);
 		pointer (* select)(pointer, condition);
 		bool (* contains)(pointer, pointer);
-		
+
 		char* (*Char)(int);
 		byte* (*Byte)(int);
 		bool* (*Bool)(int);
@@ -486,7 +486,7 @@
 		pointer* (*Pointer)(int);
 		pointer	(*Generic)(size_t, int);
 	};
-	
+
 	struct __Memory{
 		void	(* free)(pointer);
 		pointer	(* alloc)(size_t);
@@ -494,7 +494,7 @@
 		size_t	(* size)(pointer);
 		pointer	(* copy)(pointer);
 	};
-	
+
 	struct __String{
 		void (* free)(pstring);
 		pstring (* formated)(const pstring, ...);
@@ -510,11 +510,11 @@
 		pstring (* toString)(const pstring);
 		pstring (* toWide)(const pstring);
 	};
-	
+
 	typedef struct{
 		string value;
 	}FileMode;
-	
+
 	struct __File{
 		file (* open)(string, FileMode);
 		void (* close)(file);
@@ -523,14 +523,14 @@
 		file (* stdInput)(void);
 		file (* stdOutput)(void);
 		file (* stdError)(void);
-		
+
 		const struct{
 			const FileMode read;
 			const FileMode write;
 			const FileMode append;
 		}Mode;
 	};
-	
+
 	/* Keys */
 	struct __Key{
 		int Right;
@@ -542,7 +542,7 @@
 		int Space;
 		int BackSpace;
 	};
-	
+
 	/* Exit codes */
 	struct __Exit{
 		int Success;
@@ -551,7 +551,7 @@
 		void (* WithSuccess)(void);
 		void (* WithFail)(void);
 	};
-	
+
 	struct Locale{
 		int (* getCategory)(OptionalArgs);
 		void (* setCategory)(OptionalArgs);
@@ -559,7 +559,7 @@
 		void (* setName)(OptionalArgs);
 		string (* set)(OptionalArgs);
 		string (* get)(OptionalArgs);
-		
+
 		struct{
 			int All;
 			int Collate;
@@ -569,7 +569,7 @@
 			int Time;
 		}Category;
 	};
-	
+
 	/* struct Resources */
 	struct Resources{
 		const struct{
@@ -585,22 +585,22 @@
 			}Random;
 			const TimerCreate TimeNow;
 		}Std;
-		
+
 		const struct{
 			const struct IO Console;
 			const struct IO File;
 			const struct IO String;
 			const struct IO Error;
 		}Wide;
-		
+
 		const struct{
 			ColorCreate Color;
 		}Resources;
-		
+
 		const Conversor Convert;
 		const struct Locale Locale;
 		const pointer DefaultFunctionPointer;
-		
+
 		void (*assert)(bool);
 		void (*checkErrno)(void);
 		string (*password)(int);
@@ -611,24 +611,24 @@
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
 		void (*initRandom)(void);
-		
+
 		const struct{
 			void (*enableSTD)(file);
 			void (*enableUTF8)(file);
 		}Encode;
-		
+
 		const struct{
 			void (* setMalloc)(P_pointer);
 			void (* setCalloc)(P_pointer);
 			void (* setRealloc)(P_pointer);
 			void (* setFree)(P_void);
 		}Callback;
-		
+
 		const struct{
 			void (* close)(pointer);
 			pointer (* open)(string);
 			pointer (* get)(pointer, string);
 		}Shared;
 	};
-	
+
 #endif

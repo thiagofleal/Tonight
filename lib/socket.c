@@ -29,7 +29,7 @@ struct socketResources SocketResources = {
 static Constructor(Socket){
 	CLASS(Socket);
 	static ISocket iSock;
-	
+
 	iSock.accept = Tonight.DefaultFunctionPointer;
 	iSock.start = Tonight.DefaultFunctionPointer;
 	iSock.connect = Tonight.DefaultFunctionPointer;
@@ -38,7 +38,7 @@ static Constructor(Socket){
 	iSock.send = Tonight.DefaultFunctionPointer;
 	iSock.receive = Tonight.DefaultFunctionPointer;
 	iSock.close = Tonight.DefaultFunctionPointer;
-	
+
 	setInterface(iSock);
 }
 
@@ -78,12 +78,12 @@ static void ISocket_send(Package message){
 
 static Package ISocket_receive(void){
 	CHECK_CLASS(Socket);
-	getInterface.receive();
+	return getInterface.receive();
 }
 
 static void ISocket_close(void){
 	CHECK_CLASS(Socket);
-	getInterface.close();
+	return getInterface.close();
 }
 
 static ISocket iSock = {

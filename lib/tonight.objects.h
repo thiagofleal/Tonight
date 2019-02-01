@@ -105,7 +105,7 @@ const TONIGHT struct Resources Tonight = {
 				.IgnoreString = __Default_void_function,
 				.IgnoreChar = __Default_void_function,
 			},
-			
+
 			.Output = {
 				.WriteText = __Error_text,
 				.WriteTextln = __Error_textln,
@@ -231,7 +231,7 @@ const TONIGHT struct Resources Tonight = {
 				.IgnoreString = __Default_void_function,
 				.IgnoreChar = __Default_void_function,
 			},
-			
+
 			.Output = {
 				.WriteText = __Error_Wide_text,
 				.WriteTextln = __Error_Wide_textln,
@@ -251,7 +251,7 @@ const TONIGHT struct Resources Tonight = {
 			.bothColors = __Colors_textbackground
 		}
 	},
-	
+
 	.Convert = {
 		.toChar = char_fromString,
 		.toByte = byte_fromString,
@@ -267,7 +267,7 @@ const TONIGHT struct Resources Tonight = {
 		.fromDouble = s_ds,
 		.fromTime = string_fromDate
 	},
-	
+
 	.Locale = {
 		.getCategory = __getCategory,
 		.setCategory = __setCategory,
@@ -275,7 +275,7 @@ const TONIGHT struct Resources Tonight = {
 		.setName = __setName,
 		.set = __locale,
 		.get = __getlocale,
-		
+
 		.Category = {
 			.All = LC_ALL,
 			.Collate = LC_COLLATE,
@@ -285,9 +285,9 @@ const TONIGHT struct Resources Tonight = {
 			.Time = LC_TIME
 		}
 	},
-	
+
 	.DefaultFunctionPointer = __Default_void_function,
-	
+
 	.assert = __assert,
 	.checkErrno = __checkErrno,
 	.password = __Scanner_Password,
@@ -298,19 +298,19 @@ const TONIGHT struct Resources Tonight = {
 	.sleep = __sleep,
 	.position = cursor_position,
 	.initRandom = __initRandom,
-	
+
 	.Encode = {
 		.enableSTD = __enableASCII,
-		.enableUTF8 = __enableUTF8,	
+		.enableUTF8 = __enableUTF8,
 	},
-	
+
 	.Callback = {
 		.setMalloc = Callback_setMalloc,
 		.setCalloc = Callback_setCalloc,
 		.setRealloc = Callback_setRealloc,
 		.setFree = Callback_setFree
 	},
-	
+
 	.Shared = {
 		.close = __Shared_close,
 		.open = __Shared_open,
@@ -326,7 +326,7 @@ const TONIGHT struct __New New = {
 	.Timer = __new_Timer,
 	.Painter = __new_Painter,
 	.Object = new,
-	
+
 	.Char = __new_char,
 	.Byte = __new_byte,
 	.Bool = __new_bool,
@@ -347,7 +347,7 @@ const struct __Array Array = {
 	.convert = Array_convert,
 	.select = Array_select,
 	.contains = Array_contains,
-	
+
 	.Char = __new_array_char,
 	.Byte = __new_array_byte,
 	.Bool = __new_array_bool,
@@ -363,6 +363,7 @@ const struct __Array Array = {
 /* Memory */
 const struct __Memory Memory = {
 	.alloc = __new_memory,
+	.realloc = __realloc_memory,
 	.size = __memory_size,
 	.copy = __memory_copy,
 	.free = __memory_free

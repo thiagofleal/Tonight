@@ -3,13 +3,12 @@
 #ifdef WIN32
 #	include <windows.h>
 #	include <conio.h>
-	
+
 	static bool TONIGHT pressKey(void){
 		return kbhit() ? true : false;
 	}
-	
+
 	static int TONIGHT getKey(void){
-		DWORD mode;
 		INPUT_RECORD inrec = {};
 		DWORD count;
 		int result;
@@ -25,36 +24,36 @@
 			result = 256 + inrec.Event.KeyEvent.wVirtualKeyCode;
 		return result;
 	}
-	
+
 	static INLINE void TONIGHT __sleep(unsigned int miliseconds){
 		Sleep(miliseconds);
 	}
-	
+
 	static INLINE void TONIGHT cursor_position(int x, int y){
 		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), (COORD){x, y});
 	}
-	
+
 	static INLINE void TONIGHT __clearScreen(void){
 		system("cls");
 	}
-	
+
 	static INLINE void TONIGHT __Colors_textbackground(register int _tcolor, register int _bcolor){
 		WORD w = (0x0F & (text_color = _tcolor)) + ((0x0F & (background_color = _bcolor)) << 4);
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), w);
 	}
-	
+
 	static INLINE pointer TONIGHT __Shared_open(string path){
 		return (pointer)LoadLibrary(path);
 	}
-	
+
 	static INLINE void TONIGHT __Shared_close(pointer lib){
 		if(lib)	FreeLibrary(lib);
 	}
-	
+
 	static INLINE pointer TONIGHT __Shared_get(pointer lib, string proc){
 		return (pointer)GetProcAddress(lib, proc);
 	}
-	
+
 #else
 #	include <termios.h>
 #	include <unistd.h>
@@ -63,10 +62,10 @@
 #	include <sys/select.h>
 #	include <sys/ioctl.h>
 #	include <stropts.h>
-	
+
 	/**
 	*	@Atention!
-	*	
+	*
 	*	Function: pressKey
 	*	This function needs be changed
 	*/
@@ -81,7 +80,7 @@
 		tcsetattr(stdin->_fileno, TCSANOW, &old_term);
 		return bytesWaiting ? true : false;
 	}
-	
+
 	static int TONIGHT getKey(void){
 		struct termios oldattr, newattr;
 		tcgetattr(stdin->_fileno, &oldattr);
@@ -101,31 +100,31 @@
 		tcsetattr(stdin->_fileno, TCSANOW, &oldattr);
 		return i;
 	}
-	
+
 	static INLINE void TONIGHT __sleep(unsigned int miliseconds){
 		usleep(miliseconds * 1000);
 	}
-	
+
 	static INLINE void TONIGHT cursor_position(int x, int y){
 		printf("\033[%d;%dH", y, x);
 	}
-	
+
 	static void TONIGHT __clearScreen(void){
 		printf("\e[2J\e[H");
 	}
-	
+
 	static INLINE void TONIGHT __Colors_textbackground(int _tcolor, int _bcolor){
 		printf("\033[%im\033[%im", _bcolor + 39, _tcolor + 29);
 	}
-	
+
 	static INLINE pointer TONIGHT __Shared_open(string path){
 		return (pointer)dlopen(path, RTLD_LAZY);
 	}
-	
+
 	static INLINE void TONIGHT __Shared_close(pointer lib){
 		if(lib)	dlclose(lib);
 	}
-	
+
 	static INLINE pointer TONIGHT __Shared_get(pointer lib, string proc){
 		return (pointer)dlsym(lib, proc);
 	}

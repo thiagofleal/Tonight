@@ -49,12 +49,6 @@ static INLINE int TONIGHT getKeyEcho(void){
 	return c;
 }
 
-static INLINE double TONIGHT decimal(double n){
-	return n - (long int)n;
-}
-
-static pointer buf_locale = NULL;
-
 static int __category = LC_ALL;
 static string __name = "C";
 
@@ -99,7 +93,7 @@ static INLINE void TONIGHT __enableASCII(file src){
 
 static INLINE void TONIGHT __enableUTF8(file src){
 	#ifdef _WIN32
-		_setmode(fileno((FILE*)src), _O_U8TEXT);
+	//	_setmode(fileno((FILE*)src), _O_U8TEXT);
 	#endif
 }
 
@@ -116,7 +110,7 @@ static INLINE pstring TONIGHT __concatWString(wchar_t dest[], wchar_t from[], in
 }
 
 static INLINE pstring TONIGHT stringToWide(pstring s){
-	swprintf(wstr, strlen(s) + 1, L"%hs", s);
+	swprintf(wstr, L"%hs", s);
 	return toWide(wstr);
 }
 
@@ -257,7 +251,6 @@ string TONIGHT s_dsf(double var, int _decimal){
 }
 
 string TONIGHT s_ds(double var){
-	double n;
 	static char s[100];
 	snprintf(s, sizeof s, "%.10g", var);
 	return toString(s);
@@ -1288,11 +1281,11 @@ static void TONIGHT $throws __Error_Wide_clear(void){
 
 /* Functions to Tonight.Wide.String.Output */
 static void TONIGHT __String_Wide_text(wchar_t str[], pstring txt){
-	swprintf(str, wcslen(txt), L"%ls", txt);
+	swprintf(str, L"%ls", txt);
 }
 
 static void TONIGHT __String_Wide_textln(wchar_t str[], pstring txt){
-	swprintf(str, wcslen(txt), L"%ls\n", txt);
+	swprintf(str, L"%ls\n", txt);
 }
 
 static void TONIGHT __String_Wide_print(wchar_t str[], pstring txt, ...){
@@ -1611,12 +1604,11 @@ static char TONIGHT char_fromString(string s){
 }
 
 static byte TONIGHT $throws byte_fromString(string s){
-	byte b;
 	string a;
-	i = (byte)strtol(s, &a, 0);
+	byte b = (byte)strtol(s, &a, 0);
 	if(*a)
 		throw(ConvertException, "Impossible to convert the string to byte");
-	return i;
+	return b;
 }
 
 static bool TONIGHT $throws bool_fromString(string s){
@@ -1679,7 +1671,7 @@ static INLINE string TONIGHT String_concatenate(string str1, string str2){
 static string TONIGHT String_upper(const string str){
 	register string s, aux = toString(str);
 	for(s = aux; *s; s++){
-		toupper(*s);
+		*s = toupper(*s);
 	}
 	return aux;
 }
@@ -1687,7 +1679,7 @@ static string TONIGHT String_upper(const string str){
 static string TONIGHT String_lower(const string str){
 	register string s, aux = toString(str);
 	for(s = aux; *s; s++){
-		tolower(*s);
+		*s = tolower(*s);
 	}
 	return aux;
 }
@@ -1701,7 +1693,7 @@ static string TONIGHT String_sep(register string *stringp, register const string
 	register string spanp;
 	register int c, sc;
 	string tok;
-	
+
 	if (!(s = *stringp))
 		return NULL;
 	for (tok = s;;) {
@@ -1725,7 +1717,7 @@ static string ARRAY String_split(string src, string lim)
 	register int i, ret_len;
 	string ARRAY ret = NULL;
 	string aux, aux2;
-	
+
 	for(aux2 = aux = toString(src), i = 0; String_sep(&aux, lim); i++);
 	__memory_free(aux2);
 	ret_len = i;
@@ -1752,7 +1744,7 @@ static pstring TONIGHT WString_formated(const pstring frmt, ...){
 	static wchar_t w[1001];
 	va_list v;
 	va_start(v, frmt);
-	vswprintf(w, sizeof w, frmt, v);
+	vswprintf(w, (wchar_t*)frmt, v);
 	va_end(v);
 	return toWide(w);
 }
@@ -1764,7 +1756,7 @@ static INLINE pstring TONIGHT WString_concatenate(pstring str1, pstring str2){
 static pstring TONIGHT WString_upper(const pstring str){
 	register pstring s, aux = toWide(str);
 	for(s = aux; *(wchar_t*)s; s++){
-		toupper(*(wchar_t*)s);
+		*(wchar_t*)s = toupper(*(wchar_t*)s);
 	}
 	return aux;
 }
@@ -1772,7 +1764,7 @@ static pstring TONIGHT WString_upper(const pstring str){
 static pstring TONIGHT WString_lower(const pstring str){
 	register pstring s, aux = toWide(str);
 	for(s = aux; *(wchar_t*)s; s++){
-		tolower(*(wchar_t*)s);
+		*(wchar_t*)s = tolower(*(wchar_t*)s);
 	}
 	return aux;
 }
@@ -1782,7 +1774,7 @@ static pstring TONIGHT WString_sep(register pstring *stringp, register const pst
 	register wchar_t* spanp;
 	register int c, sc;
 	pstring tok;
-	
+
 	if (!(s = *stringp))
 		return NULL;
 	for (tok = s;;) {
@@ -1806,7 +1798,7 @@ static pstring ARRAY WString_split(pstring src, pstring lim)
 	register int i, ret_len;
 	wchar_t* ARRAY ret = NULL;
 	pstring aux, aux2;
-	
+
 	for(aux2 = aux = toWide(src), i = 0; WString_sep(&aux, lim); i++);
 	__memory_free(aux2);
 	ret_len = i;
@@ -1949,8 +1941,8 @@ static int TONIGHT TonightModeDefault(register int argc, string argv[]){
 			return func(__args);
 		else
 			return EXIT_FAILURE;
-	catch(GenericException)
-		return EXIT_FAILURE;
+	catch(GenericException);
+    return EXIT_FAILURE;
 }
 
 static int TONIGHT TonightModeLoop(register int argc, string argv[]){
@@ -1965,8 +1957,8 @@ static int TONIGHT TonightModeLoop(register int argc, string argv[]){
 		}
 		else
 			return EXIT_FAILURE;
-	catch(GenericException)
-		return EXIT_FAILURE;
+	catch(GenericException);
+    return EXIT_FAILURE;
 }
 
 int main(int argc, string argv[]){
@@ -2030,21 +2022,6 @@ static INLINE file TONIGHT File_stdOutput(void){
 
 static INLINE file TONIGHT File_stdError(void){
 	return (file)stderr;
-}
-
-static INLINE Class TONIGHT Object_getClass(object obj){
-	return obj->class_pointer;
-}
-
-static INLINE size_t TONIGHT Object_getSize(object obj){
-	return obj->class_pointer->size;
-}
-
-static object TONIGHT Object_copy(object src){
-	object ret = Memory.alloc(sizeof(Intern_Object));
-	ret->class_pointer = src->class_pointer;
-	ret->data = __memory_copy(src->data);
-	return ret;
 }
 
 static INLINE void TONIGHT Callback_setMalloc(P_pointer callback){
