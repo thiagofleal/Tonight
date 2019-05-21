@@ -77,18 +77,14 @@
 
 /*	Methods	*/
 
-#		define CLASS(_Class)	object self=getCurrentObject();\
-								Class_##_Class *This = self->data;\
-								Class class = _Class.class
-#		define CHECK_CLASS(_Class)	object self=checkCurrentObject(_Class.class);\
-									checkArgumentPointer(self);\
-									Class_##_Class *This = self->data
+#       define This(_class_, _src_)    Class_##_class_ *This = _src_->data
+
 #		define this							(This->__self)
 #		define constructArg(type)			(va_arg(__construct_args, type))
 #		define getInterface							(*This->__interface)
 #		define setInterface(_new)					(This->__interface = &_new)
-#		define getClassInterface(_class)			(*((Class_##_class*)self)->__interface)
-#		define setClassInterface(_class, _new)		(((Class_##_class*)self)->__interface = &new)
+#		define getClassInterface(_obj, _class)		    (*((Class_##_class*)_obj->data)->__interface)
+#		define setClassInterface(_obj, _class, _new)    (((Class_##_class*)_obj->data)->__interface = &_new)
 
 /*	Constructor and destructor	*/
 
@@ -97,11 +93,11 @@
 
 /*	Superclass' access	*/
 
-#		define	super()				(class->super)
+#		define	superOf(_Class)	    (_Class.class->super)
 #		define	Super(_class)		(_class.class)
 #		define	cast_super(_super)	(((Class_##_super*)self)->__self)
-#		define	construct(_super)	(_super)->ctor(self, __construct_args)
-#		define	destruct(_super)	(_super)->dtor(self)
+#		define	construct(_super, _self)    (_super)->ctor(_self, __construct_args)
+#		define	destruct(_super, _self)	    (_super)->dtor(_self)
 
 /*	new and delete	*/
 extern object TONIGHT new(Class, ...);

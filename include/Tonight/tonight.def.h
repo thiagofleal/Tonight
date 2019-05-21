@@ -68,9 +68,10 @@
 #		define finally	Finally
 #		define throw	Throw
 #		define using	Using
+#       define with     With
 #	endif
 
-#	if (defined __GNUC_GNU_INLINE || defined __cplusplus)
+#	if (defined __GNUC_GNU_INLINE__ || defined __cplusplus)
 #		define INLINE	inline
 #	else
 #		define INLINE
@@ -102,10 +103,13 @@
 											while(__function_using(&var, ((IFree){iFree}).free))
 #	define Using(_arg_)						__using__(_arg_)
 
+#	define	With(var)	__create_with_context(var);\
+                        while(__function_with())
+
 #	define __forindex__(ind, collect, type...)	for(type ind=0;ind<Collection.length(collect);ind++)
 #	define forindex(_args_)						__forindex__(_args_)
 
-#	define __foreach__(var, collect, type...)	if(initForeach())for(type var; foreachIterator(&var, collect);)
+#	define __foreach__(var, collect, type...)	for(initForeach(); foreachIterator(&var, collect);)
 #	define foreach(_args_)						__foreach__(_args_)
 
 #	define $in			,

@@ -3,13 +3,12 @@
 #include "../include/Tonight/tonight.h"
 
 object TONIGHT new(Class class, ...){
-	object _new;
+	object _new = Memory.alloc(sizeof(Intern_Object));
 	va_list args;
 	va_start(args, class);
-	_new = Memory.alloc(sizeof(Intern_Object));
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
-	class->ctor(_new, &args);
+	class->ctor(_new, args);
 	va_end(args);
 	return _new;
 }
@@ -49,33 +48,33 @@ bool TONIGHT compare(object a, object b){
 /* Object class */
 
 static bool Object_equal(object obj){
-	CLASS(Object);
-	return self == obj ? true : false;
+	object self = useContext();
+    return self == obj ? true : false;
 }
 
 static object Object_clone(void){
-	CLASS(Object);
-	object ret = Memory.copy(self);
-	ret->data = Memory.copy(self->data);
+	object self = useContext();
+    object ret = Memory.copy(self);
+    ret->data = Memory.copy(self->data);
 	return ret;
 }
 
 static string Object_toString(void){
-	CLASS(Object);
-	return String.formated("%s at 0x%p", self->class_pointer->name, self);
+	object self = useContext();
+    return String.formated("%s at 0x%p", self->class_pointer->name, self);
 }
 
 static retString Object_toRetString(void){
-	CLASS(Object);
+	object self = useContext();
 	retString ret;
-	memcpy(ret.Text, Object.select(self).toString(), sizeof ret);
-	return ret;
+    memcpy(ret.Text, Object.select(self).toString(), sizeof ret);
+    return ret;
 }
 
 static longRetString Object_toLongRetString(void){
-	CLASS(Object);
+	object self = useContext();
 	longRetString ret;
-	memcpy(ret.Text, Object.select(self).toString(), sizeof ret);
+    memcpy(ret.Text, Object.select(self).toString(), sizeof ret);
 	return ret;
 }
 
@@ -88,28 +87,63 @@ static IObject Object_vtble = {
 };
 
 static bool IObject_equal(object obj){
-	CHECK_CLASS(Object);
-	return getInterface.equal(obj);
+	object self = getCurrentObject();
+	This(Object, self);
+	bool ret;
+
+	with(self){
+        ret = getInterface.equal(obj);
+	}
+
+	return ret;
 }
 
 static object IObject_clone(void){
-	CHECK_CLASS(Object);
-	return getInterface.copy();
+	object self = getCurrentObject();
+	This(Object, self);
+	object ret;
+
+	with(self){
+        ret = getInterface.copy();
+	}
+
+	return ret;
 }
 
 static string IObject_toString(void){
-	CHECK_CLASS(Object);
-	return getInterface.toString();
+	object self = getCurrentObject();
+	This(Object, self);
+	string ret;
+
+	with(self){
+        ret = getInterface.toString();
+	}
+
+	return ret;
 }
 
 static retString IObject_toRetString(void){
-	CHECK_CLASS(Object);
-	return getInterface.toRetString();
+	object self = getCurrentObject();
+	This(Object, self);
+	retString ret;
+
+	with(self){
+        ret = getInterface.toRetString();
+	}
+
+	return ret;
 }
 
 static longRetString IObject_toLongRetString(void){
-	CHECK_CLASS(Object);
-	return getInterface.toLongRetString();
+	object self = getCurrentObject();
+	This(Object, self);
+	longRetString ret;
+
+	with(self){
+        ret = getInterface.toLongRetString();
+	}
+
+	return ret;
 }
 
 static IObject iObject = {
@@ -121,12 +155,13 @@ static IObject iObject = {
 };
 
 static void new_Object(pointer args){
-	CLASS(Object);
+	object self = getCurrentObject();
+	This(Object, self);
 	setInterface(Object_vtble);
 }
 
 static void del_Object(void){
-	CLASS(Object);
+	getCurrentObject();
 }
 
 static INLINE IObject Object_select(object obj){
@@ -180,13 +215,15 @@ static ICollection Set_ICollection = {
 };
 
 static ICollection * Set_getCollection(void){
-	CLASS(Set);
-	return this.collection;
+	object self = useContext();
+	This(Set, self);
+    return this.collection;
 }
 
 static void Set_setCollection(ICollection value){
-	CLASS(Set);
-	*this.collection = value;
+	object self = useContext();
+    This(Set, self);
+    *this.collection = value;
 }
 
 static ISet Set_vtble = {
@@ -195,9 +232,10 @@ static ISet Set_vtble = {
 };
 
 static Constructor(Set){
-	CLASS(Set);
+	object self = getCurrentObject();
+	This(Set, self);
 	static ICollection _default;
-	construct(super());
+	construct(superOf(Set), self);
 	_default = *getICollection(self);
 	this.collection = Memory.alloc(sizeof _default);
 	*this.collection = _default;
@@ -206,18 +244,30 @@ static Constructor(Set){
 }
 
 static Destructor(Set){
-	CLASS(Set);
+	object self = getCurrentObject();
+	This(Set, self);
 	Memory.free(this.collection);
 }
 
 static ICollection * ISet_getCollection(void){
-	CHECK_CLASS(Set);
-	return getInterface.getCollection();
+	object self = getCurrentObject();
+	This(Set, self);
+	ICollection *ret;
+
+	with(self){
+	    ret = getInterface.getCollection();
+	}
+
+	return ret;
 }
 
 static void ISet_setCollection(ICollection value){
-	CHECK_CLASS(Set);
-	getInterface.setCollection(value);
+	object self = getCurrentObject();
+	This(Set, self);
+
+	with(self){
+	    getInterface.setCollection(value);
+	}
 }
 
 static ISet iSet = {

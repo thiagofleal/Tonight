@@ -129,6 +129,7 @@ bool TONIGHT __try_context(void){
 			except.current->final = true;
 			return true;
 	}
+	return false;
 }
 
 bool TONIGHT __function_try(void){

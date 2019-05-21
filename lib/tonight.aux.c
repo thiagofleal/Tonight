@@ -2,6 +2,9 @@
 
 #include "../include/Tonight/tonight.h"
 
+/*
+*   Try (try)
+*/
 static struct ctxt{
 	int value;
 	pointer next;
@@ -25,6 +28,9 @@ static int pop(void){
 	return 0;
 }
 
+/*
+*   foreach
+*/
 INLINE bool TONIGHT initForeach(void){
 	push(-1);
 	return true;
@@ -46,8 +52,11 @@ struct Stack{
 	size_t size;
 	pointer current;
 	pointer prev;
-}*stack = NULL;
+}*stack = NULL, *stack_with = NULL;
 
+/*
+*   using
+*/
 void __create_using_context(size_t size, pointer point){
 	struct Stack *_new = Memory.alloc(sizeof(struct Stack));
 	_new->current = Memory.alloc(size);
@@ -74,6 +83,38 @@ bool __function_using(pointer point, P_void destroy){
 	}
 }
 
+/*
+*   with
+*/
+void __create_with_context(pointer point){
+	struct Stack *_new = Memory.alloc(sizeof(struct Stack));
+	_new->current = point;
+	_new->ret = true;
+	_new->size = sizeof(pointer);
+	_new->prev = stack_with;
+	stack_with = _new;
+}
+
+bool __function_with(void){
+	if(stack_with->ret){
+		stack_with->ret = false;
+		return true;
+	}
+	else{
+		struct Stack *tmp = stack_with;
+		stack_with = stack_with->prev;
+		Memory.free(tmp);
+		return false;
+	}
+}
+
+INLINE pointer useContext(void){
+    return stack_with->current;
+}
+
+/*
+*   Objects
+*/
 static struct object_stack{
 	object value;
 	pointer next;

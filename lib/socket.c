@@ -27,8 +27,11 @@ struct socketResources SocketResources = {
 };
 
 static Constructor(Socket){
-	CLASS(Socket);
+	object self = getCurrentObject();
+	This(Socket, self);
 	static ISocket iSock;
+
+	construct(superOf(Socket), self);
 
 	iSock.accept = Tonight.DefaultFunctionPointer;
 	iSock.start = Tonight.DefaultFunctionPointer;
@@ -43,47 +46,83 @@ static Constructor(Socket){
 }
 
 static Destructor(Socket){
-	CLASS(Socket);
+    object self = getCurrentObject();
+	destruct(superOf(Socket), self);
 }
 
 static void ISocket_accept(object socket){
-	CHECK_CLASS(Socket);
-	getInterface.accept(socket);
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.accept(socket);
+	}
 }
 
 static void ISocket_start(void){
-	CHECK_CLASS(Socket);
-	getInterface.start();
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.start();
+	}
 }
 
 static void ISocket_connect(void){
-	CHECK_CLASS(Socket);
-	getInterface.connect();
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.connect();
+	}
 }
 
 static void ISocket_bind(void){
-	CHECK_CLASS(Socket);
-	getInterface.bind();
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.bind();
+	}
 }
 
 static void ISocket_listen(int backlog){
-	CHECK_CLASS(Socket);
-	getInterface.listen(backlog);
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.listen(backlog);
+	}
 }
 
 static void ISocket_send(Package message){
-	CHECK_CLASS(Socket);
-	getInterface.send(message);
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.send(message);
+	}
 }
 
 static Package ISocket_receive(void){
-	CHECK_CLASS(Socket);
-	return getInterface.receive();
+	object self = getCurrentObject();
+	This(Socket, self);
+	Package ret;
+
+	with(self){
+        ret = getInterface.receive();
+	}
+
+	return ret;
 }
 
 static void ISocket_close(void){
-	CHECK_CLASS(Socket);
-	return getInterface.close();
+	object self = getCurrentObject();
+	This(Socket, self);
+
+	with(self){
+        getInterface.close();
+	}
 }
 
 static ISocket iSock = {
