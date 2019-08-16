@@ -1,6 +1,6 @@
 #ifndef	TONIGHT_ABSTRACT_SOCKET
 #	define	TONIGHT_ABSTRACT_SOCKET
-	
+
 	EXCEPTION SocketException;
 	EXCEPTION AcceptSocketException;
 	EXCEPTION StartSocketException;
@@ -10,7 +10,7 @@
 	EXCEPTION SendSocketException;
 	EXCEPTION ReceiveSocketException;
 	EXCEPTION CloseSocketException;
-	
+
 	extern struct socketResources{
 		const string localhost;
 		const int autoValue;
@@ -18,12 +18,12 @@
 		const int UDP;
 		const int inet;
 	}SocketResources;
-	
+
 	typedef struct{
 		pointer value;
 		int length;
 	}Package;
-	
+
 	struct ISocket{
 		void (* accept)(object socket);
 		void (* start)(void);
@@ -34,11 +34,11 @@
 		Package (* receive)(void);
 		void (* close)(void);
 	};
-	
+
 	interface(ISocket);
-	
+
 	struct Socket{};
-	
-	class(Socket $extends Object $implements ISocket);
-	
+
+	Class(Socket $extends Object $implements ISocket);
+
 #endif

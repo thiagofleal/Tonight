@@ -1495,6 +1495,7 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 static ICollection notImplemented = {
 	(pointer)__Default_void_function,
 	(pointer)__Default_void_function,
+	(pointer)__Default_void_function,
 	(pointer)__Default_void_function
 };
 
@@ -1534,7 +1535,8 @@ static INLINE void TONIGHT __memory_free(pointer mem){
 static ICollection __Array_collection = {
 	.length = Array_length,
 	.size = Array_size,
-	.access = Array_access
+	.access = Array_access,
+	.index = Array_index
 };
 
 static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
@@ -1839,6 +1841,10 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 	return array + index * size;
 }
 
+static INLINE void TONIGHT Array_index(pointer array, pointer var, int index){
+	*(int*)var = index;
+}
+
 static INLINE void TONIGHT Array_free(pointer array){
 	if(array) p_free(array - sizeof(ArrayData));
 }
@@ -1867,7 +1873,7 @@ static pointer TONIGHT Array_convert(pointer array, cast casting){
 	return ret;
 }
 
-static pointer TONIGHT $throws Array_select(pointer array, condition where){
+static pointer TONIGHT $throws Array_where(pointer array, condition where){
 	register int i, j, length=Array_length(array);
 	size_t size = Array_size(array);
 	pointer ret=NULL, aux, arr=__new_array_generic(size, length);
@@ -1994,6 +2000,10 @@ static INLINE pointer TONIGHT Collection_access(pointer p, int i){
 	return getICollection(p)->access(p, i);
 }
 
+static INLINE void TONIGHT Collection_index(pointer p, pointer v, int i){
+	getICollection(p)->index(p, v, i);
+}
+
 INLINE void TONIGHT checkArgumentPointer(pointer arg){
 	if(!arg)
 		throw(NullArgumentException, "Null argument");
@@ -2038,4 +2048,226 @@ static INLINE void TONIGHT Callback_setRealloc(P_pointer callback){
 
 static INLINE void TONIGHT Callback_setFree(P_void callback){
 	p_free = callback;
+}
+
+static TONIGHT void AI_free(void){
+    pointer array = (pointer)getCurrentObject();
+    return Array.free(array);
+}
+
+static TONIGHT int AI_length(void){
+    pointer array = (pointer)getCurrentObject();
+    return Array.length(array);
+}
+
+static TONIGHT size_t AI_size(void){
+    pointer array = (pointer)getCurrentObject();
+    return Array.size(array);
+}
+
+static TONIGHT pointer AI_access(int index){
+    pointer array = (pointer)getCurrentObject();
+    return Array.access(array, index);
+}
+
+static TONIGHT string AI_toString(P_retString method, string sep){
+    pointer array = (pointer)getCurrentObject();
+    return Array.toString(array, method, sep);
+}
+
+static TONIGHT pointer AI_convert(cast casting){
+    pointer array = (pointer)getCurrentObject();
+    return Array.convert(array, casting);
+}
+
+static TONIGHT pointer AI_where(condition where){
+    pointer array = (pointer)getCurrentObject();
+    return Array.where(array, where);
+}
+
+static TONIGHT bool AI_contains(pointer value){
+    pointer array = (pointer)getCurrentObject();
+    return Array.contains(array, value);
+}
+
+static __ArrayInterface Array_select(pointer array){
+    setCurrentObject((object)array);
+    return (__ArrayInterface){
+        AI_free,
+        AI_length,
+        AI_size,
+        AI_access,
+        AI_toString,
+        AI_convert,
+        AI_where,
+        AI_contains
+    };
+}
+
+static TONIGHT void SI_free(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.free(str);
+}
+
+static TONIGHT pstring SI_copy(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.copy(str);
+}
+
+static TONIGHT pstring SI_concatenate(pstring s){
+    pstring str = (pstring)getCurrentObject();
+    return String.concatenate(str, s);
+}
+
+static TONIGHT pstring SI_upper(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.upper(str);
+}
+
+static TONIGHT pstring SI_lower(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.lower(str);
+}
+
+static TONIGHT pstring SI_trim(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.trim(str);
+}
+
+static TONIGHT pstring* SI_split(const pstring lim){
+    pstring str = (pstring)getCurrentObject();
+    return String.split(str, lim);
+}
+
+static TONIGHT size_t SI_length(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.length(str);
+}
+
+static TONIGHT int SI_compare(const pstring s){
+    pstring str = (pstring)getCurrentObject();
+    return String.compare(str, s);
+}
+
+static TONIGHT pstring SI_toString(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.toString(str);
+}
+
+static TONIGHT pstring SI_toWide(void){
+    pstring str = (pstring)getCurrentObject();
+    return String.toWide(str);
+}
+
+static __StringInteface String_select(pstring str){
+    setCurrentObject((object)str);
+    return (__StringInteface){
+        SI_free,
+        SI_copy,
+        SI_concatenate,
+        SI_upper,
+        SI_lower,
+        SI_trim,
+        SI_split,
+        SI_length,
+        SI_compare,
+        SI_toString,
+        SI_toWide
+    };
+}
+
+static TONIGHT void WI_free(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.free(str);
+}
+
+static TONIGHT pstring WI_copy(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.copy(str);
+}
+
+static TONIGHT pstring WI_concatenate(pstring s){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.concatenate(str, s);
+}
+
+static TONIGHT pstring WI_upper(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.upper(str);
+}
+
+static TONIGHT pstring WI_lower(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.lower(str);
+}
+
+static TONIGHT pstring WI_trim(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.trim(str);
+}
+
+static TONIGHT pstring* WI_split(const pstring lim){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.split(str, lim);
+}
+
+static TONIGHT size_t WI_length(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.length(str);
+}
+
+static TONIGHT int WI_compare(const pstring s){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.compare(str, s);
+}
+
+static TONIGHT pstring WI_toString(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.toString(str);
+}
+
+static TONIGHT pstring WI_toWide(void){
+    pstring str = (pstring)getCurrentObject();
+    return WideString.toWide(str);
+}
+
+static __StringInteface WString_select(pstring wstr){
+    setCurrentObject((object)wstr);
+    return (__StringInteface){
+        WI_free,
+        WI_copy,
+        WI_concatenate,
+        WI_upper,
+        WI_lower,
+        WI_trim,
+        WI_split,
+        WI_length,
+        WI_compare,
+        WI_toString,
+        WI_toWide
+    };
+}
+
+static TONIGHT void FI_close(void){
+    file f = (file)getCurrentObject();
+    return File.close(f);
+}
+
+static TONIGHT void FI_rewind(void){
+    file f = (file)getCurrentObject();
+    return File.rewind(f);
+}
+
+static TONIGHT bool FI_end(void){
+    file f = (file)getCurrentObject();
+    return File.end(f);
+}
+
+static __FileInterface File_select(file f){
+    setCurrentObject((object)f);
+    return (__FileInterface){
+        FI_close,
+        FI_rewind,
+        FI_end
+    };
 }

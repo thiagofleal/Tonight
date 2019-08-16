@@ -20,6 +20,7 @@ Define_Exception(InputException $as "Input error" $extends GenericException);
 Define_Exception(ConvertException $as "Convert error" $extends GenericException);
 Define_Exception(NotImplementException $as "Not implemented method error" $extends GenericException);
 Define_Exception(ArgumentException $as "Argument error" $extends GenericException);
+Define_Exception(IllegalAccessException $as "Null argument error" $extends GenericException);
 Define_Exception(NullArgumentException $as "Null argument error" $extends ArgumentException);
 Define_Exception(ApplicationException $as "Application error" $extends ArgumentException);
 

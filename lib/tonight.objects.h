@@ -325,7 +325,7 @@ const TONIGHT struct __New New = {
 	.Random = __new_Random,
 	.Timer = __new_Timer,
 	.Painter = __new_Painter,
-	.Object = new,
+	.Object = NewInstance,
 
 	.Char = __new_char,
 	.Byte = __new_byte,
@@ -345,7 +345,7 @@ const struct __Array Array = {
 	.free = Array_free,
 	.toString = Array_toString,
 	.convert = Array_convert,
-	.select = Array_select,
+	.where = Array_where,
 	.contains = Array_contains,
 
 	.Char = __new_array_char,
@@ -357,7 +357,9 @@ const struct __Array Array = {
 	.String = __new_array_String,
 	.Object = __new_array_Object,
 	.Pointer = __new_array_pointer,
-	.Generic = __new_array_generic
+	.Generic = __new_array_generic,
+
+	.select = Array_select
 };
 
 /* Memory */
@@ -383,7 +385,9 @@ const struct __String String = {
 	.trim = (pointer)String_trim,
 	.free = (pointer)__memory_free,
 	.toString = (pointer)toString,
-	.toWide = stringToWide
+	.toWide = stringToWide,
+
+	.select = String_select
 };
 
 const struct __String WideString = {
@@ -399,7 +403,9 @@ const struct __String WideString = {
 	.trim = (pointer)WString_trim,
 	.free = (pointer)__memory_free,
 	.toString = wideToString,
-	.toWide = (pointer)toWide
+	.toWide = (pointer)toWide,
+
+	.select = WString_select
 };
 
 /* File */
@@ -413,7 +419,9 @@ const struct __File File = {
 	.stdError = File_stdError,
 	.Mode.read = {"r"},
 	.Mode.write = {"w"},
-	.Mode.append = {"a"}
+	.Mode.append = {"a"},
+
+	.select = File_select
 };
 
 /* Key */
@@ -441,5 +449,6 @@ const struct __Exit Exit = {
 const ICollection Collection = {
 	.length = Collection_lenght,
 	.size = Collection_size,
-	.access = Collection_access
+	.access = Collection_access,
+	.index = Collection_index
 };

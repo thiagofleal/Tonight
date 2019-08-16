@@ -106,11 +106,11 @@
 #	define	With(var)	__create_with_context(var);\
                         while(__function_with())
 
-#	define __forindex__(ind, collect, type...)	for(type ind=0;ind<Collection.length(collect);ind++)
-#	define forindex(_args_)						__forindex__(_args_)
+#	define __forindex__(var, collect)	if(initForindex(collect))while(forindexIterator(&var))
+#	define forindex(_args_)				__forindex__(_args_)
 
-#	define __foreach__(var, collect, type...)	for(initForeach(); foreachIterator(&var, collect);)
-#	define foreach(_args_)						__foreach__(_args_)
+#	define __foreach__(var, collect)    if(initForeach(collect))while(foreachIterator(&var))
+#	define foreach(_args_)				__foreach__(_args_)
 
 #	define $in			,
 #	define $as			,
@@ -151,6 +151,9 @@
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
 #	define	$lF(format, args...)	getText(longFormated(format, args))
 
+#   define $va_set(var, __data__)   struct __data__ *__args__ = (pointer)var
+#   define $va_get                  (*__args__)
+
 /* data types definitions */
 #	ifndef __cplusplus
 		typedef unsigned char bool;
@@ -159,6 +162,7 @@
 #	endif
 	typedef unsigned char uchar, byte;
 	typedef	char *string;
+	typedef	wchar_t *wstring;
 	typedef void *pointer, *pstring;
 	typedef struct {} *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
@@ -453,21 +457,27 @@
 		pointer (*Pointer)(pointer);
 	};
 
-#	define Scanner(arg)	New.Scanner(arg)
-#	define Writer(arg)	New.Writer(arg)
-#	define Random(arg)	New.Random(arg)
-#	define Timer(arg)	New.Timer(arg)
-#	define Painter(arg)	New.Painter(arg)
-
 	typedef struct{
 		int (* length)(pointer);
 		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
+		void (* index)(pointer, pointer, int);
 	}ICollection;
 
 	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
+
+    typedef struct __ArrayInterface{
+        void (* free)(void);
+		int (* length)(void);
+		size_t (* size)(void);
+		pointer (* access)(int);
+		string (* toString)(P_retString, string);
+		pointer (* convert)(cast);
+		pointer (* where)(condition);
+		bool (* contains)(pointer);
+    }__ArrayInterface;
 
 	struct __Array{
 		void (* free)(pointer);
@@ -476,7 +486,7 @@
 		pointer (* access)(pointer, int);
 		string (* toString)(pointer, P_retString, string);
 		pointer (* convert)(pointer, cast);
-		pointer (* select)(pointer, condition);
+		pointer (* where)(pointer, condition);
 		bool (* contains)(pointer, pointer);
 
 		char* (*Char)(int);
@@ -489,6 +499,8 @@
 		object* (*Object)(int);
 		pointer* (*Pointer)(int);
 		pointer	(*Generic)(size_t, int);
+
+		__ArrayInterface (* select)(pointer);
 	};
 
 	struct __Memory{
@@ -498,6 +510,20 @@
 		size_t	(* size)(pointer);
 		pointer	(* copy)(pointer);
 	};
+
+    typedef struct __StringInteface{
+        void (* free)(void);
+		pstring (* copy)(void);
+		pstring (* concatenate)(pstring);
+		pstring (* upper)(void);
+		pstring (* lower)(void);
+		pstring (* trim)(void);
+		pstring* (* split)(const pstring);
+		size_t (* length)(void);
+		int (* compare)(const pstring);
+		pstring (* toString)(void);
+		pstring (* toWide)(void);
+    }__StringInteface;
 
 	struct __String{
 		void (* free)(pstring);
@@ -513,11 +539,19 @@
 		int (* compare)(const pstring, const pstring);
 		pstring (* toString)(const pstring);
 		pstring (* toWide)(const pstring);
+
+		__StringInteface (*select)(pstring);
 	};
 
 	typedef struct{
 		string value;
 	}FileMode;
+
+    typedef struct __FileInterface{
+		void (* close)(void);
+		void (* rewind)(void);
+		bool (* end)(void);
+    }__FileInterface;
 
 	struct __File{
 		file (* open)(string, FileMode);
@@ -533,6 +567,8 @@
 			const FileMode write;
 			const FileMode append;
 		}Mode;
+
+		__FileInterface (*select)(file);
 	};
 
 	/* Keys */

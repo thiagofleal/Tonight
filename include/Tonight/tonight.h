@@ -52,6 +52,7 @@
 			extern EXCEPTION TONIGHT ConvertException;
 			extern EXCEPTION TONIGHT NotImplementException;
 			extern EXCEPTION TONIGHT ArgumentException;
+			extern EXCEPTION TONIGHT IllegalAccessException;
 			extern EXCEPTION TONIGHT NullArgumentException;
 			extern EXCEPTION TONIGHT ApplicationException;
 
@@ -70,14 +71,20 @@
 			extern INLINE string TONIGHT Message(Exception);
 			extern INLINE EXCEPTION TONIGHT ExceptionType(Exception);
 
-			extern INLINE bool TONIGHT NO_CALL initForeach(void);
-			extern bool TONIGHT NO_CALL foreachIterator(pointer, pointer);
+			extern INLINE bool TONIGHT NO_CALL initForindex(pointer);
+			extern bool TONIGHT NO_CALL forindexIterator(pointer);
+
+			extern INLINE bool TONIGHT NO_CALL initForeach(pointer);
+			extern bool TONIGHT NO_CALL foreachIterator(pointer);
 
 			extern void TONIGHT NO_CALL __create_using_context(size_t, pointer);
 			extern bool TONIGHT NO_CALL __function_using(pointer, P_void);
 
 			extern void TONIGHT NO_CALL __create_with_context(pointer);
 			extern bool TONIGHT NO_CALL __function_with(void);
+
+			extern void TONIGHT NO_CALL __create_this_context(void);
+            extern bool TONIGHT NO_CALL __function_this(void);
 
 			extern INLINE pointer TONIGHT useContext(void);
 

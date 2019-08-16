@@ -10,34 +10,29 @@ static pointer iterator(struct Node *node){
 }
 
 static void List_add(pointer value){
-    object self = useContext();
-
-    This(List, self);
     struct Node *node;
 
-    if(!this.list){
-        this.list = Memory.alloc(sizeof(struct Node));
-        node = this.list;
+    if(!$$(this $as List).list){
+        $$(this $as List).list = Memory.alloc(sizeof(struct Node));
+        node = $$(this $as List).list;
         node->value = value;
         node->next = NULL;
     }
     else{
-        node = iterator(this.list);
+        node = iterator($$(this $as List).list);
         node->next = Memory.alloc(sizeof(struct Node));
         node = node->next;
         node->value = value;
         node->next = NULL;
     }
-    this.size++;
+    $$(this $as List).size++;
 }
 
 static void List_addPos(pointer value, int index){
-	object self = useContext();
-    This(List, self);
-    int i;
-    struct Node *node = this.list, *newNode;
+	int i;
+    struct Node *node = $$(this $as List).list, *newNode;
 
-    if(index > this.size || index < 0){
+    if(index > $$(this $as List).size || index < 0){
         string s = concat("Impossible to add the index ", $i(index), $end);
         throw(IndexException, s);
         String.free(s);
@@ -45,8 +40,8 @@ static void List_addPos(pointer value, int index){
     if(!index){
         newNode = Memory.alloc(sizeof(struct Node));
         newNode->value = value;
-        newNode->next = this.list;
-        this.list = newNode;
+        newNode->next = $$(this $as List).list;
+        $$(this $as List).list = newNode;
     }
     else{
         for(i = 2; i <= index && node->next; i++, node = node->next);
@@ -55,27 +50,25 @@ static void List_addPos(pointer value, int index){
         newNode->next = node->next;
         node->next = newNode;
     }
-    this.size++;
+    $$(this $as List).size++;
 }
 
 static void List_remove(int index){
-	object self = useContext();
-    This(List, self);
-    int i;
-    struct Node *node = this.list, *aux;
+	int i;
+    struct Node *node = $$(this $as List).list, *aux;
 
-    if(index >= this.size || index < 0){
+    if(index >= $$(this $as List).size || index < 0){
         static string error = NULL;
 
         if(error)	Memory.free(error);
-        error = concat("Impossible to access the index ", is(index), $end);
+        error = concat("Impossible to access the index ", is(index).Text, $end);
         throw(IndexException, error);
     }
 
     if(!index){
         aux = node;
         node = node->next;
-        this.list = node;
+        $$(this $as List).list = node;
     }
     else{
         struct Node **p;
@@ -85,20 +78,19 @@ static void List_remove(int index){
         *p = (*p)->next;
     }
 
-    if(this.freeCallBack){
-        this.freeCallBack(aux->value);
+    if($$(this $as List).freeCallBack){
+        $$(this $as List).freeCallBack(aux->value);
     }
 
     Memory.free(aux);
-    this.size--;
+    $$(this $as List).size--;
 }
 
-static private struct Node * List_getNode(object self, int index){
+static Private struct Node * List_getNode(object self, int index){
 	int i;
-	Class_List *This = self->data;
-	struct Node *node = this.list;
+	struct Node *node = $$(self $as List).list;
 
-	if(index >= this.size || index < 0){
+	if(index >= $$(self $as List).size || index < 0){
 		throw(IndexException, concat("Impossible to access the index ", $i(index), $end));
 	}
 	for(i = 0; i < index && node->next; i++, node = node->next);
@@ -106,41 +98,34 @@ static private struct Node * List_getNode(object self, int index){
 }
 
 static pointer List_get(int index){
-	object self = useContext();
-    return List_getNode(self, index)->value;
+	return List_getNode(this, index)->value;
 }
 
 static int List_size(void){
-	object self = useContext();
-    This(List, self);
-    return this.size;
+	return $$(this $as List).size;
 }
 
 static pointer List_toArray(void){
-	object self = useContext();
-	This(List, self);
-    pointer ARRAY ret;
+	pointer ARRAY ret;
     register int i;
 
-    ret = Array.Pointer(this.size);
+    ret = Array.Pointer($$(this $as List).size);
 
-    for(i = 0; i < this.size; i++){
+    for(i = 0; i < $$(this $as List).size; i++){
         ret[i] = List_get(i);
     }
 	return ret;
 }
 
 static object List_select(condition where){
-	object self = useContext();
 	object sel;
-    This(List, self);
-    register int i, length = this.size;
+    register int i, length = $$(this $as List).size;
     pointer current;
 
-    sel = new(List.class);
+    sel = new(List);
 
     for(i = 0; i < length; i++){
-        current = List_getNode(self, i)->value;
+        current = List_getNode(this, i)->value;
 
         if(where(&current)){
             $(sel $as List).add(current);
@@ -150,18 +135,16 @@ static object List_select(condition where){
 }
 
 static string List_toString(P_retString method, string sep){
-	object self = useContext();
 	string ret;
-    This(List, self);
-    Writer write = Writer(Tonight.Std.String.Output);
-    register int i, length = this.size;
+    Writer write = New.Writer(Tonight.Std.String.Output);
+    register int i, length = $$(this $as List).size;
     char ARRAY str = Array.Char((sizeof(retString) + String.length(sep)) * length);
     if(!length)
         return toString("");
     *str = 0;
     checkArgumentPointer(method);
     for(i=0; i<length; i++)
-        write.print(str, getText(method(List_getNode(self, i)->value)), sep, $end);
+        write.print(str, getText(method(List_getNode(this, i)->value)), sep, $end);
     str[String.length(str) - String.length(sep)] = 0;
     ret = toString(str);
     Array.free(str);
@@ -169,9 +152,7 @@ static string List_toString(P_retString method, string sep){
 }
 
 static void List_setFreeCallBack(P_freeCallBack freeCallBack){
-	object self = useContext();
-    This(List, self);
-    this.freeCallBack = freeCallBack;
+	$$(this $as List).freeCallBack = freeCallBack;
 }
 
 static IList List_vtble = {
@@ -198,127 +179,105 @@ static inline pointer List_ICollection_access(pointer collect, int index){
 	return &List_getNode(collect, index)->value;
 }
 
+static inline void List_ICollection_index(pointer collect, pointer var, int index){
+	*(int*)var = index;
+}
+
 static ICollection List_collection = {
 	.length = List_ICollection_length,
 	.size = List_ICollection_size,
-	.access = List_ICollection_access
+	.access = List_ICollection_access,
+	.index = List_ICollection_index
 };
 
-static Constructor(List){
-	object self = getCurrentObject();
-	This(List, self);
-	construct(superOf(List), self);
-	this.list = NULL;
-	this.size = 0;
-	this.freeCallBack = NULL;
-	setInterface(List_vtble);
-	$(self $as Set).setCollection(List_collection);
+static void List_constructor(){
+	construct(superOf(List));
+	$$(this $as List).list = NULL;
+	$$(this $as List).size = 0;
+	$$(this $as List).freeCallBack = NULL;
+	setInterface(List, List_vtble);
+	$(this $as Set).setCollection(List_collection);
 }
 
-static Destructor(List){
-	object self = getCurrentObject();
-	This(List, self);
-
-	while(this.size){
-		$(self $as List).remove(0);
+static void List_destructor(){
+	while($$(this $as List).size){
+		$(this $as List).remove(0);
 	}
 
-	destruct(superOf(List), self);
+	destruct(superOf(List));
 }
 
 static void IList_add(pointer value){
-	object self = getCurrentObject();
-	This(List, self);
-
-	with(self){
-        getInterface.add(value);
+	Method(){
+        getInterface(List).add(value);
 	}
 }
 
 static void IList_addPos(pointer value, int index){
-	object self = getCurrentObject();
-	This(List, self);
-
-	with(self){
-        getInterface.addPos(value, index);
+	Method(){
+        getInterface(List).addPos(value, index);
 	}
 }
 
 static void IList_remove(int index){
-	object self = getCurrentObject();
-	This(List, self);
-
-	with(self){
-        getInterface.remove(index);
+	Method(){
+        getInterface(List).remove(index);
 	}
 }
 
 static pointer IList_get(int index){
-	object self = getCurrentObject();
-	This(List, self);
 	pointer ret;
 
-	with(self){
-        ret = getInterface.get(index);
+    Method(){
+        ret = getInterface(List).get(index);
 	}
 
 	return ret;
 }
 
 static int IList_size(void){
-	object self = getCurrentObject();
-	This(List, self);
 	int ret;
 
-	with(self){
-        ret = getInterface.size();
+	Method(){
+        ret = getInterface(List).size();
 	}
 
 	return ret;
 }
 
 static pointer IList_toArray(void){
-	object self = getCurrentObject();
-	This(List, self);
 	pointer ret;
 
-	with(self){
-        ret = getInterface.toArray();
+	Method(){
+        ret = getInterface(List).toArray();
 	}
 
 	return ret;
 }
 
 static object IList_select(condition where){
-	object self = getCurrentObject();
-	This(List, self);
 	object ret;
 
-	with(self){
-        ret = getInterface.select(where);
+	Method(){
+        ret = getInterface(List).select(where);
 	}
 
 	return ret;
 }
 
 static string IList_toString(P_retString method, string sep){
-	object self = getCurrentObject();
-	This(List, self);
 	string ret;
 
-	with(self){
-        ret = getInterface.toString(method, sep);
+	Method(){
+        ret = getInterface(List).toString(method, sep);
 	}
 
 	return ret;
 }
 
 static void IList_setFreeCallBack(P_freeCallBack freeCallBack){
-	object self = getCurrentObject();
-	This(List, self);
-
-	with(self){
-        getInterface.setFreeCallBack(freeCallBack);
+	Method(){
+        getInterface(List).setFreeCallBack(freeCallBack);
 	}
 }
 
@@ -333,5 +292,8 @@ static IList iList = {
 	.toString = IList_toString,
 	.setFreeCallBack = IList_setFreeCallBack
 };
+
+Constructor(List, List_constructor);
+Destructor(List, List_destructor);
 
 Define_Class(List $extends Set $implements IList $with iList);

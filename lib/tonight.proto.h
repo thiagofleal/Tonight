@@ -308,10 +308,11 @@ static INLINE file TONIGHT File_stdError(void);
 static INLINE int TONIGHT Array_length(pointer);
 static INLINE size_t TONIGHT Array_size(pointer);
 static NORMAL pointer TONIGHT $throws Array_access(pointer, int);
+static INLINE void TONIGHT Array_index(pointer, pointer, int);
 static INLINE void TONIGHT Array_free(pointer);
 static NORMAL string TONIGHT $throws Array_toString(pointer, P_retString, string);
 static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
-static NORMAL pointer TONIGHT $throws Array_select(pointer, condition);
+static NORMAL pointer TONIGHT $throws Array_where(pointer, condition);
 static NORMAL bool TONIGHT $throws Array_contains(pointer, pointer);
 
 static INLINE void TONIGHT Exit_WithSuccess(void);
@@ -320,6 +321,7 @@ static INLINE void TONIGHT Exit_WithFail(void);
 static INLINE int TONIGHT Collection_lenght(pointer);
 static INLINE size_t TONIGHT Collection_size(pointer);
 static INLINE pointer TONIGHT Collection_access(pointer, int);
+static INLINE void TONIGHT Collection_index(pointer, pointer, int);
 
 static INLINE void TONIGHT Callback_setMalloc(P_pointer);
 static INLINE void TONIGHT Callback_setCalloc(P_pointer);
@@ -329,3 +331,8 @@ static INLINE void TONIGHT Callback_setFree(P_void);
 static INLINE void TONIGHT __Shared_close(pointer);
 static INLINE pointer TONIGHT __Shared_open(string path);
 static INLINE pointer TONIGHT __Shared_get(pointer, string);
+
+static __ArrayInterface Array_select(pointer);
+static __StringInteface String_select(pstring);
+static __StringInteface WString_select(pstring);
+static __FileInterface File_select(file);

@@ -20,21 +20,26 @@
 #		error "Include the Tonight library with #include<Tonight/tonight.h>"
 #	endif
 
-#	ifndef __cplusplus
-
 /*	Declare classes and interfaces	*/
 
 #		define __Define_Class__(_Class, _super, _int, _intVal)	static INLINE _int __##_Class##_select(object obj){\
 																	setCurrentObject(obj);\
 																	return *_Class.implement.__interface;\
 																}\
-																static INLINE void _Class##_ctor(object obj, pointer args){\
+																static INLINE struct _Class* __##_Class##_structure(object obj){\
+																	return &((Class_##_Class*)obj->data)->__self;\
+																}\
+																static void _Class##_ctor(object obj, pointer args){\
 																	setCurrentObject(obj);\
-																	__new_##_Class(args);\
+																	Method(){\
+                                                                        __new_##_Class(args);\
+																	}\
 																}\
 																static INLINE void _Class##_dtor(object obj){\
 																	setCurrentObject(obj);\
-																	__del_##_Class();\
+																	Method(){\
+                                                                        __del_##_Class();\
+																	}\
 																}\
 																const struct Interface_##_Class _Class = {\
 																	._ = (const struct str_Class){\
@@ -44,11 +49,12 @@
 																		.ctor = _Class##_ctor,\
 																		.dtor = _Class##_dtor\
 																	},\
-																	.class = (Class)&_Class,\
+																	.__class__ = (Class)&_Class,\
 																	.implement = (const Class_##_Class){\
 																		.__interface = &_intVal\
 																	},\
-																	.select = __##_Class##_select\
+																	.select = __##_Class##_select,\
+																	.structure = __##_Class##_structure\
 																}
 #		define __class__(_Class, _super, _int)			typedef struct{\
 															Class_##_super __super;\
@@ -57,57 +63,63 @@
 														}Class_##_Class;\
 														extern const struct Interface_##_Class{\
 															const struct str_Class _;\
-															const Class class;\
+															const Class __class__;\
 															const Class_##_Class implement;\
 															_int (*select)(object);\
+															struct _Class* (*structure)(object);\
 														}_Class
 
-#		define class(__args__)	__class__(__args__)
+#		define Class(__args__)          __class__(__args__)
 #		define Define_Class(__args__)	__Define_Class__(__args__)
 
-#		define interface(_int)			typedef struct _int _int
-#		define __select__(_obj, _Class)	_Class.select(_obj)
-#		define $(_args_)				__select__(_args_)
+#		define  interface(_int)			    typedef struct _int _int
+#		define  __select__(_obj, _Class)	_Class.select(_obj)
+#       define  __structure__(_obj, _Class) (*_Class.structure(_obj))
+#		define  $(_args_)				    __select__(_args_)
+#		define  $$(_args_)				    __structure__(_args_)
 
 /*	Access modifiers	*/
 
-#		define	private
-#		define	protected
-#		define	public
+#       ifdef __cplusplus
+#		    define	Private     private
+#		    define	Protected   protected
+#		    define	Public      public
+#       else
+#		    define	Private
+#           define  private
+#		    define	Protected
+#		    define	protected
+#		    define	Public
+#		    define	public
+#       endif // __cplusplus
 
 /*	Methods	*/
 
-#       define This(_class_, _src_)    Class_##_class_ *This = _src_->data
-
-#		define this							(This->__self)
-#		define constructArg(type)			(va_arg(__construct_args, type))
-#		define getInterface							(*This->__interface)
-#		define setInterface(_new)					(This->__interface = &_new)
-#		define getClassInterface(_obj, _class)		    (*((Class_##_class*)_obj->data)->__interface)
-#		define setClassInterface(_obj, _class, _new)    (((Class_##_class*)_obj->data)->__interface = &_new)
+#       define  Method()                    __create_this_context();while(__function_this())
+#       define  setInterface(_class, _int_) (((Class_##_class*)this->data)->__interface = &_int_)
+#       define  getInterface(_class)        (*((Class_##_class*)this->data)->__interface)
 
 /*	Constructor and destructor	*/
 
-#		define Constructor(_Class)	void __new_##_Class(va_list *__construct_args)
-#		define Destructor(_Class)	void __del_##_Class(void)
+#		define Constructor(_Class, _func)	void (* __new_##_Class)(pointer) = (pointer)_func
+#		define Destructor(_Class, _func)	pointer (* __del_##_Class)(void) = (pointer)_func
 
 /*	Superclass' access	*/
 
-#		define	superOf(_Class)	    (_Class.class->super)
-#		define	Super(_class)		(_class.class)
-#		define	cast_super(_super)	(((Class_##_super*)self)->__self)
-#		define	construct(_super, _self)    (_super)->ctor(_self, __construct_args)
-#		define	destruct(_super, _self)	    (_super)->dtor(_self)
+#		define	superOf(_Class) 	        (_Class.__class__->super)
+#		define	Super(_class)	        	(_class.__class__)
+#		define	cast_super(_super)  	    (((Class_##_super*)self)->__self)
 
-/*	new and delete	*/
-extern object TONIGHT new(Class, ...);
-extern void TONIGHT delete(object);
+#   ifndef __cplusplus
 
-extern Class TONIGHT classOf(object);
-extern bool TONIGHT isType(object, Class);
-extern size_t TONIGHT sizeOf(object);
-extern object TONIGHT copy(object);
-extern bool TONIGHT compare(object, object);
+#       define class(__args__)  __class__(__args__)
+#       define this             This
+#       define virtual          Virtual
+#       define new(_c, _a...)   NewInstance(_c.__class__ _a)
+#       define delete           Delete
+#   endif // __cplusplus
+
+extern object This;
 
 /* Base class */
 
@@ -130,9 +142,10 @@ typedef struct{
 
 extern const struct Interface_Object{
 	const struct str_Class _;
-	const Class class;
+	const Class __class__;
 	const Class_Object implement;
 	IObject (*select)(object);
+	struct Object* (*structure)(object);
 }Object;
 
 struct ISet{
@@ -146,11 +159,22 @@ struct Set{
 	ICollection *collection;
 };
 
-class(Set $extends Object $implements ISet);
+Class(Set $extends Object $implements ISet);
 
-INLINE void TONIGHT setCurrentObject(object);
-INLINE object TONIGHT getCurrentObject(void);
-INLINE object TONIGHT checkCurrentObject(Class);
+/*	new and delete	*/
+extern object TONIGHT NewInstance(Class, ...);
+extern void TONIGHT construct(Class, ...);
+extern void TONIGHT Delete(object);
+extern void TONIGHT destruct(Class);
 
-#	endif	// ifndef __cplusplus
+extern Class TONIGHT classOf(object);
+extern bool TONIGHT isType(object, Class);
+extern size_t TONIGHT sizeOf(object);
+extern object TONIGHT copy(object);
+extern bool TONIGHT compare(object, object);
+
+extern INLINE void TONIGHT setCurrentObject(object);
+extern INLINE object TONIGHT getCurrentObject(void);
+extern INLINE object TONIGHT checkCurrentObject(Class);
+
 #endif	// ifndef TONIGHT_OO_MACROS

@@ -26,12 +26,10 @@ struct socketResources SocketResources = {
 	.inet = AF_INET
 };
 
-static Constructor(Socket){
-	object self = getCurrentObject();
-	This(Socket, self);
+static void Socket_constructor(){
 	static ISocket iSock;
 
-	construct(superOf(Socket), self);
+	construct(superOf(Socket));
 
 	iSock.accept = Tonight.DefaultFunctionPointer;
 	iSock.start = Tonight.DefaultFunctionPointer;
@@ -42,86 +40,62 @@ static Constructor(Socket){
 	iSock.receive = Tonight.DefaultFunctionPointer;
 	iSock.close = Tonight.DefaultFunctionPointer;
 
-	setInterface(iSock);
+	setInterface(Socket, iSock);
 }
 
-static Destructor(Socket){
-    object self = getCurrentObject();
-	destruct(superOf(Socket), self);
+static void Socket_destructor(){
+	destruct(superOf(Socket));
 }
 
 static void ISocket_accept(object socket){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.accept(socket);
+	Method(){
+        getInterface(Socket).accept(socket);
 	}
 }
 
 static void ISocket_start(void){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.start();
+	Method(){
+        getInterface(Socket).start();
 	}
 }
 
 static void ISocket_connect(void){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.connect();
+	Method(){
+        getInterface(Socket).connect();
 	}
 }
 
 static void ISocket_bind(void){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.bind();
+	Method(){
+        getInterface(Socket).bind();
 	}
 }
 
 static void ISocket_listen(int backlog){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.listen(backlog);
+	Method(){
+        getInterface(Socket).listen(backlog);
 	}
 }
 
 static void ISocket_send(Package message){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.send(message);
+	Method(){
+        getInterface(Socket).send(message);
 	}
 }
 
 static Package ISocket_receive(void){
-	object self = getCurrentObject();
-	This(Socket, self);
 	Package ret;
 
-	with(self){
-        ret = getInterface.receive();
+	Method(){
+        ret = getInterface(Socket).receive();
 	}
 
 	return ret;
 }
 
 static void ISocket_close(void){
-	object self = getCurrentObject();
-	This(Socket, self);
-
-	with(self){
-        getInterface.close();
+	Method(){
+        getInterface(Socket).close();
 	}
 }
 
@@ -135,5 +109,8 @@ static ISocket iSock = {
 	.receive = ISocket_receive,
 	.close = ISocket_close
 };
+
+Constructor(Socket, Socket_constructor);
+Destructor(Socket, Socket_destructor);
 
 Define_Class(Socket $extends Object $implements ISocket $with iSock);
