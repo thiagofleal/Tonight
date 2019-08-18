@@ -176,7 +176,7 @@ static inline size_t List_ICollection_size(pointer collect){
 }
 
 static inline pointer List_ICollection_access(pointer collect, int index){
-	return &List_getNode(collect, index)->value;
+	return List_getNode(collect, index);
 }
 
 static inline void List_ICollection_index(pointer collect, pointer var, int index){
