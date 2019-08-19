@@ -325,7 +325,7 @@ const TONIGHT struct __New New = {
 	.Random = __new_Random,
 	.Timer = __new_Timer,
 	.Painter = __new_Painter,
-	.Object = NewInstance,
+	.Object = newInstance,
 
 	.Char = __new_char,
 	.Byte = __new_byte,
@@ -347,6 +347,8 @@ const struct __Array Array = {
 	.convert = Array_convert,
 	.where = Array_where,
 	.contains = Array_contains,
+	.sort = Array_sort,
+    .forEach = Array_forEach,
 
 	.Char = __new_array_char,
 	.Byte = __new_array_byte,

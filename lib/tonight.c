@@ -1910,6 +1910,19 @@ static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
 	return true;
 }
 
+static void TONIGHT $throws Array_sort(pointer array, pointer function){
+    register size_t size = Array_size(array);
+    register int length = Array_length(array);
+    qsort(array, length, size, function);
+}
+
+static void TONIGHT $throws Array_forEach(pointer array, pointer function){
+    register int i, length = Array_length(array);
+    for(i=0;i<length;i++){
+        ((void(*)())function)(Array_access(array, i));
+    }
+}
+
 static string ARRAY __args = NULL;
 
 static void onExit(void){
@@ -2090,6 +2103,16 @@ static TONIGHT bool AI_contains(pointer value){
     return Array.contains(array, value);
 }
 
+static TONIGHT void AI_sort(pointer function){
+    pointer array = (pointer)getCurrentObject();
+    Array.sort(array, function);
+}
+
+static TONIGHT void AI_forEach(pointer function){
+    pointer array = (pointer)getCurrentObject();
+    Array.forEach(array, function);
+}
+
 static __ArrayInterface Array_select(pointer array){
     setCurrentObject((object)array);
     return (__ArrayInterface){
@@ -2100,7 +2123,9 @@ static __ArrayInterface Array_select(pointer array){
         AI_toString,
         AI_convert,
         AI_where,
-        AI_contains
+        AI_contains,
+        AI_sort,
+        AI_forEach
     };
 }
 

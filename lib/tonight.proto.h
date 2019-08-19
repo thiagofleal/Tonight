@@ -314,6 +314,8 @@ static NORMAL string TONIGHT $throws Array_toString(pointer, P_retString, string
 static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
 static NORMAL pointer TONIGHT $throws Array_where(pointer, condition);
 static NORMAL bool TONIGHT $throws Array_contains(pointer, pointer);
+static NORMAL void TONIGHT $throws Array_sort(pointer, pointer);
+static NORMAL void TONIGHT $throws Array_forEach(pointer, pointer);
 
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);

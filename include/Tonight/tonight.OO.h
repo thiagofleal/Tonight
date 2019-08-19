@@ -115,7 +115,7 @@
 #       define class(__args__)  __class__(__args__)
 #       define this             This
 #       define virtual          Virtual
-#       define new(_c, _a...)   NewInstance(_c.__class__ _a)
+#       define new(_c, _a...)   newInstance(_c.__class__ _a)
 #       define delete           Delete
 #   endif // __cplusplus
 
@@ -162,7 +162,7 @@ struct Set{
 Class(Set $extends Object $implements ISet);
 
 /*	new and delete	*/
-extern object TONIGHT NewInstance(Class, ...);
+extern object TONIGHT newInstance(Class, ...);
 extern void TONIGHT construct(Class, ...);
 extern void TONIGHT Delete(object);
 extern void TONIGHT destruct(Class);

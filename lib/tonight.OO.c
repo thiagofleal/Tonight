@@ -4,7 +4,7 @@
 
 object This = NULL;
 
-object TONIGHT NewInstance(Class class, ...){
+object TONIGHT newInstance(Class class, ...){
 	object _new = Memory.alloc(sizeof(Intern_Object));
 	va_list args;
 	va_start(args, class);

@@ -281,20 +281,20 @@
 
 	typedef bool (* condition)(pointer);
 
-#	define __CONDITION__(_name, _cond, _arg, _type)	inline bool _name(pointer __arg__){\
+#	define __CONDITION__(_name, _arg, _type, _cond)	inline bool _name(pointer __arg__){\
 														_type _arg = *(_type*)__arg__;\
-														return (_cond) ? true : false;\
+														return _cond ? true : false;\
 													}
 #	define DeclareCondition(args)	__CONDITION__(args)
 
-#	define __Condition__(cond, arg, type)	(condition)({\
+#	define __Condition__(arg, type, cond)	(condition)({\
 												bool __cond__(pointer __arg__){\
 													type arg = *(type*)__arg__;\
 													return cond ? true : false;\
 												}\
 												__cond__;\
 											})
-#	define Where(args)	__Condition__(args)
+#	define Condition(args)	__Condition__(args)
 
 	/* "Class" Input */
 	typedef struct{
@@ -477,6 +477,8 @@
 		pointer (* convert)(cast);
 		pointer (* where)(condition);
 		bool (* contains)(pointer);
+		void (* sort)(pointer);
+		void (* forEach)(pointer);
     }__ArrayInterface;
 
 	struct __Array{
@@ -488,6 +490,8 @@
 		pointer (* convert)(pointer, cast);
 		pointer (* where)(pointer, condition);
 		bool (* contains)(pointer, pointer);
+		void (* sort)(pointer, pointer);
+		void (* forEach)(pointer, pointer);
 
 		char* (*Char)(int);
 		byte* (*Byte)(int);
