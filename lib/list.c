@@ -162,7 +162,7 @@ static IList List_vtble = {
 	.get = List_get,
 	.size = List_size,
 	.toArray = List_toArray,
-	.select = List_select,
+	.where = List_select,
 	.toString = List_toString,
 	.setFreeCallBack = List_setFreeCallBack
 };
@@ -259,7 +259,7 @@ static object IList_select(condition where){
 	object ret;
 
 	Method(){
-        ret = getInterface(List).select(where);
+        ret = getInterface(List).where(where);
 	}
 
 	return ret;
@@ -288,7 +288,7 @@ static IList iList = {
 	.get = IList_get,
 	.size = IList_size,
 	.toArray = IList_toArray,
-	.select = IList_select,
+	.where = IList_select,
 	.toString = IList_toString,
 	.setFreeCallBack = IList_setFreeCallBack
 };

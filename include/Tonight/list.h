@@ -30,7 +30,7 @@
 		pointer (* get)(int index);
 		int (* size)(void);
 		pointer (* toArray)(void);
-		object (* select)(condition);
+		object (* where)(condition);
 		string (* toString)(P_retString, string);
 		void (* setFreeCallBack)(P_freeCallBack);
 	};
