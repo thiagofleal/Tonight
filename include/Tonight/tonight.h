@@ -31,11 +31,14 @@
 			/* Objects */
 			extern const TONIGHT struct __New New;
 			extern const TONIGHT struct __Array Array;
-			extern const TONIGHT struct __Matrix Matrix;
+			extern const TONIGHT struct ___Array_Interface___ ___Array___;
 			extern const TONIGHT struct __Memory Memory;
 			extern const TONIGHT struct __String String;
+			extern const TONIGHT struct ___String_Interface___ ___String___;
 			extern const TONIGHT struct __String WideString;
+			extern const TONIGHT struct ___String_Interface___ ___WideString___;
 			extern const TONIGHT struct __File File;
+			extern const TONIGHT struct ___File_Interface___ ___File___;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
 			extern const TONIGHT struct Resources Tonight;
@@ -105,6 +108,7 @@
 			extern string TONIGHT s_ds(double);
 			extern string TONIGHT s_fsf(float, int);
 			extern string TONIGHT s_dsf(double, int);
+			extern string TONIGHT s_ps(pointer);
 
 			extern INLINE string TONIGHT s_cps(char*);
 			extern INLINE string TONIGHT s_bps(bool*);
@@ -113,6 +117,7 @@
 			extern INLINE string TONIGHT s_dps(double*);
 			extern INLINE string TONIGHT s_fpsf(float*, int);
 			extern INLINE string TONIGHT s_dpsf(double*, int);
+			extern INLINE string TONIGHT s_pps(pointer*);
 
 			extern retString TONIGHT retConcat(string, ...);
 			extern retString TONIGHT cs(char);
@@ -122,6 +127,7 @@
 			extern retString TONIGHT ds(double);
 			extern retString TONIGHT fsf(float, int);
 			extern retString TONIGHT dsf(double, int);
+			extern retString TONIGHT ps(pointer);
 			extern retString TONIGHT formated(const string, ...);
 
 			extern INLINE retString TONIGHT cps(char*);
@@ -131,6 +137,7 @@
 			extern INLINE retString TONIGHT dps(double*);
 			extern INLINE retString TONIGHT fpsf(float*, int);
 			extern INLINE retString TONIGHT dpsf(double*, int);
+			extern INLINE retString TONIGHT pps(pointer*);
 
 			extern longRetString TONIGHT longRetConcat(string, ...);
 			extern longRetString TONIGHT cls(char);

@@ -28,6 +28,7 @@ typedef struct{
 typedef struct{
 	int length;
 	size_t size;
+	P_retString stringMethod;
 	ICollection *collection;
 	char data[0];
 }ArrayData;
@@ -256,6 +257,12 @@ string TONIGHT s_ds(double var){
 	return toString(s);
 }
 
+string TONIGHT s_ps(pointer var){
+	static char s[100];
+	snprintf(s, sizeof s, "%p", var);
+	return toString(s);
+}
+
 INLINE string TONIGHT s_fs(float var){
 	return s_ds((double)var);
 }
@@ -336,8 +343,20 @@ retString TONIGHT ds(double var){
 	return ret;
 }
 
-INLINE retString TONIGHT fs(float var){
-	return ds((double)var);
+retString TONIGHT fs(float var){
+	register char *s = s_fs(var);
+	static retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	Memory.free(s);
+	return ret;
+}
+
+INLINE retString TONIGHT ps(pointer var){
+	register char *s = s_ps(var);
+	static retString ret;
+	strncpy(ret.Text, s, sizeof ret);
+	Memory.free(s);
+	return ret;
 }
 
 longRetString TONIGHT longRetConcat(string wrd_1, ...){
@@ -378,6 +397,10 @@ INLINE retString TONIGHT fpsf(float *p, int d){
 
 INLINE retString TONIGHT dpsf(double *p, int d){
 	return dsf(*p, d);
+}
+
+INLINE retString TONIGHT pps(pointer *p){
+	return ps(*p);
 }
 
 longRetString TONIGHT cls(char var){
@@ -1539,12 +1562,13 @@ static ICollection __Array_collection = {
 	.index = Array_index
 };
 
-static pointer TONIGHT $throws alloc_array(size_t size, int lenght){
+static pointer TONIGHT $throws alloc_array(size_t size, int lenght, P_retString method){
 	ArrayData *p = p_malloc(sizeof(ArrayData) + size * lenght);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	p->length = lenght;
 	p->size = size;
+	p->stringMethod = method;
 	p->collection = &__Array_collection;
 	return p->data;
 }
@@ -1558,43 +1582,47 @@ pointer TONIGHT NO_CALL __create_array(size_t size, int length, pointer array){
 }
 
 static INLINE char* TONIGHT $throws __new_array_char(int q){
-	return alloc_array(sizeof(char), q);
+	return alloc_array(sizeof(char), q, cps);
 }
 
 static INLINE byte* TONIGHT $throws __new_array_byte(int q){
-	return alloc_array(sizeof(byte), q);
+	return alloc_array(sizeof(byte), q, ps);
 }
 
 static INLINE bool* TONIGHT $throws __new_array_bool(int q){
-	return alloc_array(sizeof(bool), q);
+	return alloc_array(sizeof(bool), q, bps);
 }
 
 static INLINE int* TONIGHT $throws __new_array_int(int q){
-	return alloc_array(sizeof(int), q);
+	return alloc_array(sizeof(int), q, ips);
 }
 
 static INLINE float* TONIGHT $throws __new_array_float(int q){
-	return alloc_array(sizeof(float), q);
+	return alloc_array(sizeof(float), q, fps);
 }
 
 static INLINE double* TONIGHT $throws __new_array_double(int q){
-	return alloc_array(sizeof(double), q);
+	return alloc_array(sizeof(double), q, dps);
 }
 
 static INLINE string* TONIGHT $throws __new_array_String(int q){
-	return alloc_array(sizeof(string), q);
+	return alloc_array(sizeof(string), q, (pointer)retConcat);
+}
+
+static INLINE retString object_retString(pointer obj){
+    return $(obj $as Object).toRetString();
 }
 
 static INLINE object* TONIGHT $throws __new_array_Object(int q){
-	return alloc_array(sizeof(object), q);
+	return alloc_array(sizeof(object), q, object_retString);
 }
 
 static INLINE pointer* TONIGHT $throws __new_array_pointer(int q){
-	return alloc_array(sizeof(pointer), q);
+	return alloc_array(sizeof(pointer), q, pps);
 }
 
 static INLINE pointer TONIGHT $throws __new_array_generic(size_t size, int q){
-	return alloc_array(size, q);
+	return alloc_array(size, q, ps);
 }
 
 /* Functions to Convert */
@@ -1841,6 +1869,11 @@ static pointer TONIGHT $throws Array_access(pointer array, int index){
 	return array + index * size;
 }
 
+static INLINE P_retString TONIGHT Array_getStringMethod(pointer array){
+    checkArgumentPointer(array);
+	return ((ArrayData*)(array - sizeof(ArrayData)))->stringMethod;
+}
+
 static INLINE void TONIGHT Array_index(pointer array, pointer var, int index){
 	*(int*)var = index;
 }
@@ -1849,14 +1882,19 @@ static INLINE void TONIGHT Array_free(pointer array){
 	if(array) p_free(array - sizeof(ArrayData));
 }
 
-static string TONIGHT Array_toString(pointer array, P_retString method, string sep){
+static INLINE void TONIGHT Array_setStringMethod(pointer array, P_retString method){
+    checkArgumentPointer(array);
+	((ArrayData*)(array - sizeof(ArrayData)))->stringMethod = method;
+}
+
+static string TONIGHT Array_toString(pointer array, string sep){
 	register int i, length = Array_length(array);
 	char ARRAY str = __new_array_char((Array_size(array) * 3 + strlen(sep)) * length);
+	P_retString method = Array_getStringMethod(array);
 	string ret;
 	if(!length)
 		return toString("");
 	*str = 0;
-	checkArgumentPointer(method);
 	for(i=0; i<length; i++)
 		strcat(strcat(str, getText(method(Array_access(array, i)))), sep);
 	str[strlen(str) - strlen(sep)] = 0;
@@ -2083,9 +2121,14 @@ static TONIGHT pointer AI_access(int index){
     return Array.access(array, index);
 }
 
-static TONIGHT string AI_toString(P_retString method, string sep){
+static TONIGHT void AI_setStringMethod(P_retString method){
     pointer array = (pointer)getCurrentObject();
-    return Array.toString(array, method, sep);
+    return Array.setStringMethod(array, method);
+}
+
+static TONIGHT string AI_toString(string sep){
+    pointer array = (pointer)getCurrentObject();
+    return Array.toString(array, sep);
 }
 
 static TONIGHT pointer AI_convert(cast casting){
@@ -2116,16 +2159,17 @@ static TONIGHT void AI_forEach(pointer function){
 static __ArrayInterface Array_select(pointer array){
     setCurrentObject((object)array);
     return (__ArrayInterface){
-        AI_free,
-        AI_length,
-        AI_size,
-        AI_access,
-        AI_toString,
-        AI_convert,
-        AI_where,
-        AI_contains,
-        AI_sort,
-        AI_forEach
+        .free = AI_free,
+        .length = AI_length,
+        .size = AI_size,
+        .access = AI_access,
+		.setStringMethod = AI_setStringMethod,
+        .toString = AI_toString,
+        .convert = AI_convert,
+        .where = AI_where,
+        .contains = AI_contains,
+        .sort = AI_sort,
+        .forEach = AI_forEach
     };
 }
 

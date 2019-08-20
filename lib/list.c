@@ -134,15 +134,19 @@ static object List_select(condition where){
 	return sel;
 }
 
-static string List_toString(P_retString method, string sep){
+static void List_setStringMethod(P_retString method){
+    $$(this $as List).stringMethod = method;
+}
+
+static string List_toString(string sep){
 	string ret;
     Writer write = New.Writer(Tonight.Std.String.Output);
     register int i, length = $$(this $as List).size;
     char ARRAY str = Array.Char((sizeof(retString) + String.length(sep)) * length);
+    P_retString method = $$(this $as List).stringMethod;
     if(!length)
         return toString("");
     *str = 0;
-    checkArgumentPointer(method);
     for(i=0; i<length; i++)
         write.print(str, getText(method(List_getNode(this, i)->value)), sep, $end);
     str[String.length(str) - String.length(sep)] = 0;
@@ -163,6 +167,7 @@ static IList List_vtble = {
 	.size = List_size,
 	.toArray = List_toArray,
 	.where = List_select,
+	.setStringMethod = List_setStringMethod,
 	.toString = List_toString,
 	.setFreeCallBack = List_setFreeCallBack
 };
@@ -265,11 +270,17 @@ static object IList_select(condition where){
 	return ret;
 }
 
-static string IList_toString(P_retString method, string sep){
+static void IList_setStringMethod(P_retString method){
+    Method(){
+        getInterface(List).setStringMethod(method);
+    }
+}
+
+static string IList_toString(string sep){
 	string ret;
 
 	Method(){
-        ret = getInterface(List).toString(method, sep);
+        ret = getInterface(List).toString(sep);
 	}
 
 	return ret;
@@ -289,6 +300,7 @@ static IList iList = {
 	.size = IList_size,
 	.toArray = IList_toArray,
 	.where = IList_select,
+	.setStringMethod = IList_setStringMethod,
 	.toString = IList_toString,
 	.setFreeCallBack = IList_setFreeCallBack
 };

@@ -49,7 +49,6 @@
 #	define $Empty(Type)	((Type){0})
 #	define $end			((string)0)
 #	define ARRAY		*
-#	define MATRIX		**
 #	define getText(str) ((string)&((str).Text)[0])
 
 #	define $throws
@@ -125,8 +124,9 @@
 #	define	$i(arg)	getText(is(arg))
 #	define	$f(arg)	getText(fs(arg))
 #	define	$d(arg)	getText(ds(arg))
+#	define	$p(arg)	getText(ps(arg))
 #	define	$s(arg)	getText(arg)
-#	define	$o(arg)	getText(Object.select(arg).toRetString())
+#	define	$o(arg)	getText($(arg $as Object).toRetString())
 #	define	$ff(arg, n)	getText(fsf(arg, n))
 #	define	$df(arg, n)	getText(dsf(arg, n))
 #	define	$F(format, args...)	getText(formated(format, args))
@@ -136,6 +136,7 @@
 #	define	$ip(arg)		getText(ips(arg))
 #	define	$fp(arg)		getText(fps(arg))
 #	define	$dp(arg)		getText(dps(arg))
+#	define	$pp(arg)		getText(pps(arg))
 #	define	$sp(arg)		getText((*arg))
 #	define	$fpf(arg, n)	getText(fpsf(arg, n))
 #	define	$dpf(arg, n)	getText(dpsf(arg, n))
@@ -146,7 +147,7 @@
 #	define	$lf(arg)	getText(fls(arg))
 #	define	$ld(arg)	getText(dls(arg))
 #	define	$ls(arg)	getText(arg)
-#	define	$lo(arg)	getText(Object.select(arg).toLongRetString())
+#	define	$lo(arg)	getText($(arg $as Object).toLongRetString())
 #	define	$lff(arg, n)	getText(flsf(arg, n))
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
 #	define	$lF(format, args...)	getText(longFormated(format, args))
@@ -473,7 +474,8 @@
 		int (* length)(void);
 		size_t (* size)(void);
 		pointer (* access)(int);
-		string (* toString)(P_retString, string);
+		void (* setStringMethod)(P_retString);
+		string (* toString)(string);
 		pointer (* convert)(cast);
 		pointer (* where)(condition);
 		bool (* contains)(pointer);
@@ -481,12 +483,17 @@
 		void (* forEach)(pointer);
     }__ArrayInterface;
 
+    struct ___Array_Interface___{
+		__ArrayInterface (* select)(pointer);
+    };
+
 	struct __Array{
 		void (* free)(pointer);
 		int (* length)(pointer);
 		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
-		string (* toString)(pointer, P_retString, string);
+		void (* setStringMethod)(pointer, P_retString);
+		string (* toString)(pointer, string);
 		pointer (* convert)(pointer, cast);
 		pointer (* where)(pointer, condition);
 		bool (* contains)(pointer, pointer);
@@ -503,8 +510,6 @@
 		object* (*Object)(int);
 		pointer* (*Pointer)(int);
 		pointer	(*Generic)(size_t, int);
-
-		__ArrayInterface (* select)(pointer);
 	};
 
 	struct __Memory{
@@ -529,6 +534,10 @@
 		pstring (* toWide)(void);
     }__StringInteface;
 
+    struct ___String_Interface___{
+		__StringInteface (*select)(pstring);
+    };
+
 	struct __String{
 		void (* free)(pstring);
 		pstring (* formated)(const pstring, ...);
@@ -543,8 +552,6 @@
 		int (* compare)(const pstring, const pstring);
 		pstring (* toString)(const pstring);
 		pstring (* toWide)(const pstring);
-
-		__StringInteface (*select)(pstring);
 	};
 
 	typedef struct{
@@ -556,6 +563,10 @@
 		void (* rewind)(void);
 		bool (* end)(void);
     }__FileInterface;
+
+    struct ___File_Interface___{
+		__FileInterface (*select)(file);
+    };
 
 	struct __File{
 		file (* open)(string, FileMode);
@@ -571,8 +582,6 @@
 			const FileMode write;
 			const FileMode append;
 		}Mode;
-
-		__FileInterface (*select)(file);
 	};
 
 	/* Keys */

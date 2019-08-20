@@ -325,7 +325,7 @@ const TONIGHT struct __New New = {
 	.Random = __new_Random,
 	.Timer = __new_Timer,
 	.Painter = __new_Painter,
-	.Object = newInstance,
+	.Object = (pointer)newInstance,
 
 	.Char = __new_char,
 	.Byte = __new_byte,
@@ -343,6 +343,7 @@ const struct __Array Array = {
 	.size = Array_size,
 	.access = Array_access,
 	.free = Array_free,
+	.setStringMethod = Array_setStringMethod,
 	.toString = Array_toString,
 	.convert = Array_convert,
 	.where = Array_where,
@@ -359,8 +360,10 @@ const struct __Array Array = {
 	.String = __new_array_String,
 	.Object = __new_array_Object,
 	.Pointer = __new_array_pointer,
-	.Generic = __new_array_generic,
+	.Generic = __new_array_generic
+};
 
+const struct ___Array_Interface___ ___Array___ = {
 	.select = Array_select
 };
 
@@ -387,8 +390,10 @@ const struct __String String = {
 	.trim = (pointer)String_trim,
 	.free = (pointer)__memory_free,
 	.toString = (pointer)toString,
-	.toWide = stringToWide,
+	.toWide = stringToWide
+};
 
+const struct ___String_Interface___ ___String___ = {
 	.select = String_select
 };
 
@@ -405,8 +410,10 @@ const struct __String WideString = {
 	.trim = (pointer)WString_trim,
 	.free = (pointer)__memory_free,
 	.toString = wideToString,
-	.toWide = (pointer)toWide,
+	.toWide = (pointer)toWide
+};
 
+const struct ___String_Interface___ ___WideString___ = {
 	.select = WString_select
 };
 
@@ -421,8 +428,10 @@ const struct __File File = {
 	.stdError = File_stdError,
 	.Mode.read = {"r"},
 	.Mode.write = {"w"},
-	.Mode.append = {"a"},
+	.Mode.append = {"a"}
+};
 
+const struct ___File_Interface___ ___File___ = {
 	.select = File_select
 };
 

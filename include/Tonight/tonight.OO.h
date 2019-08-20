@@ -24,10 +24,7 @@
 
 #		define __Define_Class__(_Class, _super, _int, _intVal)	static INLINE _int __##_Class##_select(object obj){\
 																	setCurrentObject(obj);\
-																	return *_Class.implement.__interface;\
-																}\
-																static INLINE struct _Class* __##_Class##_structure(object obj){\
-																	return &((Class_##_Class*)obj->data)->__self;\
+																	return *___##_Class##___.implement.__interface;\
 																}\
 																static void _Class##_ctor(object obj, pointer args){\
 																	setCurrentObject(obj);\
@@ -41,22 +38,22 @@
                                                                         __del_##_Class();\
 																	}\
 																}\
-																const struct Interface_##_Class _Class = {\
+																const struct Interface_##_Class ___##_Class##___ = {\
 																	._ = (const struct str_Class){\
 																		.name = #_Class,\
-																		.super = (const Class)&_super,\
+																		.super = (const Class)&___##_super##___,\
 																		.size = sizeof(Class_##_Class),\
 																		.ctor = _Class##_ctor,\
 																		.dtor = _Class##_dtor\
 																	},\
-																	.__class__ = (Class)&_Class,\
+																	.__class__ = (Class)&___##_Class##___,\
 																	.implement = (const Class_##_Class){\
 																		.__interface = &_intVal\
 																	},\
-																	.select = __##_Class##_select,\
-																	.structure = __##_Class##_structure\
-																}
-#		define __class__(_Class, _super, _int)			typedef struct{\
+																	.select = __##_Class##_select\
+																};\
+																const Class _Class = (const Class)&___##_Class##___
+#		define ___class___(_Class, _super, _int)		typedef struct{\
 															Class_##_super __super;\
 															_int *__interface;\
 															struct _Class __self;\
@@ -66,15 +63,15 @@
 															const Class __class__;\
 															const Class_##_Class implement;\
 															_int (*select)(object);\
-															struct _Class* (*structure)(object);\
-														}_Class
+														}___##_Class##___;\
+														extern const Class _Class
 
-#		define Class(__args__)          __class__(__args__)
+#		define Class(__args__)          ___class___(__args__)
 #		define Define_Class(__args__)	__Define_Class__(__args__)
 
 #		define  interface(_int)			    typedef struct _int _int
-#		define  __select__(_obj, _Class)	_Class.select(_obj)
-#       define  __structure__(_obj, _Class) (*_Class.structure(_obj))
+#		define  __select__(_obj, _Class)	___##_Class##___.select(_obj)
+#       define  __structure__(_obj, _Class) ((Class_##_Class*)((object)_obj)->data)->__self
 #		define  $(_args_)				    __select__(_args_)
 #		define  $$(_args_)				    __structure__(_args_)
 
@@ -106,16 +103,14 @@
 
 /*	Superclass' access	*/
 
-#		define	superOf(_Class) 	        (_Class.__class__->super)
-#		define	Super(_class)	        	(_class.__class__)
+#		define	superOf(_Class) 	        _Class->super
 #		define	cast_super(_super)  	    (((Class_##_super*)self)->__self)
 
 #   ifndef __cplusplus
 
-#       define class(__args__)  __class__(__args__)
+#       define class(__args__)  ___class___(__args__)
 #       define this             This
-#       define virtual          Virtual
-#       define new(_c, _a...)   newInstance(_c.__class__ _a)
+#       define new(_args...)    newInstance(_args)
 #       define delete           Delete
 #   endif // __cplusplus
 
@@ -145,8 +140,9 @@ extern const struct Interface_Object{
 	const Class __class__;
 	const Class_Object implement;
 	IObject (*select)(object);
-	struct Object* (*structure)(object);
-}Object;
+}___Object___;
+
+extern const Class Object;
 
 struct ISet{
 	ICollection * (* getCollection)(void);
@@ -161,11 +157,13 @@ struct Set{
 
 Class(Set $extends Object $implements ISet);
 
+typedef const void *classDescriptor;
+
 /*	new and delete	*/
-extern object TONIGHT newInstance(Class, ...);
-extern void TONIGHT construct(Class, ...);
+extern object TONIGHT newInstance(classDescriptor, ...);
+extern void TONIGHT construct(classDescriptor, ...);
 extern void TONIGHT Delete(object);
-extern void TONIGHT destruct(Class);
+extern void TONIGHT destruct(classDescriptor);
 
 extern Class TONIGHT classOf(object);
 extern bool TONIGHT isType(object, Class);

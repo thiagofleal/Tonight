@@ -261,7 +261,7 @@ static INLINE size_t TONIGHT __memory_size(pointer);
 static INLINE pointer TONIGHT $throws __memory_copy(pointer);
 static INLINE void TONIGHT __memory_free(pointer);
 
-static NORMAL pointer TONIGHT $throws alloc_array(size_t, int);
+static NORMAL pointer TONIGHT $throws alloc_array(size_t, int, P_retString);
 static INLINE char* TONIGHT $throws __new_array_char(int);
 static INLINE byte* TONIGHT $throws __new_array_byte(int);
 static INLINE bool* TONIGHT $throws __new_array_bool(int);
@@ -310,7 +310,8 @@ static INLINE size_t TONIGHT Array_size(pointer);
 static NORMAL pointer TONIGHT $throws Array_access(pointer, int);
 static INLINE void TONIGHT Array_index(pointer, pointer, int);
 static INLINE void TONIGHT Array_free(pointer);
-static NORMAL string TONIGHT $throws Array_toString(pointer, P_retString, string);
+static INLINE void TONIGHT Array_setStringMethod(pointer, P_retString);
+static NORMAL string TONIGHT $throws Array_toString(pointer, string);
 static NORMAL pointer TONIGHT $throws Array_convert(pointer, cast);
 static NORMAL pointer TONIGHT $throws Array_where(pointer, condition);
 static NORMAL bool TONIGHT $throws Array_contains(pointer, pointer);

@@ -4,10 +4,11 @@
 
 object This = NULL;
 
-object TONIGHT newInstance(Class class, ...){
+object TONIGHT newInstance(classDescriptor _class, ...){
 	object _new = Memory.alloc(sizeof(Intern_Object));
+	Class class = (const Class)_class;
 	va_list args;
-	va_start(args, class);
+	va_start(args, _class);
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
 	class->ctor(_new, args);
@@ -15,9 +16,10 @@ object TONIGHT newInstance(Class class, ...){
 	return _new;
 }
 
-extern void TONIGHT construct(Class class, ...){
+extern void TONIGHT construct(classDescriptor _class, ...){
 	va_list args;
-	va_start(args, class);
+	Class class = (const Class)_class;
+	va_start(args, _class);
 	class->ctor(This, args);
 	va_end(args);
 }
@@ -30,7 +32,8 @@ void TONIGHT Delete(object self){
 	Memory.free(self);
 }
 
-extern void TONIGHT destruct(Class class){
+extern void TONIGHT destruct(classDescriptor _class){
+    Class class = (const Class)_class;
 	if(!This)
 		return;
 	class->dtor(This);
@@ -53,11 +56,11 @@ INLINE size_t TONIGHT sizeOf(object obj){
 }
 
 INLINE object TONIGHT copy(object obj){
-	return Object.select(obj).copy();
+	return $(obj $as Object).copy();
 }
 
 bool TONIGHT compare(object a, object b){
-	return Object.select(a).equal(b);
+	return $(a $as Object).equal(b);
 }
 
 /* Object class */
@@ -78,13 +81,13 @@ static string Object_toString(void){
 
 static retString Object_toRetString(void){
 	retString ret;
-    memcpy(ret.Text, Object.select(this).toString(), sizeof ret);
+    memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
     return ret;
 }
 
 static longRetString Object_toLongRetString(void){
 	longRetString ret;
-    memcpy(ret.Text, Object.select(this).toString(), sizeof ret);
+    memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
 	return ret;
 }
 
@@ -163,11 +166,7 @@ static void del_Object(void){
 
 static INLINE IObject Object_select(object obj){
 	setCurrentObject(obj);
-	return *Object.implement.__interface;
-}
-
-static INLINE struct Object* Object_structure(object obj){
-    return &((Class_Object*)obj->data)->__self;
+	return *___Object___.implement.__interface;
 }
 
 static void Object_ctor(object obj, pointer args){
@@ -184,7 +183,7 @@ static void Object_dtor(object obj){
 	}
 }
 
-const struct Interface_Object Object = {
+const struct Interface_Object ___Object___ = {
 	._ = (const struct str_Class){
 		.name = "Object",
 		.super = NULL,
@@ -196,9 +195,10 @@ const struct Interface_Object Object = {
 	.implement = (const Class_Object){
 		.__interface = &iObject
 	},
-	.select = Object_select,
-	.structure = Object_structure
+	.select = Object_select
 };
+
+const Class Object = (const Class)&___Object___;
 
 /* Set */
 
