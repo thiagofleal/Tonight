@@ -101,7 +101,7 @@ static pointer List_get(int index){
 	return List_getNode(this, index)->value;
 }
 
-static int List_size(void){
+static unsigned int List_size(void){
 	return $$(this $as List).size;
 }
 
@@ -190,7 +190,7 @@ static ICollection List_collection = {
 	.index = List_ICollection_index
 };
 
-static void List_constructor(){
+static void List_constructor(pointer args){
 	construct(superOf(List));
 	$$(this $as List).list = NULL;
 	$$(this $as List).size = 0;
@@ -199,7 +199,7 @@ static void List_constructor(){
 	$(this $as Set).setCollection(List_collection);
 }
 
-static void List_destructor(){
+static void List_destructor(void){
 	while($$(this $as List).size){
 		$(this $as List).remove(0);
 	}
@@ -235,8 +235,8 @@ static pointer IList_get(int index){
 	return ret;
 }
 
-static int IList_size(void){
-	int ret;
+static unsigned int IList_size(void){
+	unsigned int ret;
 
 	Method(){
         ret = getInterface(List).size();

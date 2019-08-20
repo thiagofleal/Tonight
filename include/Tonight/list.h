@@ -28,7 +28,7 @@
 		void (* addPos)(pointer value, int index);
 		void (* remove)(int index);
 		pointer (* get)(int index);
-		int (* size)(void);
+		unsigned int (* size)(void);
 		pointer (* toArray)(void);
 		object (* where)(condition);
 		string (* toString)(P_retString, string);
@@ -39,7 +39,7 @@
 
 	struct List{
 		struct Node *list;
-		int size;
+		unsigned int size;
 		P_freeCallBack freeCallBack;
 	};
 
