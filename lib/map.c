@@ -56,6 +56,10 @@ static void Map_remove(object self, int index){
         *p = (*p)->next;
     }
 
+    if($$(self $as Map).freeCallback){
+        $$(self $as Map).freeCallback(aux->item.value);
+    }
+
     Memory.free(aux);
     $$(self $as Map).size--;
 }
@@ -114,11 +118,21 @@ static pointer Map_get(string index){
     return NULL;
 }
 
+static unsigned int Map_size(void){
+    return $$(this $as Map).size;
+}
+
+static void Map_setFreeCallBack(MapItemFreeCallBack callback){
+    $$(this $as Map).freeCallback = callback;
+}
+
 static IMap Map_vtble = {
     .set = Map_set,
     .get = Map_get,
     .isset = Map_isset,
-    .unset = Map_unset
+    .unset = Map_unset,
+    .size = Map_size,
+    .setFreeCallBack = Map_setFreeCallBack
 };
 
 static inline int Map_ICollection_length(pointer collect){
@@ -188,11 +202,27 @@ static void IMap_unset(string index){
     }
 }
 
+static unsigned int IMap_size(void){
+    unsigned int ret;
+    Method(){
+        ret = getInterface(Map).size();
+    }
+    return ret;
+}
+
+static void IMap_setFreeCallBack(MapItemFreeCallBack callback){
+    Method(){
+        getInterface(Map).setFreeCallBack(callback);
+    }
+}
+
 static IMap iMap = {
     .set = IMap_set,
     .get = IMap_get,
     .isset = IMap_isset,
-    .unset = IMap_unset
+    .unset = IMap_unset,
+    .size = IMap_size,
+    .setFreeCallBack = IMap_setFreeCallBack,
 };
 
 Constructor(Map, Map_constructor);
