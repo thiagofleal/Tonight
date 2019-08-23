@@ -181,7 +181,7 @@ static void IMap_set(string index, pointer value){
 }
 
 static pointer IMap_get(string index){
-    pointer ret;
+    pointer ret = $Empty(pointer);
     Method(){
         ret = getInterface(Map).get(index);
     }
@@ -189,7 +189,7 @@ static pointer IMap_get(string index){
 }
 
 static bool IMap_isset(string index){
-    bool ret;
+    bool ret = $Empty(bool);
     Method(){
         ret = getInterface(Map).isset(index);
     }
@@ -203,7 +203,7 @@ static void IMap_unset(string index){
 }
 
 static unsigned int IMap_size(void){
-    unsigned int ret;
+    unsigned int ret = $Empty(unsigned int);
     Method(){
         ret = getInterface(Map).size();
     }

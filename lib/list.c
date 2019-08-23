@@ -231,43 +231,35 @@ static void IList_remove(int index){
 }
 
 static pointer IList_get(int index){
-	pointer ret;
-
+	pointer ret = $Empty(pointer);
     Method(){
         ret = getInterface(List).get(index);
 	}
-
-	return ret;
+    return ret;
 }
 
 static unsigned int IList_size(void){
-	unsigned int ret;
-
-	Method(){
+	unsigned int ret = $Empty(unsigned int);
+    Method(){
         ret = getInterface(List).size();
 	}
-
-	return ret;
+    return ret;
 }
 
 static pointer IList_toArray(void){
-	pointer ret;
-
-	Method(){
+	pointer ret = $Empty(pointer);
+    Method(){
         ret = getInterface(List).toArray();
 	}
-
-	return ret;
+    return ret;
 }
 
 static object IList_select(condition where){
-	object ret;
-
-	Method(){
+	object ret = $Empty(object);
+    Method(){
         ret = getInterface(List).where(where);
 	}
-
-	return ret;
+    return ret;
 }
 
 static void IList_setStringMethod(P_retString method){
@@ -277,13 +269,11 @@ static void IList_setStringMethod(P_retString method){
 }
 
 static string IList_toString(string sep){
-	string ret;
-
-	Method(){
+	string ret = $Empty(string);
+    Method(){
         ret = getInterface(List).toString(sep);
 	}
-
-	return ret;
+    return ret;
 }
 
 static void IList_setFreeCallBack(P_freeCallBack freeCallBack){

@@ -160,19 +160,19 @@ Class(Set $extends Object $implements ISet);
 typedef const void *classDescriptor;
 
 /*	new and delete	*/
-extern object TONIGHT newInstance(classDescriptor, ...);
-extern void TONIGHT construct(classDescriptor, ...);
-extern void TONIGHT Delete(object);
-extern void TONIGHT destruct(classDescriptor);
+extern object TONIGHT newInstance(const Class, ...);
+extern void TONIGHT construct(const Class, ...);
+extern void TONIGHT Delete(const object);
+extern void TONIGHT destruct(const Class);
 
-extern Class TONIGHT classOf(object);
-extern bool TONIGHT isType(object, Class);
-extern size_t TONIGHT sizeOf(object);
-extern object TONIGHT copy(object);
-extern bool TONIGHT compare(object, object);
+extern Class TONIGHT classOf(const object);
+extern bool TONIGHT isType(const object, const Class);
+extern size_t TONIGHT sizeOf(const object);
+extern object TONIGHT copy(const object);
+extern bool TONIGHT compare(const object, const object);
 
-extern INLINE void TONIGHT setCurrentObject(object);
+extern INLINE void TONIGHT setCurrentObject(const object);
 extern INLINE object TONIGHT getCurrentObject(void);
-extern INLINE object TONIGHT checkCurrentObject(Class);
+extern INLINE bool TONIGHT checkCurrentObject(const Class);
 
 #endif	// ifndef TONIGHT_OO_MACROS

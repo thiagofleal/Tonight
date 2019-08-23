@@ -193,7 +193,7 @@ static object get_object(void){
 	return NULL;
 }
 
-INLINE void TONIGHT setCurrentObject(object obj){
+INLINE void TONIGHT setCurrentObject(const object obj){
 	push_object(obj);
 }
 
@@ -201,9 +201,8 @@ INLINE object TONIGHT getCurrentObject(void){
 	return pop_object();
 }
 
-INLINE object TONIGHT checkCurrentObject(Class class){
-	object current = get_object();
-	return isType(current, class) ? current : NULL;
+INLINE bool TONIGHT checkCurrentObject(const Class class){
+	return isType(get_object(), class);
 }
 
 /*

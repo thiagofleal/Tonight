@@ -1440,23 +1440,28 @@ static INLINE void TONIGHT __Colors_background(int _color){
 
 /* Initialize objects */
 static INLINE Scanner TONIGHT __new_Scanner(Input father){
-	return *(Scanner*)&father;
+    pointer p = &father;
+	return *(Scanner*)p;
 }
 
 static INLINE Writer TONIGHT __new_Writer(Output father){
-	return *(Writer*)&father;
+	pointer p = &father;
+	return *(Writer*)p;
 }
 
 static INLINE Random TONIGHT __new_Random(RandomicMaker father){
-	return *(Random*)&father;
+    pointer p = &father;
+	return *(Random*)p;
 }
 
 static INLINE Timer TONIGHT __new_Timer(TimerCreate father){
-	return *(Timer*)&father;
+    pointer p = &father;
+	return *(Timer*)p;
 }
 
 static INLINE Painter TONIGHT __new_Painter(ColorCreate father){
-	return *(Painter*)&father;
+    pointer p = &father;
+	return *(Painter*)p;
 }
 
 static file TONIGHT $throws __new_File(string fName, FileMode fMode){

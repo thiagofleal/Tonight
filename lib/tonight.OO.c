@@ -4,11 +4,10 @@
 
 object This = NULL;
 
-object TONIGHT newInstance(classDescriptor _class, ...){
+object TONIGHT newInstance(const Class class, ...){
 	object _new = Memory.alloc(sizeof(Intern_Object));
-	Class class = (const Class)_class;
 	va_list args;
-	va_start(args, _class);
+	va_start(args, class);
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
 	class->ctor(_new, args);
@@ -16,10 +15,9 @@ object TONIGHT newInstance(classDescriptor _class, ...){
 	return _new;
 }
 
-extern void TONIGHT construct(classDescriptor _class, ...){
+extern void TONIGHT construct(const Class class, ...){
 	va_list args;
-	Class class = (const Class)_class;
-	va_start(args, _class);
+	va_start(args, class);
 	class->ctor(This, args);
 	va_end(args);
 }
@@ -32,8 +30,7 @@ void TONIGHT Delete(object self){
 	Memory.free(self);
 }
 
-extern void TONIGHT destruct(classDescriptor _class){
-    Class class = (const Class)_class;
+void TONIGHT destruct(const Class class){
 	if(!This)
 		return;
 	class->dtor(This);
@@ -43,7 +40,7 @@ INLINE Class TONIGHT classOf(object obj){
 	return obj->class_pointer;
 }
 
-bool TONIGHT isType(object obj, Class class){
+bool TONIGHT isType(const object obj, const Class class){
 	Class pClass;
 	for(pClass = obj->class_pointer; pClass; pClass = pClass->super)
 		if(pClass == class)
@@ -51,27 +48,28 @@ bool TONIGHT isType(object obj, Class class){
 	return false;
 }
 
-INLINE size_t TONIGHT sizeOf(object obj){
+INLINE size_t TONIGHT sizeOf(const object obj){
 	return obj->class_pointer->size;
 }
 
-INLINE object TONIGHT copy(object obj){
+INLINE object TONIGHT copy(const object obj){
 	return $(obj $as Object).copy();
 }
 
-bool TONIGHT compare(object a, object b){
+bool TONIGHT compare(const object a, const object b){
 	return $(a $as Object).equal(b);
 }
 
 /* Object class */
 
-static bool Object_equal(object obj){
+static bool Object_equal(const object obj){
 	return this == obj ? true : false;
 }
 
 static object Object_clone(void){
 	object ret = Memory.copy(this);
     ret->data = Memory.copy(this->data);
+    ret->class_pointer = this->class_pointer;
 	return ret;
 }
 
@@ -100,52 +98,42 @@ static IObject Object_vtble = {
 };
 
 static bool IObject_equal(object obj){
-	bool ret;
-
+	bool ret = $Empty(bool);
 	Method(){
         ret = getInterface(Object).equal(obj);
 	}
-
 	return ret;
 }
 
 static object IObject_clone(void){
-	object ret;
-
+	object ret = $Empty(object);
 	Method(){
         ret = getInterface(Object).copy();
 	}
-
 	return ret;
 }
 
 static string IObject_toString(void){
-	string ret;
-
-	Method(){
+	string ret = $Empty(string);
+    Method(){
         ret = getInterface(Object).toString();
 	}
-
-	return ret;
+    return ret;
 }
 
 static retString IObject_toRetString(void){
-	retString ret;
-
+	retString ret = $Empty(retString);
 	Method(){
         ret = getInterface(Object).toRetString();
 	}
-
-	return ret;
+    return ret;
 }
 
 static longRetString IObject_toLongRetString(void){
-	longRetString ret;
-
+	longRetString ret = $Empty(longRetString);
 	Method(){
         ret = getInterface(Object).toLongRetString();
 	}
-
 	return ret;
 }
 
@@ -254,12 +242,10 @@ static void Set_destructor(void){
 }
 
 static ICollection * ISet_getCollection(void){
-	ICollection *ret;
-
+	ICollection *ret = $Empty(ICollection*);
 	Method(){
 	    ret = getInterface(Set).getCollection();
 	}
-
 	return ret;
 }
 

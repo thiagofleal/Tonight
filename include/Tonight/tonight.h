@@ -31,18 +31,19 @@
 			/* Objects */
 			extern const TONIGHT struct __New New;
 			extern const TONIGHT struct __Array Array;
-			extern const TONIGHT struct ___Array_Interface___ ___Array___;
 			extern const TONIGHT struct __Memory Memory;
 			extern const TONIGHT struct __String String;
-			extern const TONIGHT struct ___String_Interface___ ___String___;
 			extern const TONIGHT struct __String WideString;
-			extern const TONIGHT struct ___String_Interface___ ___WideString___;
 			extern const TONIGHT struct __File File;
-			extern const TONIGHT struct ___File_Interface___ ___File___;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
 			extern const TONIGHT struct Resources Tonight;
 			extern const TONIGHT ICollection Collection;
+
+			extern const TONIGHT struct ___Array_Interface___ ___Array___;
+			extern const TONIGHT struct ___String_Interface___ ___String___;
+			extern const TONIGHT struct ___String_Interface___ ___WideString___;
+			extern const TONIGHT struct ___File_Interface___ ___File___;
 
 			/* Exceptions */
 			extern EXCEPTION TONIGHT GenericException;
