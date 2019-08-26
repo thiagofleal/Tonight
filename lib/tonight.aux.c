@@ -187,12 +187,6 @@ static object pop_object(void){
 	return NULL;
 }
 
-static object get_object(void){
-	if(objstk)
-		return objstk->value;
-	return NULL;
-}
-
 INLINE void TONIGHT setCurrentObject(const object obj){
 	push_object(obj);
 }
@@ -201,8 +195,16 @@ INLINE object TONIGHT getCurrentObject(void){
 	return pop_object();
 }
 
-INLINE bool TONIGHT checkCurrentObject(const Class class){
-	return isType(get_object(), class);
+object TONIGHT getCurrentObjectChecked(const Class class, P_void onError, ...){
+	object self = pop_object();
+	if(!isType(self, class)){
+	    va_list v;
+        va_start(v, onError);
+        onError(self, v);
+        va_end(v);
+        return NULL;
+	}
+	return self;
 }
 
 /*
@@ -215,10 +217,25 @@ struct StackThis {
     pointer prev;
 }*stack_this = NULL;
 
-void __create_this_context(void){
+static void classThisError(object obj, pointer args){
+    $va_set(args, { Class obj_class; });
+    static string error_str = NULL;
+    if(error_str) String.free(error_str);
+    error_str = concat(
+        "The class \"",
+        (obj->class_pointer ? obj->class_pointer->name : "(undefined"),
+        "\" not extends \"",
+        $va_get.obj_class->name,
+        "\"",
+        $end
+    );
+    Throw(IllegalAccessException, error_str);
+}
+
+void __create_this_context(const Class class){
     struct StackThis *_new = Memory.alloc(sizeof(struct StackThis));
     _new->__this = This;
-    This = getCurrentObject();
+    This = getCurrentObjectChecked(class, classThisError, class);
     _new->ret = true;
     _new->prev = stack_this;
     stack_this = _new;

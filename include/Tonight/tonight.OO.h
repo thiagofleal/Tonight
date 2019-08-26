@@ -28,13 +28,13 @@
 																}\
 																static void _Class##_ctor(object obj, pointer args){\
 																	setCurrentObject(obj);\
-																	Method(){\
+																	Method(_Class){\
                                                                         __new_##_Class(args);\
 																	}\
 																}\
 																static INLINE void _Class##_dtor(object obj){\
 																	setCurrentObject(obj);\
-																	Method(){\
+																	Method(_Class){\
                                                                         __del_##_Class();\
 																	}\
 																}\
@@ -92,7 +92,7 @@
 
 /*	Methods	*/
 
-#       define  Method()                    __create_this_context();while(__function_this())
+#       define  Method(_class_)             __create_this_context(_class_);while(__function_this())
 #       define  setInterface(_class, _int_) (((Class_##_class*)this->data)->__interface = &_int_)
 #       define  getInterface(_class)        (*((Class_##_class*)this->data)->__interface)
 
@@ -111,7 +111,7 @@
 #       define class(__args__)  ___class___(__args__)
 #       define this             This
 #       define new(_args...)    newInstance(_args)
-#       define delete           Delete
+#       define delete           deleteInstance
 #   endif // __cplusplus
 
 extern object This;
@@ -162,7 +162,7 @@ typedef const void *classDescriptor;
 /*	new and delete	*/
 extern object TONIGHT newInstance(const Class, ...);
 extern void TONIGHT construct(const Class, ...);
-extern void TONIGHT Delete(const object);
+extern void TONIGHT deleteInstance(object);
 extern void TONIGHT destruct(const Class);
 
 extern Class TONIGHT classOf(const object);
@@ -173,6 +173,6 @@ extern bool TONIGHT compare(const object, const object);
 
 extern INLINE void TONIGHT setCurrentObject(const object);
 extern INLINE object TONIGHT getCurrentObject(void);
-extern INLINE bool TONIGHT checkCurrentObject(const Class);
+extern object TONIGHT getCurrentObjectChecked(const Class, P_void, ...);
 
 #endif	// ifndef TONIGHT_OO_MACROS

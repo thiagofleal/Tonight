@@ -175,14 +175,14 @@ static void Map_destructor(void){
 }
 
 static void IMap_set(string index, pointer value){
-    Method(){
+    Method(Map){
         getInterface(Map).set(index, value);
     }
 }
 
 static pointer IMap_get(string index){
     pointer ret = $Empty(pointer);
-    Method(){
+    Method(Map){
         ret = getInterface(Map).get(index);
     }
     return ret;
@@ -190,28 +190,28 @@ static pointer IMap_get(string index){
 
 static bool IMap_isset(string index){
     bool ret = $Empty(bool);
-    Method(){
+    Method(Map){
         ret = getInterface(Map).isset(index);
     }
     return ret;
 }
 
 static void IMap_unset(string index){
-    Method(){
+    Method(Map){
         getInterface(Map).unset(index);
     }
 }
 
 static unsigned int IMap_size(void){
     unsigned int ret = $Empty(unsigned int);
-    Method(){
+    Method(Map){
         ret = getInterface(Map).size();
     }
     return ret;
 }
 
 static void IMap_setFreeCallBack(MapItemFreeCallBack callback){
-    Method(){
+    Method(Map){
         getInterface(Map).setFreeCallBack(callback);
     }
 }

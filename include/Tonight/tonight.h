@@ -87,7 +87,7 @@
 			extern void TONIGHT NO_CALL __create_with_context(pointer);
 			extern bool TONIGHT NO_CALL __function_with(void);
 
-			extern void TONIGHT NO_CALL __create_this_context(void);
+			extern void TONIGHT NO_CALL __create_this_context(const Class);
             extern bool TONIGHT NO_CALL __function_this(void);
 
 			extern INLINE pointer TONIGHT useContext(void);

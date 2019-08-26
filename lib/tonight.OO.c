@@ -22,29 +22,27 @@ extern void TONIGHT construct(const Class class, ...){
 	va_end(args);
 }
 
-void TONIGHT Delete(object self){
-	if(!self)
-		return;
-	if(self->class_pointer->dtor)
-		self->class_pointer->dtor(self);
+void TONIGHT deleteInstance(object self){
+	if(!self) return;
+    if(!self->class_pointer) return;
+    if(self->class_pointer->dtor) self->class_pointer->dtor(self);
+    self->class_pointer = NULL;
 	Memory.free(self);
 }
 
 void TONIGHT destruct(const Class class){
-	if(!This)
-		return;
+	if(!This) return;
 	class->dtor(This);
 }
 
 INLINE Class TONIGHT classOf(object obj){
-	return obj->class_pointer;
+	return (obj ? obj->class_pointer : NULL);
 }
 
 bool TONIGHT isType(const object obj, const Class class){
 	Class pClass;
 	for(pClass = obj->class_pointer; pClass; pClass = pClass->super)
-		if(pClass == class)
-			return true;
+		if(pClass == class) return true;
 	return false;
 }
 
@@ -99,7 +97,7 @@ static IObject Object_vtble = {
 
 static bool IObject_equal(object obj){
 	bool ret = $Empty(bool);
-	Method(){
+	Method(Object){
         ret = getInterface(Object).equal(obj);
 	}
 	return ret;
@@ -107,7 +105,7 @@ static bool IObject_equal(object obj){
 
 static object IObject_clone(void){
 	object ret = $Empty(object);
-	Method(){
+	Method(Object){
         ret = getInterface(Object).copy();
 	}
 	return ret;
@@ -115,7 +113,7 @@ static object IObject_clone(void){
 
 static string IObject_toString(void){
 	string ret = $Empty(string);
-    Method(){
+    Method(Object){
         ret = getInterface(Object).toString();
 	}
     return ret;
@@ -123,7 +121,7 @@ static string IObject_toString(void){
 
 static retString IObject_toRetString(void){
 	retString ret = $Empty(retString);
-	Method(){
+	Method(Object){
         ret = getInterface(Object).toRetString();
 	}
     return ret;
@@ -131,7 +129,7 @@ static retString IObject_toRetString(void){
 
 static longRetString IObject_toLongRetString(void){
 	longRetString ret = $Empty(longRetString);
-	Method(){
+	Method(Object){
         ret = getInterface(Object).toLongRetString();
 	}
 	return ret;
@@ -159,14 +157,14 @@ static INLINE IObject Object_select(object obj){
 
 static void Object_ctor(object obj, pointer args){
 	setCurrentObject(obj);
-	Method(){
+	Method(Object){
         new_Object(args);
 	}
 }
 
 static void Object_dtor(object obj){
 	setCurrentObject(obj);
-	Method(){
+	Method(Object){
         del_Object();
 	}
 }
@@ -243,14 +241,14 @@ static void Set_destructor(void){
 
 static ICollection * ISet_getCollection(void){
 	ICollection *ret = $Empty(ICollection*);
-	Method(){
+	Method(Set){
 	    ret = getInterface(Set).getCollection();
 	}
 	return ret;
 }
 
 static void ISet_setCollection(ICollection value){
-	Method(){
+	Method(Set){
 	    getInterface(Set).setCollection(value);
 	}
 }

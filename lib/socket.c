@@ -48,53 +48,51 @@ static void Socket_destructor(){
 }
 
 static void ISocket_accept(object socket){
-	Method(){
+	Method(Socket){
         getInterface(Socket).accept(socket);
 	}
 }
 
 static void ISocket_start(void){
-	Method(){
+	Method(Socket){
         getInterface(Socket).start();
 	}
 }
 
 static void ISocket_connect(void){
-	Method(){
+	Method(Socket){
         getInterface(Socket).connect();
 	}
 }
 
 static void ISocket_bind(void){
-	Method(){
+	Method(Socket){
         getInterface(Socket).bind();
 	}
 }
 
 static void ISocket_listen(int backlog){
-	Method(){
+	Method(Socket){
         getInterface(Socket).listen(backlog);
 	}
 }
 
 static void ISocket_send(Package message){
-	Method(){
+	Method(Socket){
         getInterface(Socket).send(message);
 	}
 }
 
 static Package ISocket_receive(void){
 	Package ret;
-
-	Method(){
+    Method(Socket){
         ret = getInterface(Socket).receive();
 	}
-
 	return ret;
 }
 
 static void ISocket_close(void){
-	Method(){
+	Method(Socket){
         getInterface(Socket).close();
 	}
 }
