@@ -172,7 +172,7 @@ static IList List_vtble = {
 	.setFreeCallBack = List_setFreeCallBack
 };
 
-static inline int List_ICollection_length(pointer collect){
+static inline uint List_ICollection_length(pointer collect){
 	return $(collect $as List).size();
 }
 

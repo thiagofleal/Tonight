@@ -17,20 +17,22 @@ static P_pointer p_calloc = calloc;
 static P_pointer p_realloc = realloc;
 static P_void p_free = free;
 
+static bool ___init_random___ = false;
+
 #include "tonight.sys.h"
 
 typedef struct{
 	size_t size;
 	ICollection *collection;
-	char data[0];
+	byte data[0];
 }MemoryData;
 
 typedef struct{
-	int length;
+	uint length;
 	size_t size;
 	P_retString stringMethod;
 	ICollection *collection;
-	char data[0];
+	byte data[0];
 }ArrayData;
 
 /* Functions */
@@ -1451,6 +1453,10 @@ static INLINE Writer TONIGHT __new_Writer(Output father){
 
 static INLINE Random TONIGHT __new_Random(RandomicMaker father){
     pointer p = &father;
+    if(!___init_random___){
+        __initRandom();
+        ___init_random___ = true;
+    }
 	return *(Random*)p;
 }
 
@@ -1610,8 +1616,12 @@ static INLINE double* TONIGHT $throws __new_array_double(int q){
 	return alloc_array(sizeof(double), q, dps);
 }
 
+static INLINE retString sps(string *str){
+    return formated("%s", *str);
+}
+
 static INLINE string* TONIGHT $throws __new_array_String(int q){
-	return alloc_array(sizeof(string), q, (pointer)retConcat);
+	return alloc_array(sizeof(string), q, sps);
 }
 
 static INLINE retString object_retString(pointer obj){
@@ -1856,7 +1866,7 @@ static pstring WString_trim(const pstring _str){
 }
 
 /* Functions to Array */
-static INLINE int TONIGHT Array_length(pointer array){
+static INLINE uint TONIGHT Array_length(pointer array){
 	checkArgumentPointer(array);
 	return ((ArrayData*)(array - sizeof(ArrayData)))->length;
 }
@@ -1970,6 +1980,9 @@ static string ARRAY __args = NULL;
 
 static void onExit(void){
 	if(__args){
+        register int lenth = Array_length(__args);
+        register int i = 0;
+        for(;i<lenth;i++) free(__args[i]);
 		Array_free(__args);
 		__args = NULL;
 	}
@@ -1991,7 +2004,7 @@ static void TONIGHT __Base_TonightMode(register int argc, string argv[]){
 	if(f++)
 		throw(ApplicationException, "Application previosly initialized");
 	for(i = 0; i < argc; i++)
-		__args[i] = argv[i];
+		__args[i] = toString(argv[i]);
 	atexit(onExit);
 }
 
@@ -2044,7 +2057,7 @@ INLINE ICollection* TONIGHT getICollection(pointer p){
 	return *(ICollection**)(p - sizeof(ICollection*));
 }
 
-static INLINE int TONIGHT Collection_lenght(pointer p){
+static INLINE uint TONIGHT Collection_lenght(pointer p){
 	return getICollection(p)->length(p);
 }
 
@@ -2111,7 +2124,7 @@ static TONIGHT void AI_free(void){
     return Array.free(array);
 }
 
-static TONIGHT int AI_length(void){
+static TONIGHT uint AI_length(void){
     pointer array = (pointer)getCurrentObject();
     return Array.length(array);
 }

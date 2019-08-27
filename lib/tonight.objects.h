@@ -297,7 +297,6 @@ const TONIGHT struct Resources Tonight = {
 	.pressKey = pressKey,
 	.sleep = __sleep,
 	.position = cursor_position,
-	.initRandom = __initRandom,
 
 	.Encode = {
 		.enableSTD = __enableASCII,

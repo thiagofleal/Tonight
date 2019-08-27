@@ -305,7 +305,7 @@ static INLINE file TONIGHT File_stdInput(void);
 static INLINE file TONIGHT File_stdOutput(void);
 static INLINE file TONIGHT File_stdError(void);
 
-static INLINE int TONIGHT Array_length(pointer);
+static INLINE uint TONIGHT Array_length(pointer);
 static INLINE size_t TONIGHT Array_size(pointer);
 static NORMAL pointer TONIGHT $throws Array_access(pointer, int);
 static INLINE void TONIGHT Array_index(pointer, pointer, int);
@@ -321,7 +321,7 @@ static NORMAL void TONIGHT $throws Array_forEach(pointer, pointer);
 static INLINE void TONIGHT Exit_WithSuccess(void);
 static INLINE void TONIGHT Exit_WithFail(void);
 
-static INLINE int TONIGHT Collection_lenght(pointer);
+static INLINE uint TONIGHT Collection_lenght(pointer);
 static INLINE size_t TONIGHT Collection_size(pointer);
 static INLINE pointer TONIGHT Collection_access(pointer, int);
 static INLINE void TONIGHT Collection_index(pointer, pointer, int);

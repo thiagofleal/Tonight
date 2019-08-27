@@ -225,6 +225,7 @@
 	typedef unsigned char uchar, byte;
 	typedef	char *string;
 	typedef	wchar_t *wstring;
+	typedef unsigned int uint;
 	typedef void *pointer, *pstring;
 	typedef struct {} *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
@@ -459,7 +460,7 @@
 	};
 
 	typedef struct{
-		int (* length)(pointer);
+		uint (* length)(pointer);
 		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
 		void (* index)(pointer, pointer, int);
@@ -471,7 +472,7 @@
 
     typedef struct __ArrayInterface{
         void (* free)(void);
-		int (* length)(void);
+		uint (* length)(void);
 		size_t (* size)(void);
 		pointer (* access)(int);
 		void (* setStringMethod)(P_retString);
@@ -489,7 +490,7 @@
 
 	struct __Array{
 		void (* free)(pointer);
-		int (* length)(pointer);
+		uint (* length)(pointer);
 		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
 		void (* setStringMethod)(pointer, P_retString);
@@ -663,7 +664,6 @@
 		bool (*pressKey)(void);
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
-		void (*initRandom)(void);
 
 		const struct{
 			void (*enableSTD)(file);

@@ -188,7 +188,7 @@ const Class Object = (const Class)&___Object___;
 
 /* Set */
 
-static int Set_ICollection_length(pointer collect){
+static uint Set_ICollection_length(pointer collect){
 	return $(collect $as Set).getCollection()->length(collect);
 }
 

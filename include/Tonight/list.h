@@ -40,7 +40,7 @@
 
 	struct List{
 		struct Node *list;
-		unsigned int size;
+		uint size;
 		P_retString stringMethod;
 		P_freeCallBack freeCallBack;
 	};

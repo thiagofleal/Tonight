@@ -57,6 +57,7 @@ static void Map_remove(object self, int index){
     }
 
     if($$(self $as Map).freeCallback){
+        String.free(aux->item.index);
         $$(self $as Map).freeCallback(aux->item.value);
     }
 
@@ -93,7 +94,7 @@ static void Map_set(string index, pointer value){
             return;
         }
     }
-    Map_add_node(this, index, value);
+    Map_add_node(this, toString(index), value);
 }
 
 static void Map_unset(string index){
@@ -135,7 +136,7 @@ static IMap Map_vtble = {
     .setFreeCallBack = Map_setFreeCallBack
 };
 
-static inline int Map_ICollection_length(pointer collect){
+static inline uint Map_ICollection_length(pointer collect){
 	return $$(collect $as Map).size;
 }
 
