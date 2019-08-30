@@ -3,43 +3,43 @@
 #include "../include/Tonight/tonight.h"
 
 /*
-*   forindex
+*   foreachkey
 */
-static struct ctxti{
+static struct fek_str{
 	int value;
 	int length;
 	pointer collect;
 	pointer next;
-}*fctxti = NULL;
+}*fek_ctxt = NULL;
 
 static void forindex_push(int value, int length, pointer collect){
-	struct ctxti *p = Memory.alloc(sizeof(struct ctxti));
+	struct fek_str *p = Memory.alloc(sizeof(struct fek_str));
 	p->value = value;
 	p->length = length;
 	p->collect = collect;
-	p->next = fctxti;
-	fctxti = p;
+	p->next = fek_ctxt;
+	fek_ctxt = p;
 }
 
 static int forindex_pop(void){
-	if(fctxti){
-		pointer node = fctxti;
-		int ret = fctxti->value;
-		fctxti = fctxti->next;
+	if(fek_ctxt){
+		pointer node = fek_ctxt;
+		int ret = fek_ctxt->value;
+		fek_ctxt = fek_ctxt->next;
 		Memory.free(node);
 		return ret;
 	}
 	return 0;
 }
 
-INLINE bool TONIGHT initForindex(pointer collect){
+INLINE bool TONIGHT initForeachkey(pointer collect){
 	forindex_push(-1, Collection.length(collect), collect);
 	return true;
 }
 
-bool TONIGHT forindexIterator(pointer var){
-	if(++ fctxti->value < fctxti->length){
-		Collection.index(fctxti->collect, var, fctxti->value);
+bool TONIGHT foreachkeyIterator(pointer var){
+	if(++ fek_ctxt->value < fek_ctxt->length){
+		Collection.index(fek_ctxt->collect, var, fek_ctxt->value);
 		return true;
 	}
 	else{
@@ -51,29 +51,29 @@ bool TONIGHT forindexIterator(pointer var){
 /*
 *   foreach
 */
-static struct ctxt{
+static struct fe_str{
 	int value;
 	int length;
 	size_t size;
 	pointer collect;
 	pointer next;
-}*fctxt = NULL;
+}*fe_ctxt = NULL;
 
 static void push(int value, int length, size_t size, pointer collect){
-	struct ctxt *p = Memory.alloc(sizeof(struct ctxt));
+	struct fe_str *p = Memory.alloc(sizeof(struct fe_str));
 	p->value = value;
 	p->length = length;
 	p->size = size;
 	p->collect = collect;
-	p->next = fctxt;
-	fctxt = p;
+	p->next = fe_ctxt;
+	fe_ctxt = p;
 }
 
 static int pop(void){
-	if(fctxt){
-		pointer node = fctxt;
-		int ret = fctxt->value;
-		fctxt = fctxt->next;
+	if(fe_ctxt){
+		pointer node = fe_ctxt;
+		int ret = fe_ctxt->value;
+		fe_ctxt = fe_ctxt->next;
 		Memory.free(node);
 		return ret;
 	}
@@ -86,8 +86,8 @@ INLINE bool TONIGHT initForeach(pointer collect){
 }
 
 bool TONIGHT foreachIterator(pointer var){
-	if(++ fctxt->value < fctxt->length){
-		memcpy(var, Collection.access(fctxt->collect, fctxt->value), fctxt->size);
+	if(++ fe_ctxt->value < fe_ctxt->length){
+		memcpy(var, Collection.access(fe_ctxt->collect, fe_ctxt->value), fe_ctxt->size);
 		return true;
 	}
 	else{

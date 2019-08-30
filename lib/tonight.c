@@ -519,7 +519,7 @@ static string TONIGHT $throws __Scanner_nextLine(void){
 static string TONIGHT __Scanner_Password(int nchar){
 	int i = 0;
 	char* senha = Memory.alloc(sizeof(char) * (nchar + 1));
-	while((senha[i] = Tonight.getKey()) != key_ENTER){
+	while((senha[i] = Tonight->Util->getKey()) != key_ENTER){
 		if(senha[i] != key_BS && i < nchar){
 			printf("*");
 			i++;
@@ -1441,33 +1441,28 @@ static INLINE void TONIGHT __Colors_background(int _color){
 }
 
 /* Initialize objects */
-static INLINE Scanner TONIGHT __new_Scanner(Input father){
-    pointer p = &father;
-	return *(Scanner*)p;
+static INLINE Scanner TONIGHT __new_Scanner(Input *father){
+	return *(Scanner*)father;
 }
 
-static INLINE Writer TONIGHT __new_Writer(Output father){
-	pointer p = &father;
-	return *(Writer*)p;
+static INLINE Writer TONIGHT __new_Writer(Output *father){
+	return *(Writer*)father;
 }
 
-static INLINE Random TONIGHT __new_Random(RandomicMaker father){
-    pointer p = &father;
+static INLINE Random TONIGHT __new_Random(RandomicMaker *father){
     if(!___init_random___){
         __initRandom();
         ___init_random___ = true;
     }
-	return *(Random*)p;
+	return *(Random*)father;
 }
 
-static INLINE Timer TONIGHT __new_Timer(TimerCreate father){
-    pointer p = &father;
-	return *(Timer*)p;
+static INLINE Timer TONIGHT __new_Timer(TimerCreate *father){
+	return *(Timer*)father;
 }
 
-static INLINE Painter TONIGHT __new_Painter(ColorCreate father){
-    pointer p = &father;
-	return *(Painter*)p;
+static INLINE Painter TONIGHT __new_Painter(ColorCreate *father){
+	return *(Painter*)father;
 }
 
 static file TONIGHT $throws __new_File(string fName, FileMode fMode){

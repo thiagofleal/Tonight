@@ -140,7 +140,7 @@ static void List_setStringMethod(P_retString method){
 
 static string List_toString(string sep){
 	string ret;
-    Writer write = New.Writer(Tonight.Std.String.Output);
+    Writer write = New.Writer(Tonight->Std->String->Output);
     register int i, length = $$(this $as List).size;
     char ARRAY str = Array.Char((sizeof(retString) + String.length(sep)) * length);
     P_retString method = $$(this $as List).stringMethod;

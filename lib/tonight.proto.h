@@ -239,11 +239,11 @@ static INLINE void TONIGHT __Colors_textbackground(int, int);
 static INLINE void TONIGHT __Colors_text(int);
 static INLINE void TONIGHT __Colors_background(int);
 
-static INLINE Scanner TONIGHT __new_Scanner(Input);
-static INLINE Writer TONIGHT __new_Writer(Output);
-static INLINE Random TONIGHT __new_Random(RandomicMaker);
-static INLINE Timer TONIGHT __new_Timer(TimerCreate);
-static INLINE Painter TONIGHT __new_Painter(ColorCreate);
+static INLINE Scanner TONIGHT __new_Scanner(Input*);
+static INLINE Writer TONIGHT __new_Writer(Output*);
+static INLINE Random TONIGHT __new_Random(RandomicMaker*);
+static INLINE Timer TONIGHT __new_Timer(TimerCreate*);
+static INLINE Painter TONIGHT __new_Painter(ColorCreate*);
 static NORMAL file TONIGHT $throws __new_File(string, FileMode);
 
 static NORMAL char* TONIGHT $throws __new_char(char);

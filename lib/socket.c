@@ -31,14 +31,14 @@ static void Socket_constructor(){
 
 	construct(superOf(Socket));
 
-	iSock.accept = Tonight.DefaultFunctionPointer;
-	iSock.start = Tonight.DefaultFunctionPointer;
-	iSock.connect = Tonight.DefaultFunctionPointer;
-	iSock.bind = Tonight.DefaultFunctionPointer;
-	iSock.listen = Tonight.DefaultFunctionPointer;
-	iSock.send = Tonight.DefaultFunctionPointer;
-	iSock.receive = Tonight.DefaultFunctionPointer;
-	iSock.close = Tonight.DefaultFunctionPointer;
+	iSock.accept = Tonight->Util->DefaultFunctionPointer;
+	iSock.start = Tonight->Util->DefaultFunctionPointer;
+	iSock.connect = Tonight->Util->DefaultFunctionPointer;
+	iSock.bind = Tonight->Util->DefaultFunctionPointer;
+	iSock.listen = Tonight->Util->DefaultFunctionPointer;
+	iSock.send = Tonight->Util->DefaultFunctionPointer;
+	iSock.receive = Tonight->Util->DefaultFunctionPointer;
+	iSock.close = Tonight->Util->DefaultFunctionPointer;
 
 	setInterface(Socket, iSock);
 }

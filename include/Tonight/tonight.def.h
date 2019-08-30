@@ -60,9 +60,9 @@
 #	define Define_Exception(_args_)	_Define_Exception_(_args_)
 
 #	ifndef __cplusplus
-#		define and	&&
-#		define or	||
-#		define try	Try
+#		define and      &&
+#		define or       ||
+#		define try      Try
 #		define catch	Catch
 #		define finally	Finally
 #		define throw	Throw
@@ -88,8 +88,8 @@
 #	define DOWN_40	40, 39, 38, 37, 36, 35, 34, 33, 32, 31, DOWN_30
 #	define DOWN_50	50, 49, 48, 47, 46, 45, 44, 43, 42, 41, DOWN_40
 
-#	define COUNT(arg, args...)	SELECT(50 + arg, args, DOWN_50)
-#	define New_Array(type, values...)	__create_array(sizeof(type), COUNT(0, values), (type[]){values})
+#	define COUNT(arg, args...)          SELECT(50 + arg, args, DOWN_50)
+#	define New_Array(type, values...)   __create_array(sizeof(type), COUNT(0, values), (type[]){values})
 
 #	ifdef __cplusplus
 #		define OptionalArgs	...
@@ -105,8 +105,8 @@
 #	define	With(var)	__create_with_context(var);\
                         while(__function_with())
 
-#	define __forindex__(var, collect)	if(initForindex(collect))while(forindexIterator(&var))
-#	define forindex(_args_)				__forindex__(_args_)
+#	define __foreachkey__(var, collect)	if(initForeachkey(collect))while(foreachkeyIterator(&var))
+#	define foreachkey(_args_)				__foreachkey__(_args_)
 
 #	define __foreach__(var, collect)    if(initForeach(collect))while(foreachIterator(&var))
 #	define foreach(_args_)				__foreach__(_args_)
@@ -299,7 +299,7 @@
 	typedef bool (* condition)(pointer);
 
 	/* "Class" Input */
-	typedef struct{
+	typedef struct Input{
 		pointer ReadChar;
 		pointer ReadInt;
 		pointer ReadFloat;
@@ -312,7 +312,7 @@
 	}Input;
 
 	/* "Class" Output */
-	typedef struct{
+	typedef struct Output{
 		pointer WriteText;
 		pointer WriteTextln;
 		pointer Write;
@@ -324,13 +324,17 @@
 	}Output;
 
 	/* struct IO */
+
+	typedef Input *__Input_set;
+	typedef Output *__Output_set;
+
 	struct IO{
-		Input Input;
-		Output Output;
+	    __Input_set Input;
+		__Output_set Output;
 	};
 
 	/* Class Scanner */
-	typedef struct{
+	typedef struct Scanner{
 		char (*nextChar)(OptionalArgs);
 		int (*nextInt)(OptionalArgs);
 		float (*nextFloat)(OptionalArgs);
@@ -343,7 +347,7 @@
 	}Scanner;
 
 	/* Class Writer */
-	typedef struct{
+	typedef struct Writer{
 		void (*text)(OptionalArgs);
 		void (*textln)(OptionalArgs);
 		void (*print)(OptionalArgs);
@@ -356,27 +360,27 @@
 	}Writer;
 
 	/* Interface IScanner */
-	typedef struct{
+	typedef struct IScanner{
 		string (*getString)(object);
 		void (*setString)(object, string);
 	}IScanner;
 
 	/* Interface IWriter */
-	typedef struct{
+	typedef struct IWriter{
 		void (*addText)(object, string);
 		void (*clear)(object);
 	}IWriter;
 
 	/* Class RandomicMaker */
-	typedef struct{
+	typedef struct RandomicMaker{
 		pointer MakeRandomicChar;
 		pointer MakeRandomicInt;
 		pointer MakeRandomicFloat;
 		pointer MakeRandomicDouble;
-	}RandomicMaker;
+	}*RandomicMaker;
 
 	/* Class Random */
-	typedef struct{
+	typedef struct Random{
 		char (*nextChar)(OptionalArgs);
 		int (*nextInt)(OptionalArgs);
 		float (*nextFloat)(OptionalArgs);
@@ -384,7 +388,7 @@
 	}Random;
 
 	/* Class Timer */
-	typedef struct{
+	typedef struct TimerCreate{
 		pointer GetTime;
 		pointer TimeHours;
 		pointer TimeMinutes;
@@ -394,10 +398,10 @@
 		pointer TimeDay_week;
 		pointer TimeDay_year;
 		pointer TimeYear;
-	}TimerCreate;
+	}*TimerCreate;
 
-	/* Class Time */
-	typedef struct{
+	/* Class Timer */
+	typedef struct Timer{
 		Time (*getTime)(OptionalArgs);
 		int (*hours)(OptionalArgs);
 		int (*minutes)(OptionalArgs);
@@ -409,22 +413,22 @@
 		int (*year)(OptionalArgs);
 	}Timer;
 
-	/* Class CreateColor */
-	typedef struct{
+	/* Class ColorCreate */
+	typedef struct ColorCreate{
 		pointer textColor;
 		pointer backgroundColor;
 		pointer bothColors;
-	}ColorCreate;
+	}*ColorCreate;
 
 	/* Class Colors */
-	typedef struct{
+	typedef struct Painter{
 		void (*text)(OptionalArgs);
 		void (*background)(OptionalArgs);
 		void (*both)(OptionalArgs);
 	}Painter;
 
 	/* Conversor */
-	typedef struct{
+	typedef struct __Conversor_set{
 		char (*toChar)(string);
 		byte (*toByte)(string);
 		bool (*toBool)(string);
@@ -438,26 +442,7 @@
 		string (*fromFloat)(float);
 		string (*fromDouble)(double);
 		string (*fromTime)(Time);
-	}Conversor;
-
-	/* Constructors */
-	struct __New{
-		Scanner (*Scanner)(Input);
-		Writer (*Writer)(Output);
-		Random (*Random)(RandomicMaker);
-		Timer (*Timer)(TimerCreate);
-		Painter (*Painter)(ColorCreate);
-		object (*Object)(Class, ...);
-
-		char* (*Char)(char);
-		byte* (*Byte)(byte);
-		bool* (*Bool)(bool);
-		int* (*Int)(int);
-		float* (*Float)(float);
-		double* (*Double)(double);
-		pstring (*String)(pstring);
-		pointer (*Pointer)(pointer);
-	};
+	}*__Conversor_set;
 
 	typedef struct{
 		uint (* length)(pointer);
@@ -578,10 +563,10 @@
 		file (* stdOutput)(void);
 		file (* stdError)(void);
 
-		const struct{
-			const FileMode read;
-			const FileMode write;
-			const FileMode append;
+		struct{
+			FileMode read;
+			FileMode write;
+			FileMode append;
 		}Mode;
 	};
 
@@ -606,7 +591,7 @@
 		void (* WithFail)(void);
 	};
 
-	struct Locale{
+	typedef struct __Locale_set{
 		int (* getCategory)(OptionalArgs);
 		void (* setCategory)(OptionalArgs);
 		string (* getName)(OptionalArgs);
@@ -622,40 +607,40 @@
 			int Numeric;
 			int Time;
 		}Category;
-	};
+	}*__Locale_set;
 
-	/* struct Resources */
-	struct Resources{
-		const struct{
-			const struct IO Console;
-			const struct IO File;
-			const struct IO String;
-			const struct IO Object;
-			const struct IO Error;
-			const struct{
-				RandomicMaker Simple;
-				RandomicMaker Limit;
-				RandomicMaker Range;
-			}Random;
-			const TimerCreate TimeNow;
-		}Std;
+	/* Tonight sets */
+	typedef struct IO *__Console_set;
+	typedef struct IO *__File_set;
+	typedef struct IO *__String_set;
+	typedef struct IO *__Object_set;
+	typedef struct IO *__Error_set;
 
-		const struct{
-			const struct IO Console;
-			const struct IO File;
-			const struct IO String;
-			const struct IO Error;
-		}Wide;
+	typedef struct IO_set{
+        __Console_set Console;
+        __File_set File;
+        __String_set String;
+        __Object_set Object;
+        __Error_set Error;
+    }*__Std_set, *__Wide_set;
 
-		const struct{
-			ColorCreate Color;
-		}Resources;
+    typedef struct __Random_set{
+        RandomicMaker Simple;
+        RandomicMaker Limit;
+        RandomicMaker Range;
+    }*__Random_set;
 
-		const Conversor Convert;
-		const struct Locale Locale;
-		const pointer DefaultFunctionPointer;
+    typedef struct __Color_set{
+        ColorCreate Console;
+    }*__Color_set;
 
-		void (*assert)(bool);
+    typedef struct __Timer_set{
+        TimerCreate Now;
+    }*__Timer_set;
+
+	typedef struct __Util_set{
+	    pointer DefaultFunctionPointer;
+	    void (*assert)(bool);
 		void (*checkErrno)(void);
 		string (*password)(int);
 		void (*clearScreen)(void);
@@ -664,24 +649,64 @@
 		bool (*pressKey)(void);
 		void (*sleep)(unsigned int);
 		void (*position)(int, int);
+    }*__Util_set;
 
-		const struct{
-			void (*enableSTD)(file);
-			void (*enableUTF8)(file);
-		}Encode;
+    typedef struct __Encode_set{
+        void (*enableSTD)(file);
+        void (*enableUTF8)(file);
+    }*__Encode_set;
 
-		const struct{
-			void (* setMalloc)(P_pointer);
-			void (* setCalloc)(P_pointer);
-			void (* setRealloc)(P_pointer);
-			void (* setFree)(P_void);
-		}Callback;
+    typedef struct __Callback_set{
+        void (* setMalloc)(P_pointer);
+        void (* setCalloc)(P_pointer);
+        void (* setRealloc)(P_pointer);
+        void (* setFree)(P_void);
+    }*__Callback_set;
 
-		const struct{
-			void (* close)(pointer);
-			pointer (* open)(string);
-			pointer (* get)(pointer, string);
-		}Shared;
+    typedef struct __Shared_set{
+        void (* close)(pointer);
+        pointer (* open)(string);
+        pointer (* get)(pointer, string);
+    }*__Shared_set;
+
+    typedef struct Classes *__Classes_set;
+    typedef struct Extension *__Extension_set;
+
+	/* struct Resources */
+	struct Resources{
+		__Std_set Std;
+		__Wide_set Wide;
+		__Object_set Object;
+		__Random_set Random;
+        __Color_set Color;
+        __Timer_set Timer;
+		__Conversor_set Conversor;
+		__Locale_set Locale;
+		__Util_set Util;
+		__Encode_set Encode;
+        __Callback_set Callback;
+        __Shared_set Shared;
+        __Classes_set Classes;
+        __Extension_set Extension;
+	};
+
+	/* Constructors */
+	struct __New{
+		Scanner (*Scanner)(Input*);
+		Writer (*Writer)(Output*);
+		Random (*Random)(RandomicMaker*);
+		Timer (*Timer)(TimerCreate*);
+		Painter (*Painter)(ColorCreate*);
+		object (*Object)(Class, ...);
+
+		char* (*Char)(char);
+		byte* (*Byte)(byte);
+		bool* (*Bool)(bool);
+		int* (*Int)(int);
+		float* (*Float)(float);
+		double* (*Double)(double);
+		pstring (*String)(pstring);
+		pointer (*Pointer)(pointer);
 	};
 
 #endif

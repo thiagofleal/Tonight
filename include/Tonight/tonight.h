@@ -37,7 +37,7 @@
 			extern const TONIGHT struct __File File;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
-			extern const TONIGHT struct Resources Tonight;
+			extern const TONIGHT struct Resources *Tonight;
 			extern const TONIGHT ICollection Collection;
 
 			extern const TONIGHT struct ___Array_Interface___ ___Array___;
@@ -75,8 +75,8 @@
 			extern INLINE string TONIGHT Message(Exception);
 			extern INLINE EXCEPTION TONIGHT ExceptionType(Exception);
 
-			extern INLINE bool TONIGHT NO_CALL initForindex(pointer);
-			extern bool TONIGHT NO_CALL forindexIterator(pointer);
+			extern INLINE bool TONIGHT NO_CALL initForeachkey(pointer);
+			extern bool TONIGHT NO_CALL foreachkeyIterator(pointer);
 
 			extern INLINE bool TONIGHT NO_CALL initForeach(pointer);
 			extern bool TONIGHT NO_CALL foreachIterator(pointer);
