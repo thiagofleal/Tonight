@@ -26,6 +26,7 @@
 
 #			include "tonight.undef.h"
 #			include "tonight.def.h"
+#			include "tonight.namespace.h"
 #			include "tonight.OO.h"
 
 			/* Objects */

@@ -97,6 +97,12 @@
 #		define OptionalArgs
 #	endif
 
+#   define first(a, b...)          a
+#   define second(a, b, c...)      b
+#   define third(a, b, c, d...)    c
+#   define __import__(name, space...)  __##name##_set second(space, name) = first(space)->name
+#   define import(args...) __import__(args)
+
 #	define	__using__(var, from, iFree...)	__create_using_context(sizeof var, &var);\
 											var = from;\
 											while(__function_using(&var, ((IFree){iFree}).free))
@@ -329,6 +335,9 @@
 	typedef Output *__Output_set;
 
 	struct IO{
+	    Input __base_Input;
+		Output __base_Output;
+
 	    __Input_set Input;
 		__Output_set Output;
 	};
@@ -589,105 +598,6 @@
 		void (* With)(int);
 		void (* WithSuccess)(void);
 		void (* WithFail)(void);
-	};
-
-	typedef struct __Locale_set{
-		int (* getCategory)(OptionalArgs);
-		void (* setCategory)(OptionalArgs);
-		string (* getName)(OptionalArgs);
-		void (* setName)(OptionalArgs);
-		string (* set)(OptionalArgs);
-		string (* get)(OptionalArgs);
-
-		struct{
-			int All;
-			int Collate;
-			int Type;
-			int Monetary;
-			int Numeric;
-			int Time;
-		}Category;
-	}*__Locale_set;
-
-	/* Tonight sets */
-	typedef struct IO *__Console_set;
-	typedef struct IO *__File_set;
-	typedef struct IO *__String_set;
-	typedef struct IO *__Object_set;
-	typedef struct IO *__Error_set;
-
-	typedef struct IO_set{
-        __Console_set Console;
-        __File_set File;
-        __String_set String;
-        __Object_set Object;
-        __Error_set Error;
-    }*__Std_set, *__Wide_set;
-
-    typedef struct __Random_set{
-        RandomicMaker Simple;
-        RandomicMaker Limit;
-        RandomicMaker Range;
-    }*__Random_set;
-
-    typedef struct __Color_set{
-        ColorCreate Console;
-    }*__Color_set;
-
-    typedef struct __Timer_set{
-        TimerCreate Now;
-    }*__Timer_set;
-
-	typedef struct __Util_set{
-	    pointer DefaultFunctionPointer;
-	    void (*assert)(bool);
-		void (*checkErrno)(void);
-		string (*password)(int);
-		void (*clearScreen)(void);
-		int (*getKey)(void);
-		int (*getKeyEcho)(void);
-		bool (*pressKey)(void);
-		void (*sleep)(unsigned int);
-		void (*position)(int, int);
-    }*__Util_set;
-
-    typedef struct __Encode_set{
-        void (*enableSTD)(file);
-        void (*enableUTF8)(file);
-    }*__Encode_set;
-
-    typedef struct __Callback_set{
-        void (* setMalloc)(P_pointer);
-        void (* setCalloc)(P_pointer);
-        void (* setRealloc)(P_pointer);
-        void (* setFree)(P_void);
-    }*__Callback_set;
-
-    typedef struct __Shared_set{
-        void (* close)(pointer);
-        pointer (* open)(string);
-        pointer (* get)(pointer, string);
-    }*__Shared_set;
-
-    typedef struct Classes *__Classes_set;
-    typedef struct Extension *__Extension_set;
-
-	/* struct Resources */
-	struct Resources{
-		__Std_set Std;
-		__Wide_set Wide;
-		__Object_set Object;
-		__Random_set Random;
-        __Color_set Color;
-        __Timer_set Timer;
-		__Conversor_set Conversor;
-		__Locale_set Locale;
-		__Util_set Util;
-		__Encode_set Encode;
-        __Callback_set Callback;
-        __Shared_set Shared;
-        __Classes_set Classes;
-        __Extension_set Extension;
 	};
 
 	/* Constructors */
