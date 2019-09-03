@@ -63,10 +63,14 @@
         __Error_set Error;
     };
 
+    typedef RandomicMaker __Simple_set;
+    typedef RandomicMaker __Limit_set;
+    typedef RandomicMaker __Range_set;
+
     struct __Random_set{
-        RandomicMaker Simple;
-        RandomicMaker Limit;
-        RandomicMaker Range;
+        __Simple_set Simple;
+        __Limit_set Limit;
+        __Range_set Range;
     };
 
 	struct __Color_set{

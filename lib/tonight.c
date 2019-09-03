@@ -1449,7 +1449,7 @@ static INLINE Writer TONIGHT __new_Writer(Output *father){
 	return *(Writer*)father;
 }
 
-static INLINE Random TONIGHT __new_Random(RandomicMaker *father){
+static INLINE Random TONIGHT __new_Random(RandomicMaker father){
     if(!___init_random___){
         __initRandom();
         ___init_random___ = true;
@@ -1457,11 +1457,11 @@ static INLINE Random TONIGHT __new_Random(RandomicMaker *father){
 	return *(Random*)father;
 }
 
-static INLINE Timer TONIGHT __new_Timer(TimerCreate *father){
+static INLINE Timer TONIGHT __new_Timer(TimerCreate father){
 	return *(Timer*)father;
 }
 
-static INLINE Painter TONIGHT __new_Painter(ColorCreate *father){
+static INLINE Painter TONIGHT __new_Painter(ColorCreate father){
 	return *(Painter*)father;
 }
 

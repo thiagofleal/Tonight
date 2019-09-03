@@ -604,9 +604,9 @@
 	struct __New{
 		Scanner (*Scanner)(Input*);
 		Writer (*Writer)(Output*);
-		Random (*Random)(RandomicMaker*);
-		Timer (*Timer)(TimerCreate*);
-		Painter (*Painter)(ColorCreate*);
+		Random (*Random)(RandomicMaker);
+		Timer (*Timer)(TimerCreate);
+		Painter (*Painter)(ColorCreate);
 		object (*Object)(Class, ...);
 
 		char* (*Char)(char);
