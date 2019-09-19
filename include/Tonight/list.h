@@ -11,6 +11,10 @@
 *	Free Documentation License".
 */
 
+#include "../tonight.h"
+#include "array.h"
+#include "set.h"
+
 #ifndef TONIGHT_LIST_H
 #	define	TONIGHT_LIST_H
 
@@ -40,7 +44,7 @@
 
 	struct List{
 		struct Node *list;
-		uint size;
+		size_t size;
 		P_retString stringMethod;
 		P_freeCallBack freeCallBack;
 	};

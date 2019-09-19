@@ -11,6 +11,8 @@
 *	Free Documentation License".
 */
 
+#include "set.h"
+
 #ifndef TONIGHT_MAP_H
 #	define	TONIGHT_MAP_H
 
@@ -30,7 +32,7 @@
 
 	struct Map {
 	    struct map_node *list;
-	    uint size;
+	    size_t size;
 	    MapItemFreeCallBack freeCallback;
 	};
 
@@ -39,7 +41,7 @@
 	    pointer (* get)(string);
 	    bool (* isset)(string);
 	    void (* unset)(string);
-	    uint (* size)(void);
+	    size_t (* size)(void);
 	    void (* setFreeCallBack)(MapItemFreeCallBack);
 	};
 

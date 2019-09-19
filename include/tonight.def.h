@@ -48,24 +48,11 @@
 
 #	define $Empty(Type)	((Type){0})
 #	define $end			((string)0)
-#	define ARRAY		*
 #	define getText(str) ((string)&((str).Text)[0])
-
-#	define $throws
-#	define Try	if(setjmp(__create_try_context())||1)while(__try_context())if(__function_try())
-#	define Catch(exception)	else if(__function_catch(exception))
-#	define Finally	else if(__function_finally())
-#	define _Define_Exception_(exc, msg, super)	static EXCEPTION_DEFINE __##exc = {msg, &super};\
-												EXCEPTION exc = &__##exc
-#	define Define_Exception(_args_)	_Define_Exception_(_args_)
 
 #	ifndef __cplusplus
 #		define and      &&
 #		define or       ||
-#		define try      Try
-#		define catch	Catch
-#		define finally	Finally
-#		define throw	Throw
 #		define using	Using
 #       define with     With
 #	endif
@@ -78,7 +65,6 @@
 #	endif
 
 #	define NORMAL
-#	define ARRAY_LENGTH(array)	(sizeof array / sizeof array[0])
 
 #	define SELECT(_ind, values...)	((int[]){values})[_ind]
 
@@ -89,7 +75,6 @@
 #	define DOWN_50	50, 49, 48, 47, 46, 45, 44, 43, 42, 41, DOWN_40
 
 #	define COUNT(arg, args...)          SELECT(50 + arg, args, DOWN_50)
-#	define New_Array(type, values...)   __create_array(sizeof(type), COUNT(0, values), (type[]){values})
 
 #	ifdef __cplusplus
 #		define OptionalArgs	...
@@ -110,12 +95,6 @@
 
 #	define	With(var)	__create_with_context(var);\
                         while(__function_with())
-
-#	define __foreachkey__(var, collect)	if(initForeachkey(collect))while(foreachkeyIterator(&var))
-#	define foreachkey(_args_)				__foreachkey__(_args_)
-
-#	define __foreach__(var, collect)    if(initForeach(collect))while(foreachIterator(&var))
-#	define foreach(_args_)				__foreach__(_args_)
 
 #	define __DefineCast__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
 															(pointer from, pointer to){\
@@ -231,9 +210,8 @@
 	typedef unsigned char uchar, byte;
 	typedef	char *string;
 	typedef	wchar_t *wstring;
-	typedef unsigned int uint;
-	typedef void *pointer, *pstring;
-	typedef struct {} *file;
+	typedef void *pointer;
+	typedef struct __file__ *file;
 	typedef struct str_Intern_Object	Intern_Object, *object;
 	typedef void (*P_void)	(OptionalArgs);
 	typedef char (*P_char)	(OptionalArgs);
@@ -270,15 +248,6 @@
 	typedef struct tm* Time;
 	typedef Time (*P_Time)(OptionalArgs);
 
-	/* Exceptions */
-	typedef struct str_EXCEPTION EXCEPTION_DEFINE, *EXCEPTION;
-	typedef struct __struct_exception *Exception;
-
-	struct str_EXCEPTION{
-		const string error_name;
-		EXCEPTION *_super;
-	};
-
 	/* Objects structs */
 	typedef struct str_Class *Class;
 
@@ -304,111 +273,6 @@
 
 	typedef bool (* condition)(pointer);
 
-	/* "Class" Input */
-	typedef struct Input{
-		pointer ReadChar;
-		pointer ReadInt;
-		pointer ReadFloat;
-		pointer ReadDouble;
-		pointer Read;
-		pointer ReadLine;
-		pointer ClearInputBuffer;
-		pointer IgnoreString;
-		pointer IgnoreChar;
-	}Input;
-
-	/* "Class" Output */
-	typedef struct Output{
-		pointer WriteText;
-		pointer WriteTextln;
-		pointer Write;
-		pointer Writeln;
-		pointer Writeargln;
-		pointer newLine;
-		pointer newMultipleLines;
-		pointer ClearOutputBuffer;
-	}Output;
-
-	/* struct IO */
-
-	typedef Input *__Input_set;
-	typedef Output *__Output_set;
-
-	struct IO{
-	    Input __base_Input;
-		Output __base_Output;
-
-	    __Input_set Input;
-		__Output_set Output;
-	};
-
-	/* Class Scanner */
-	typedef struct Scanner{
-		char (*nextChar)(OptionalArgs);
-		int (*nextInt)(OptionalArgs);
-		float (*nextFloat)(OptionalArgs);
-		double (*nextDouble)(OptionalArgs);
-		pstring (*next)(OptionalArgs);
-		pstring (*nextLine)(OptionalArgs);
-		void (*clear)(OptionalArgs);
-		void (*ignore)(OptionalArgs);
-		void (*ignoreChar)(OptionalArgs);
-	}Scanner;
-
-	/* Class Writer */
-	typedef struct Writer{
-		void (*text)(OptionalArgs);
-		void (*textln)(OptionalArgs);
-		void (*print)(OptionalArgs);
-		void (*println)(OptionalArgs);
-		void (*printargln)(OptionalArgs);
-		void (*nl)(OptionalArgs);
-		void (*nls)(OptionalArgs);
-		void (*buffer)(OptionalArgs);
-		void (*clear)(OptionalArgs);
-	}Writer;
-
-	/* Interface IScanner */
-	typedef struct IScanner{
-		string (*getString)(object);
-		void (*setString)(object, string);
-	}IScanner;
-
-	/* Interface IWriter */
-	typedef struct IWriter{
-		void (*addText)(object, string);
-		void (*clear)(object);
-	}IWriter;
-
-	/* Class RandomicMaker */
-	typedef struct RandomicMaker{
-		pointer MakeRandomicChar;
-		pointer MakeRandomicInt;
-		pointer MakeRandomicFloat;
-		pointer MakeRandomicDouble;
-	}*RandomicMaker;
-
-	/* Class Random */
-	typedef struct Random{
-		char (*nextChar)(OptionalArgs);
-		int (*nextInt)(OptionalArgs);
-		float (*nextFloat)(OptionalArgs);
-		double (*nextDouble)(OptionalArgs);
-	}Random;
-
-	/* Class Timer */
-	typedef struct TimerCreate{
-		pointer GetTime;
-		pointer TimeHours;
-		pointer TimeMinutes;
-		pointer TimeSeconds;
-		pointer TimeMonth;
-		pointer TimeDay_month;
-		pointer TimeDay_week;
-		pointer TimeDay_year;
-		pointer TimeYear;
-	}*TimerCreate;
-
 	/* Class Timer */
 	typedef struct Timer{
 		Time (*getTime)(OptionalArgs);
@@ -422,18 +286,11 @@
 		int (*year)(OptionalArgs);
 	}Timer;
 
-	/* Class ColorCreate */
-	typedef struct ColorCreate{
-		pointer textColor;
-		pointer backgroundColor;
-		pointer bothColors;
-	}*ColorCreate;
-
 	/* Class Colors */
 	typedef struct Painter{
 		void (*text)(OptionalArgs);
 		void (*background)(OptionalArgs);
-		void (*both)(OptionalArgs);
+		void (*all)(OptionalArgs);
 	}Painter;
 
 	/* Conversor */
@@ -454,129 +311,39 @@
 	}*__Conversor_set;
 
 	typedef struct{
-		uint (* length)(pointer);
-		size_t (* size)(pointer);
-		pointer (* access)(pointer, int);
-		void (* index)(pointer, pointer, int);
-	}ICollection;
-
-	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
 
-    typedef struct __ArrayInterface{
-        void (* free)(void);
-		uint (* length)(void);
-		size_t (* size)(void);
-		pointer (* access)(int);
-		void (* setStringMethod)(P_retString);
-		string (* toString)(string);
-		pointer (* convert)(cast);
-		pointer (* where)(condition);
-		bool (* contains)(pointer);
-		void (* sort)(pointer);
-		void (* forEach)(pointer);
-    }__ArrayInterface;
-
-    struct ___Array_Interface___{
-		__ArrayInterface (* select)(pointer);
-    };
-
-	struct __Array{
-		void (* free)(pointer);
-		uint (* length)(pointer);
-		size_t (* size)(pointer);
-		pointer (* access)(pointer, int);
-		void (* setStringMethod)(pointer, P_retString);
-		string (* toString)(pointer, string);
-		pointer (* convert)(pointer, cast);
-		pointer (* where)(pointer, condition);
-		bool (* contains)(pointer, pointer);
-		void (* sort)(pointer, pointer);
-		void (* forEach)(pointer, pointer);
-
-		char* (*Char)(int);
-		byte* (*Byte)(int);
-		bool* (*Bool)(int);
-		int* (*Int)(int);
-		float* (*Float)(int);
-		double* (*Double)(int);
-		string* (*String)(int);
-		object* (*Object)(int);
-		pointer* (*Pointer)(int);
-		pointer	(*Generic)(size_t, int);
-	};
-
-	struct __Memory{
-		void	(* free)(pointer);
-		pointer	(* alloc)(size_t);
-		pointer	(* realloc)(pointer, size_t);
-		size_t	(* size)(pointer);
-		pointer	(* copy)(pointer);
-	};
-
-    typedef struct __StringInteface{
-        void (* free)(void);
-		pstring (* copy)(void);
-		pstring (* concatenate)(pstring);
-		pstring (* upper)(void);
-		pstring (* lower)(void);
-		pstring (* trim)(void);
-		pstring* (* split)(const pstring);
-		size_t (* length)(void);
-		int (* compare)(const pstring);
-		pstring (* toString)(void);
-		pstring (* toWide)(void);
-    }__StringInteface;
-
-    struct ___String_Interface___{
-		__StringInteface (*select)(pstring);
-    };
-
 	struct __String{
-		void (* free)(pstring);
-		pstring (* formated)(const pstring, ...);
-		pstring (* copy)(pstring);
-		pstring (* concatenate)(pstring, pstring);
-		pstring (* upper)(const pstring);
-		pstring (* lower)(const pstring);
-		pstring (* trim)(const pstring);
-		pstring (* sep)(pstring*, const pstring);
-		pstring* (* split)(const pstring, const pstring);
-		size_t (* length)(const pstring);
-		int (* compare)(const pstring, const pstring);
-		pstring (* toString)(const pstring);
-		pstring (* toWide)(const pstring);
+		void (* free)(string);
+		string (* formated)(const string, ...);
+		string (* copy)(string);
+		string (* concatenate)(string, string);
+		string (* upper)(const string);
+		string (* lower)(const string);
+		string (* trim)(const string);
+		string (* sep)(string*, const string);
+		string* (* split)(const string, const string);
+		size_t (* length)(const string);
+		int (* compare)(const string, const string);
+		string (* toString)(const string);
+		wstring (* toWide)(const string);
 	};
 
-	typedef struct{
-		string value;
-	}FileMode;
-
-    typedef struct __FileInterface{
-		void (* close)(void);
-		void (* rewind)(void);
-		bool (* end)(void);
-    }__FileInterface;
-
-    struct ___File_Interface___{
-		__FileInterface (*select)(file);
-    };
-
-	struct __File{
-		file (* open)(string, FileMode);
-		void (* close)(file);
-		void (* rewind)(file);
-		bool (* end)(file);
-		file (* stdInput)(void);
-		file (* stdOutput)(void);
-		file (* stdError)(void);
-
-		struct{
-			FileMode read;
-			FileMode write;
-			FileMode append;
-		}Mode;
+	struct __WideString{
+		void (* free)(wstring);
+		wstring (* formated)(const wstring, ...);
+		wstring (* copy)(wstring);
+		wstring (* concatenate)(wstring, wstring);
+		wstring (* upper)(const wstring);
+		wstring (* lower)(const wstring);
+		wstring (* trim)(const wstring);
+		wstring (* sep)(wstring*, const wstring);
+		wstring* (* split)(const wstring, const wstring);
+		size_t (* length)(const wstring);
+		int (* compare)(const wstring, const wstring);
+		string (* toString)(const wstring);
+		wstring (* toWide)(const wstring);
 	};
 
 	/* Keys */
@@ -602,11 +369,6 @@
 
 	/* Constructors */
 	struct __New{
-		Scanner (*Scanner)(Input*);
-		Writer (*Writer)(Output*);
-		Random (*Random)(RandomicMaker);
-		Timer (*Timer)(TimerCreate);
-		Painter (*Painter)(ColorCreate);
 		object (*Object)(Class, ...);
 
 		char* (*Char)(char);
@@ -615,7 +377,7 @@
 		int* (*Int)(int);
 		float* (*Float)(float);
 		double* (*Double)(double);
-		pstring (*String)(pstring);
+		string* (*String)(string);
 		pointer (*Pointer)(pointer);
 	};
 

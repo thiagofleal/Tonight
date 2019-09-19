@@ -1,4 +1,6 @@
-#include "../include/Tonight/tonight.h"
+#include "../include/tonight.h"
+#include "../include/Tonight/exceptions.h"
+#include "../include/Tonight/memory.h"
 #include "../include/Tonight/list.h"
 
 Define_Exception(IndexException $as "Invalid index" $extends GenericException);
@@ -139,8 +141,8 @@ static void List_setStringMethod(P_retString method){
 }
 
 static string List_toString(string sep){
+    extern int sprintf(string, const string, ...);
 	string ret;
-    Writer write = New.Writer(Tonight->Std->String->Output);
     register int i, length = $$(this $as List).size;
     char ARRAY str = Array.Char((sizeof(retString) + String.length(sep)) * length);
     P_retString method = $$(this $as List).stringMethod;
@@ -148,7 +150,7 @@ static string List_toString(string sep){
         return toString("");
     *str = 0;
     for(i=0; i<length; i++)
-        write.print(str, getText(method(List_getNode(this, i)->value)), sep, $end);
+        sprintf(str, "%s%s%s", str, getText(method(List_getNode(this, i)->value)), sep);
     str[String.length(str) - String.length(sep)] = 0;
     ret = toString(str);
     Array.free(str);
@@ -172,7 +174,7 @@ static IList List_vtble = {
 	.setFreeCallBack = List_setFreeCallBack
 };
 
-static inline uint List_ICollection_length(pointer collect){
+static inline size_t List_ICollection_length(pointer collect){
 	return $(collect $as List).size();
 }
 

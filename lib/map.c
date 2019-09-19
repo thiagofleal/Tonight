@@ -1,4 +1,7 @@
-#include "../include/Tonight/tonight.h"
+#include "../include/tonight.h"
+#include "../include/Tonight/exceptions.h"
+#include "../include/Tonight/memory.h"
+#include "../include/Tonight/collection.h"
 #include "../include/Tonight/map.h"
 
 Define_Exception(MapException $as "Map exception" $extends GenericException);
@@ -136,7 +139,7 @@ static IMap Map_vtble = {
     .setFreeCallBack = Map_setFreeCallBack
 };
 
-static inline uint Map_ICollection_length(pointer collect){
+static inline size_t Map_ICollection_length(pointer collect){
 	return $$(collect $as Map).size;
 }
 

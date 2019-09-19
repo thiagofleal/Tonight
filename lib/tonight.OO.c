@@ -1,13 +1,21 @@
 #include <string.h>
 
-#include "../include/Tonight/tonight.h"
+#include "../include/tonight.h"
+#include "../include/Tonight/memory.h"
+#include "../include/Tonight/collection.h"
 
 object This = NULL;
 
+struct objectAdditionalData{
+    ICollection *collection;
+};
+
 object TONIGHT newInstance(const Class class, ...){
-	object _new = Memory.alloc(sizeof(Intern_Object));
+    object _new = Memory.alloc(sizeof(struct objectAdditionalData) + sizeof(Intern_Object));
 	va_list args;
 	va_start(args, class);
+	((struct objectAdditionalData*)_new)->collection = NULL;
+	_new = (pointer)_new + sizeof(struct objectAdditionalData);
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
 	class->ctor(_new, args);
@@ -18,7 +26,7 @@ object TONIGHT newInstance(const Class class, ...){
 extern void TONIGHT construct(const Class class, ...){
 	va_list args;
 	va_start(args, class);
-	class->ctor(This, args);
+	class->ctor(this, args);
 	va_end(args);
 }
 
@@ -27,7 +35,7 @@ void TONIGHT deleteInstance(object self){
     if(!self->class_pointer) return;
     if(self->class_pointer->dtor) self->class_pointer->dtor(self);
     self->class_pointer = NULL;
-	Memory.free(self);
+	Memory.free((pointer)self - sizeof(struct objectAdditionalData));
 }
 
 void TONIGHT destruct(const Class class){
@@ -150,7 +158,7 @@ static void new_Object(pointer args){
 static void del_Object(void){
 }
 
-static INLINE IObject Object_select(object obj){
+INLINE IObject ___Object_select___(object obj){
 	setCurrentObject(obj);
 	return *___Object___.implement.__interface;
 }
@@ -180,85 +188,7 @@ const struct Interface_Object ___Object___ = {
 	.__class__ = (Class)&Object,
 	.implement = (const Class_Object){
 		.__interface = &iObject
-	},
-	.select = Object_select
+	}
 };
 
 const Class Object = (const Class)&___Object___;
-
-/* Set */
-
-static uint Set_ICollection_length(pointer collect){
-	return $(collect $as Set).getCollection()->length(collect);
-}
-
-static size_t Set_ICollection_size(pointer collect){
-	return $(collect $as Set).getCollection()->size(collect);
-}
-
-static pointer Set_ICollection_access(pointer collect, int index){
-	return $(collect $as Set).getCollection()->access(collect, index);
-}
-
-static void Set_ICollection_index(pointer collect, pointer var, int index){
-	$(collect $as Set).getCollection()->index(collect, var, index);
-}
-
-static ICollection Set_ICollection = {
-	.length = Set_ICollection_length,
-	.size = Set_ICollection_size,
-	.access = Set_ICollection_access,
-	.index = Set_ICollection_index
-};
-
-static ICollection * Set_getCollection(void){
-	return $$(this $as Set).collection;
-}
-
-static void Set_setCollection(ICollection value){
-	*$$(this $as Set).collection = value;
-}
-
-static ISet Set_vtble = {
-	.getCollection = Set_getCollection,
-	.setCollection = Set_setCollection
-};
-
-static void Set_constructor(pointer args){
-	static ICollection _default;
-	construct(superOf(Set));
-	_default = *getICollection(this);
-	$$(this $as Set).collection = Memory.alloc(sizeof _default);
-	*$$(this $as Set).collection = _default;
-	setInterface(Set, Set_vtble);
-	*getICollection(this) = Set_ICollection;
-}
-
-static void Set_destructor(void){
-	Memory.free($$(this $as Set).collection);
-	destruct(superOf(Set));
-}
-
-static ICollection * ISet_getCollection(void){
-	ICollection *ret = $Empty(ICollection*);
-	Method(Set){
-	    ret = getInterface(Set).getCollection();
-	}
-	return ret;
-}
-
-static void ISet_setCollection(ICollection value){
-	Method(Set){
-	    getInterface(Set).setCollection(value);
-	}
-}
-
-static ISet iSet = {
-	.getCollection = ISet_getCollection,
-	.setCollection = ISet_setCollection
-};
-
-Constructor(Set, Set_constructor);
-Destructor(Set, Set_destructor);
-
-Define_Class(Set $extends Object $implements ISet $as iSet);

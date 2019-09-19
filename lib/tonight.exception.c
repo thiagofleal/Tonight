@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
-#include "../include/Tonight/tonight.h"
+#include "../include/tonight.h"
+#include "../include/Tonight/exceptions.h"
 
 typedef struct __struct_exception{
 	EXCEPTION exception;
@@ -25,7 +26,6 @@ Define_Exception(NullArgumentException $as "Null argument error" $extends Argume
 Define_Exception(ApplicationException $as "Application error" $extends ArgumentException);
 
 /* try - catch - throw */
-
 enum ctrl{
 	CTRL_CONTINUE,
 	CTRL_FINALLY,
@@ -90,10 +90,6 @@ static Context pop_context(void){
 		return ctx;
 	}
 	return NULL;
-}
-
-Exception TONIGHT getException(void){
-	return except.value;
 }
 
 pointer TONIGHT __create_try_context(void){
@@ -177,14 +173,25 @@ void TONIGHT Throw(EXCEPTION __exc, string message){
 	}
 }
 
-INLINE string TONIGHT Error(Exception exc){
+static Exception TONIGHT getException(void){
+	return except.value;
+}
+
+static INLINE string TONIGHT Error(Exception exc){
 	return exc->exception->error_name;
 }
 
-INLINE string TONIGHT Message(Exception exc){
+static INLINE string TONIGHT Message(Exception exc){
 	return exc->message;
 }
 
-INLINE EXCEPTION TONIGHT ExceptionType(Exception exc){
+static INLINE EXCEPTION TONIGHT ExceptionType(Exception exc){
 	return exc->exception;
 }
+
+struct Exceptions Exceptions = {
+    .getCurrent = getException,
+    .Error = Error,
+    .Message = Message,
+    .ExceptionType = ExceptionType
+};

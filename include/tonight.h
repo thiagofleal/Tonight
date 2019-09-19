@@ -16,7 +16,6 @@
 #ifndef TONIGHT_LIBRARY
 #	define TONIGHT_LIBRARY
 
-#	include <setjmp.h>
 #	include <stddef.h>
 #	include <stdarg.h>
 
@@ -24,63 +23,15 @@
 		extern "C"{
 #	endif
 
-#			include "tonight.undef.h"
 #			include "tonight.def.h"
-#			include "tonight.namespace.h"
 #			include "tonight.OO.h"
 
 			/* Objects */
 			extern const TONIGHT struct __New New;
-			extern const TONIGHT struct __Array Array;
-			extern const TONIGHT struct __Memory Memory;
 			extern const TONIGHT struct __String String;
-			extern const TONIGHT struct __String WideString;
-			extern const TONIGHT struct __File File;
+			extern const TONIGHT struct __WideString WideString;
 			extern const TONIGHT struct __Key Key;
 			extern const TONIGHT struct __Exit Exit;
-			extern const TONIGHT struct Resources *Tonight;
-			extern const TONIGHT ICollection Collection;
-
-			extern const TONIGHT struct ___Array_Interface___ ___Array___;
-			extern const TONIGHT struct ___String_Interface___ ___String___;
-			extern const TONIGHT struct ___String_Interface___ ___WideString___;
-			extern const TONIGHT struct ___File_Interface___ ___File___;
-
-			/* Exceptions */
-			extern EXCEPTION TONIGHT GenericException;
-			extern EXCEPTION TONIGHT AssertException;
-			extern EXCEPTION TONIGHT ErrnoException;
-			extern EXCEPTION TONIGHT MemoryAllocException;
-			extern EXCEPTION TONIGHT ArrayIndexBoundException;
-			extern EXCEPTION TONIGHT FileOpenException;
-			extern EXCEPTION TONIGHT InputException;
-			extern EXCEPTION TONIGHT ConvertException;
-			extern EXCEPTION TONIGHT NotImplementException;
-			extern EXCEPTION TONIGHT ArgumentException;
-			extern EXCEPTION TONIGHT IllegalAccessException;
-			extern EXCEPTION TONIGHT NullArgumentException;
-			extern EXCEPTION TONIGHT ApplicationException;
-
-			/* Exceptions control */
-			extern void TONIGHT Throw(EXCEPTION, string);
-			extern pointer TONIGHT NO_CALL __create_try_context(void);
-			extern bool TONIGHT NO_CALL __try_context(void);
-			extern bool TONIGHT NO_CALL __function_try(void);
-			extern bool TONIGHT NO_CALL __function_catch(EXCEPTION);
-			extern bool TONIGHT NO_CALL __function_finally(void);
-
-			extern pointer TONIGHT NO_CALL __create_array(size_t, int, pointer);
-
-			extern INLINE Exception TONIGHT getException(void);
-			extern INLINE string TONIGHT Error(Exception);
-			extern INLINE string TONIGHT Message(Exception);
-			extern INLINE EXCEPTION TONIGHT ExceptionType(Exception);
-
-			extern INLINE bool TONIGHT NO_CALL initForeachkey(pointer);
-			extern bool TONIGHT NO_CALL foreachkeyIterator(pointer);
-
-			extern INLINE bool TONIGHT NO_CALL initForeach(pointer);
-			extern bool TONIGHT NO_CALL foreachIterator(pointer);
 
 			extern void TONIGHT NO_CALL __create_using_context(size_t, pointer);
 			extern bool TONIGHT NO_CALL __function_using(pointer, P_void);
@@ -96,13 +47,13 @@
 			/* Tonight strings functions */
 			extern bool TONIGHT equal(register string const, register string const);
 			extern string TONIGHT toString(pointer);
-			extern pstring TONIGHT toWide(pointer);
+			extern wstring TONIGHT toWide(pointer);
 			extern string TONIGHT concat(string, ...);
-			extern string TONIGHT nconcat(int, string, ...);
+			extern string TONIGHT nconcat(size_t, string, ...);
 			extern retString TONIGHT retConcat(string, ...);
-			extern pstring TONIGHT wconcat(pstring, ...);
-			extern pstring TONIGHT nwconcat(int, pstring, ...);
-			extern retWideString TONIGHT wretConcat(pstring, ...);
+			extern wstring TONIGHT wconcat(wstring, ...);
+			extern wstring TONIGHT nwconcat(size_t, wstring, ...);
+			extern retWideString TONIGHT wretConcat(wstring, ...);
 			extern string TONIGHT s_cs(char);
 			extern string TONIGHT s_bs(bool);
 			extern string TONIGHT s_is(int);
@@ -152,7 +103,6 @@
 			extern longRetString TONIGHT longFormated(const string, ...);
 
 			extern INLINE void TONIGHT checkArgumentPointer(pointer);
-			extern INLINE ICollection * TONIGHT getICollection(pointer);
 
 #	ifdef __cplusplus
 		}

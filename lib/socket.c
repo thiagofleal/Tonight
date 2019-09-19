@@ -5,7 +5,8 @@
 #	include <sys/socket.h>
 #endif
 
-#include "../include/Tonight/tonight.h"
+#include "../include/tonight.h"
+#include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/socket.h"
 
 Define_Exception(SocketException $as "Socket exception" $extends GenericException);
@@ -30,7 +31,7 @@ static void Socket_constructor(){
 	static ISocket iSock;
 
 	construct(superOf(Socket));
-
+/*
 	iSock.accept = Tonight->Util->DefaultFunctionPointer;
 	iSock.start = Tonight->Util->DefaultFunctionPointer;
 	iSock.connect = Tonight->Util->DefaultFunctionPointer;
@@ -39,7 +40,7 @@ static void Socket_constructor(){
 	iSock.send = Tonight->Util->DefaultFunctionPointer;
 	iSock.receive = Tonight->Util->DefaultFunctionPointer;
 	iSock.close = Tonight->Util->DefaultFunctionPointer;
-
+*/
 	setInterface(Socket, iSock);
 }
 
