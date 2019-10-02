@@ -75,36 +75,35 @@ static pointer TONIGHT Array_convert(pointer array, cast casting){
 }
 
 static pointer TONIGHT $throws Array_where(pointer array, condition where){
-	register int i, j, length=Array_length(array);
-	size_t size = Array_size(array);
-	pointer ret=NULL, aux, arr=__new_array_generic(size, length);
+	register size_t i, j, length=Array_length(array), size=Array_size(array);
+	pointer ret=NULL, aux, arr=__new_array_generic(size,length);
 	for(i=0, j=0; i<length; i++){
-		aux=Array_access(array, i);
+		aux=Array_access(array,i);
 		if(where(aux)){
-			memcpy(Array_access(arr, j), aux, size);
+			memcpy(Array_access(arr,j), aux, size);
 			j++;
 		}
 	}
-	ret = __new_array_generic(size, j);
+	ret = __new_array_generic(size,j);
 	for(i=0; i<j; i++)
-		memcpy(Array_access(ret, i), Array_access(arr, i), size);
+		memcpy(Array_access(ret,i),Array_access(arr,i),size);
 	Array_free(arr);
 	return ret;
 }
 
 static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
-	register int array_lenth = Array_length(array);
-	register int sub_lenth = Array_length(sub);
-	register int array_size = Array_size(array);
-	register int sub_size = Array_size(sub);
-	register int i, j;
-	if(array_size != sub_size)
+	register size_t array_lenth=Array_length(array);
+	register size_t sub_lenth=Array_length(sub);
+	register size_t array_size=Array_size(array);
+	register size_t sub_size=Array_size(sub);
+	register size_t i,j;
+	if(array_size!=sub_size)
 		return false;
-	for(i=0; i<sub_lenth; i++){
-		bool part = false;
-		for(j=0; j<array_lenth; j++)
-			if(!memcmp(Array_access(sub, i), Array_access(array, j), array_size))
-				part = true;
+	for(i=0;i<sub_lenth;i++){
+		bool part=false;
+		for(j=0;j<array_lenth;j++)
+			if(!memcmp(Array_access(sub,i),Array_access(array,j),array_size))
+				part=true;
 		if(!part)
 			return false;
 	}
@@ -112,15 +111,14 @@ static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
 }
 
 static void TONIGHT $throws Array_sort(pointer array, pointer function){
-    register size_t size = Array_size(array);
-    register int length = Array_length(array);
+    register size_t size = Array_size(array),length = Array_length(array);
     qsort(array, length, size, function);
 }
 
 static void TONIGHT $throws Array_forEach(pointer array, pointer function){
-    register int i, length = Array_length(array);
+    register size_t i, length = Array_length(array);
     for(i=0;i<length;i++){
-        ((void(*)())function)(Array_access(array, i));
+        ((P_void)function)(Array_access(array,i));
     }
 }
 

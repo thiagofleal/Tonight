@@ -10,8 +10,6 @@
 
 #undef main
 
-static int text_color = 7, background_color = 0;
-
 #include "tonight.sys.h"
 
 /* Functions */
@@ -24,12 +22,6 @@ static void __assert(bool test){
 static void __checkErrno(void){
 	if(errno)
 		throw(ErrnoException, strerror(errno));
-}
-
-static int TONIGHT getKeyEcho(void){
-    register int c = getKey();
-	putchar(c);
-	return c;
 }
 
 static int __category = LC_ALL;
@@ -551,15 +543,6 @@ static INLINE int TONIGHT __Time_year(void){
 	return (__time()->tm_year + 1900);
 }
 
-/* Functions to the Colors class */
-static INLINE void TONIGHT __Colors_text(int _color){
-	__Colors_textbackground((text_color = _color), background_color);
-}
-
-static INLINE void TONIGHT __Colors_background(int _color){
-	__Colors_textbackground(text_color, (background_color = _color));
-}
-
 /* Alloc pointers */
 static char* TONIGHT $throws __new_char(char value){
 	char* c = Memory.alloc(sizeof(char));
@@ -726,12 +709,10 @@ static string TONIGHT String_sep(register string *stringp, register const string
 	}
 }
 
-static string ARRAY String_split(string src, string lim)
-{
+static string ARRAY String_split(string src, string lim){
 	register int i, ret_len;
 	string ARRAY ret = NULL;
 	string aux, aux2;
-
 	for(aux2 = aux = toString(src), i = 0; String_sep(&aux, lim); i++);
 	Memory.free(aux2);
 	ret_len = i;
@@ -744,13 +725,13 @@ static string ARRAY String_split(string src, string lim)
 }
 
 static string String_trim(const string _str){
-	string str = toString(_str);
+    register string str = _str;
 	register string aux = str + strlen(str) - 1;
 	while(isspace(*str))
 		++str;
 	while(isspace(*aux))
 		*aux-- = 0;
-	return str;
+	return toString(str);
 }
 
 /* Functions to WideString */
@@ -811,7 +792,6 @@ static wstring ARRAY WString_split(wstring src, wstring lim){
 	register int i, ret_len;
 	wstring ARRAY ret = NULL;
 	wstring aux, aux2;
-
 	for(aux2 = aux = toWide(src), i = 0; WString_sep(&aux, lim); i++);
 	Memory.free(aux2);
 	ret_len = i;
@@ -824,13 +804,13 @@ static wstring ARRAY WString_split(wstring src, wstring lim){
 }
 
 static wstring WString_trim(const wstring _str){
-	wchar_t* str = toWide(_str);
-	register wchar_t* aux = str + wcslen(str) - 1;
+	register wstring str = _str;
+	register wstring aux = str + wcslen(str) - 1;
 	while(isspace(*str))
 		++str;
 	while(isspace(*aux))
 		*aux-- = 0;
-	return str;
+	return toWide(str);
 }
 
 static string ARRAY __args = NULL;

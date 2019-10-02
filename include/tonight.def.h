@@ -286,13 +286,6 @@
 		int (*year)(OptionalArgs);
 	}Timer;
 
-	/* Class Colors */
-	typedef struct Painter{
-		void (*text)(OptionalArgs);
-		void (*background)(OptionalArgs);
-		void (*all)(OptionalArgs);
-	}Painter;
-
 	/* Conversor */
 	typedef struct __Conversor_set{
 		char (*toChar)(string);

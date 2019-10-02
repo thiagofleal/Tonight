@@ -6,7 +6,7 @@
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/file.h"
 
-struct FileMode{
+struct FileModeDescriptor{
     string value;
 };
 
@@ -24,7 +24,7 @@ static IStream file_stream = {
     .print = (pointer)vfprintf
 };
 
-static file TONIGHT $throws __new_File(string fName, FileMode fMode){
+static file TONIGHT $throws __new_File(string fName, FileModeDescriptor fMode){
 	struct __file_data__ *fd = Memory.alloc(sizeof(struct __file_data__) + sizeof(file));
 	file f = (file)fd->data;
 	fd->_stream = &file_stream;
@@ -60,9 +60,9 @@ static INLINE file TONIGHT File_stdError(void){
 	return (file){stderr};
 }
 
-struct FileMode File_Mode_read = {"r"};
-struct FileMode File_Mode_write = {"w"};
-struct FileMode File_Mode_append = {"a"};
+struct FileModeDescriptor File_Mode_read = {"r"};
+struct FileModeDescriptor File_Mode_write = {"w"};
+struct FileModeDescriptor File_Mode_append = {"a"};
 
 /* File */
 const struct __File File = {
@@ -72,10 +72,11 @@ const struct __File File = {
 	.rewind = File_rewind,
 	.stdInput = File_stdInput,
 	.stdOutput = File_stdOutput,
-	.stdError = File_stdError,
-	.Mode = {
-	    .read = &File_Mode_read,
-        .write = &File_Mode_write,
-        .append = &File_Mode_append
-	}
+	.stdError = File_stdError
+};
+
+const struct __FileMode FileMode = {
+    .read = &File_Mode_read,
+    .write = &File_Mode_write,
+    .append = &File_Mode_append
 };
