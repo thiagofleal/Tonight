@@ -1,6 +1,7 @@
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
+#include "../include/Tonight/string.h"
 #include "../include/Tonight/list.h"
 
 Define_Exception(IndexException $as "Invalid index" $extends GenericException);

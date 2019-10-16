@@ -46,9 +46,10 @@
 
 #	define main	__main__
 
-#	define $Empty(Type)	((Type){0})
-#	define $end			((string)0)
-#	define getText(str) ((string)&((str).Text)[0])
+#	define  ARRAY    *
+#	define  $Empty(Type)	((Type){0})
+#	define  $end			((string)0)
+#	define  getText(str) ((string)&((str).Text)[0])
 
 #	ifndef __cplusplus
 #		define and      &&
@@ -165,39 +166,6 @@
 #	define $extends		,
 #	define $implements	,
 
-#	define	$c(arg)	getText(cs(arg))
-#	define	$b(arg)	getText(bs(arg))
-#	define	$i(arg)	getText(is(arg))
-#	define	$f(arg)	getText(fs(arg))
-#	define	$d(arg)	getText(ds(arg))
-#	define	$p(arg)	getText(ps(arg))
-#	define	$s(arg)	getText(arg)
-#	define	$o(arg)	getText($(arg $as Object).toRetString())
-#	define	$ff(arg, n)	getText(fsf(arg, n))
-#	define	$df(arg, n)	getText(dsf(arg, n))
-#	define	$F(format, args...)	getText(formated(format, args))
-
-#	define	$cp(arg)		getText(cps(arg))
-#	define	$bp(arg)		getText(bps(arg))
-#	define	$ip(arg)		getText(ips(arg))
-#	define	$fp(arg)		getText(fps(arg))
-#	define	$dp(arg)		getText(dps(arg))
-#	define	$pp(arg)		getText(pps(arg))
-#	define	$sp(arg)		getText((*arg))
-#	define	$fpf(arg, n)	getText(fpsf(arg, n))
-#	define	$dpf(arg, n)	getText(dpsf(arg, n))
-
-#	define	$lc(arg)	getText(cls(arg))
-#	define	$lb(arg)	getText(bls(arg))
-#	define	$li(arg)	getText(ils(arg))
-#	define	$lf(arg)	getText(fls(arg))
-#	define	$ld(arg)	getText(dls(arg))
-#	define	$ls(arg)	getText(arg)
-#	define	$lo(arg)	getText($(arg $as Object).toLongRetString())
-#	define	$lff(arg, n)	getText(flsf(arg, n))
-#	define	$ldf(arg, n)	getText(dlsf(arg, n))
-#	define	$lF(format, args...)	getText(longFormated(format, args))
-
 #   define $va_set(var, __data__)   struct __data__ *__args__ = (pointer)var
 #   define $va_get                  (*__args__)
 
@@ -306,22 +274,6 @@
 	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
-
-	struct __String{
-		void (* free)(string);
-		string (* formated)(const string, ...);
-		string (* copy)(string);
-		string (* concatenate)(string, string);
-		string (* upper)(const string);
-		string (* lower)(const string);
-		string (* trim)(const string);
-		string (* sep)(string*, const string);
-		string* (* split)(const string, const string);
-		size_t (* length)(const string);
-		int (* compare)(const string, const string);
-		string (* toString)(const string);
-		wstring (* toWide)(const string);
-	};
 
 	struct __WideString{
 		void (* free)(wstring);

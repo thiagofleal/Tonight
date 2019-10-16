@@ -3,6 +3,7 @@
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
+#include "../include/Tonight/string.h"
 
 /*
 *   using
@@ -131,7 +132,7 @@ static void classThisError(object obj, pointer args){
     if(error_str) String.free(error_str);
     error_str = concat(
         "The class \"",
-        (obj->class_pointer ? obj->class_pointer->name : "(undefined"),
+        (obj->class_pointer ? obj->class_pointer->name : "(undefined)"),
         "\" not extends \"",
         $va_get.obj_class->name,
         "\"",

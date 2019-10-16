@@ -2,6 +2,7 @@
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/collection.h"
+#include "../include/Tonight/string.h"
 #include "../include/Tonight/map.h"
 
 Define_Exception(MapException $as "Map exception" $extends GenericException);

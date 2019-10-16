@@ -3,6 +3,7 @@
 #include "../include/tonight.h"
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/collection.h"
+#include "../include/Tonight/string.h"
 
 object This = NULL;
 

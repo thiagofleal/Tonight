@@ -7,7 +7,6 @@
 		extern "C"{
 #	endif
 
-#	define  ARRAY    *
 #	define  ARRAY_LENGTH(array)         (sizeof array / sizeof array[0])
 #	define  New_Array(type, values...)  __create_array(sizeof(type), COUNT(0, values), (type[]){values})
 

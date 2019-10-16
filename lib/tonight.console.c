@@ -39,7 +39,7 @@ static pointer Console_getStream(void){
         .stream = &console_stream,
         .null = NULL
     };
-    return ret.null;
+    return &ret.null;
 }
 
 static INLINE void Console_clearScreen(void){

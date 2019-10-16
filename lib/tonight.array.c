@@ -6,6 +6,7 @@
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/array.h"
+#include "../include/Tonight/string.h"
 
 typedef struct{
 	size_t length;
