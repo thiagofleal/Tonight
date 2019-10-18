@@ -45,7 +45,7 @@
     extern wstring TONIGHT toWide(pointer);
     extern wstring TONIGHT wconcat(wstring, ...);
     extern wstring TONIGHT nwconcat(size_t, wstring, ...);
-    extern retWideString TONIGHT wretConcat(wstring, ...);
+    extern fixWideString TONIGHT wfixConcat(wstring, ...);
     extern INLINE void TONIGHT checkArgumentPointer(pointer);
 
 #	ifdef __cplusplus

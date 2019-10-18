@@ -15,7 +15,6 @@
 #	define	$o(arg)	getText($(arg $as Object).toRetString())
 #	define	$ff(arg, n)	getText(fsf(arg, n))
 #	define	$df(arg, n)	getText(dsf(arg, n))
-#	define	$F(format, args...)	getText(formated(format, args))
 
 #	define	$cp(arg)		getText(cps(arg))
 #	define	$bp(arg)		getText(bps(arg))
@@ -36,13 +35,13 @@
 #	define	$lo(arg)	getText($(arg $as Object).toLongRetString())
 #	define	$lff(arg, n)	getText(flsf(arg, n))
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
-#	define	$lF(format, args...)	getText(longFormated(format, args))
 
 	extern const struct __String{
 		void (* free)(string);
 		string (* formated)(const string, ...);
-		string (* copy)(string);
-		string (* concatenate)(string, string);
+		string (* copy)(const string);
+		string (* concat)(string, ...);
+		string (* nconcat)(size_t, string, ...);
 		string (* upper)(const string);
 		string (* lower)(const string);
 		string (* trim)(const string);
@@ -50,15 +49,27 @@
 		string* (* split)(const string, const string);
 		size_t (* length)(const string);
 		int (* compare)(const string, const string);
-		string (* toString)(const string);
-		wstring (* toWide)(const string);
+		bool (* equal)(register string const, register string const);
+		bool (* identic)(register string const, register string const);
 	}String;
 
-    extern bool TONIGHT equal(register string const, register string const);
+	extern const struct __FixString{
+		fixString (* concat)(string, ...);
+        fixString (* formated)(const string, ...);
+		int (* compare)(fixString, fixString);
+		bool (* equal)(fixString, fixString);
+		bool (* identic)(fixString, fixString);
+	}FixString;
+
+	extern const struct __LongFixString{
+		longFixString (* concat)(string, ...);
+        longFixString (* formated)(const string, ...);
+		int (* compare)(longFixString, longFixString);
+		bool (* equal)(longFixString, longFixString);
+		bool (* identic)(longFixString, longFixString);
+	}LongFixString;
+
     extern string TONIGHT toString(pointer);
-    extern string TONIGHT concat(string, ...);
-    extern string TONIGHT nconcat(size_t, string, ...);
-    extern retString TONIGHT retConcat(string, ...);
     extern string TONIGHT s_cs(char);
     extern string TONIGHT s_bs(bool);
     extern string TONIGHT s_is(int);
@@ -77,35 +88,31 @@
     extern INLINE string TONIGHT s_dpsf(double*, int);
     extern INLINE string TONIGHT s_pps(pointer*);
 
-    extern retString TONIGHT retConcat(string, ...);
-    extern retString TONIGHT cs(char);
-    extern retString TONIGHT bs(bool);
-    extern retString TONIGHT is(int);
-    extern retString TONIGHT fs(float);
-    extern retString TONIGHT ds(double);
-    extern retString TONIGHT fsf(float, int);
-    extern retString TONIGHT dsf(double, int);
-    extern retString TONIGHT ps(pointer);
-    extern retString TONIGHT formated(const string, ...);
+    extern fixString TONIGHT cs(char);
+    extern fixString TONIGHT bs(bool);
+    extern fixString TONIGHT is(int);
+    extern fixString TONIGHT fs(float);
+    extern fixString TONIGHT ds(double);
+    extern fixString TONIGHT fsf(float, int);
+    extern fixString TONIGHT dsf(double, int);
+    extern fixString TONIGHT ps(pointer);
 
-    extern INLINE retString TONIGHT cps(char*);
-    extern INLINE retString TONIGHT bps(bool*);
-    extern INLINE retString TONIGHT ips(int*);
-    extern INLINE retString TONIGHT fps(float*);
-    extern INLINE retString TONIGHT dps(double*);
-    extern INLINE retString TONIGHT fpsf(float*, int);
-    extern INLINE retString TONIGHT dpsf(double*, int);
-    extern INLINE retString TONIGHT pps(pointer*);
+    extern INLINE fixString TONIGHT cps(char*);
+    extern INLINE fixString TONIGHT bps(bool*);
+    extern INLINE fixString TONIGHT ips(int*);
+    extern INLINE fixString TONIGHT fps(float*);
+    extern INLINE fixString TONIGHT dps(double*);
+    extern INLINE fixString TONIGHT fpsf(float*, int);
+    extern INLINE fixString TONIGHT dpsf(double*, int);
+    extern INLINE fixString TONIGHT pps(pointer*);
 
-    extern longRetString TONIGHT longRetConcat(string, ...);
-    extern longRetString TONIGHT cls(char);
-    extern longRetString TONIGHT bls(bool);
-    extern longRetString TONIGHT ils(int);
-    extern longRetString TONIGHT fls(float);
-    extern longRetString TONIGHT dls(double);
-    extern longRetString TONIGHT flsf(float, int);
-    extern longRetString TONIGHT dlsf(double, int);
-    extern longRetString TONIGHT longFormated(const string, ...);
+    extern longFixString TONIGHT cls(char);
+    extern longFixString TONIGHT bls(bool);
+    extern longFixString TONIGHT ils(int);
+    extern longFixString TONIGHT fls(float);
+    extern longFixString TONIGHT dls(double);
+    extern longFixString TONIGHT flsf(float, int);
+    extern longFixString TONIGHT dlsf(double, int);
 
 	#ifdef __cplusplus
 		}

@@ -43,7 +43,7 @@ static void Map_remove(object self, int index){
     if(index >= $$(self $as Map).size || index < 0){
         static string error = NULL;
         if(error)	Memory.free(error);
-        error = concat("Impossible to access the index ", is(index).Text, $end);
+        error = String.concat("Impossible to access the index ", is(index).Text, $end);
         throw(MapException, error);
     }
 

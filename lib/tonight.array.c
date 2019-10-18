@@ -52,7 +52,7 @@ static INLINE void TONIGHT Array_free(pointer array){
 	if(array) Memory.Callback.free(array - sizeof(ArrayData));
 }
 
-static string TONIGHT Array_toString(pointer array, string sep, P_retString method){
+static string TONIGHT Array_toString(pointer array, string sep, P_fixString method){
 	register int i, length = Array_length(array);
 	char ARRAY str = __new_array_char((Array_size(array) * 3 + strlen(sep)) * length);
 	string ret;

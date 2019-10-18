@@ -145,8 +145,8 @@ struct IObject{
 	bool (* equal)(object);
 	object (* copy)(void);
 	string (* toString)(void);
-	retString (* toRetString)(void);
-	longRetString (* toLongRetString)(void);
+	fixString (* toFixString)(void);
+	longFixString (* toLongFixString)(void);
 };
 
 interface(IObject);

@@ -84,14 +84,14 @@ static string Object_toString(void){
 	return String.formated("%s at 0x%p", this->class_pointer->name, this);
 }
 
-static retString Object_toRetString(void){
-	retString ret;
+static fixString Object_toFixString(void){
+	fixString ret;
     memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
     return ret;
 }
 
-static longRetString Object_toLongRetString(void){
-	longRetString ret;
+static longFixString Object_toLongFixString(void){
+	longFixString ret;
     memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
 	return ret;
 }
@@ -100,8 +100,8 @@ static IObject Object_vtble = {
 	.equal = Object_equal,
 	.copy = Object_clone,
 	.toString = Object_toString,
-	.toRetString = Object_toRetString,
-	.toLongRetString = Object_toLongRetString
+	.toFixString = Object_toFixString,
+	.toLongFixString = Object_toLongFixString
 };
 
 static bool IObject_equal(object obj){
@@ -128,18 +128,18 @@ static string IObject_toString(void){
     return ret;
 }
 
-static retString IObject_toRetString(void){
-	retString ret = $Empty(retString);
+static fixString IObject_toFixString(void){
+	fixString ret = $Empty(fixString);
 	Method(Object){
-        ret = getInterface(Object).toRetString();
+        ret = getInterface(Object).toFixString();
 	}
     return ret;
 }
 
-static longRetString IObject_toLongRetString(void){
-	longRetString ret = $Empty(longRetString);
+static longFixString IObject_toLongFixString(void){
+	longFixString ret = $Empty(longFixString);
 	Method(Object){
-        ret = getInterface(Object).toLongRetString();
+        ret = getInterface(Object).toLongFixString();
 	}
 	return ret;
 }
@@ -148,8 +148,8 @@ static IObject iObject = {
 	.equal = IObject_equal,
 	.copy = IObject_clone,
 	.toString = IObject_toString,
-	.toRetString = IObject_toRetString,
-	.toLongRetString = IObject_toLongRetString
+	.toFixString = IObject_toFixString,
+	.toLongFixString = IObject_toLongFixString
 };
 
 static void new_Object(pointer args){

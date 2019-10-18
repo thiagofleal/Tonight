@@ -31,7 +31,7 @@ static file TONIGHT $throws __new_File(string fName, FileModeDescriptor fMode){
 	fd->_stream = &file_stream;
 	f->data = fopen(fName, fMode->value);
 	if(!f->data)
-		throw(FileOpenException, concat("Impossible to open the file \"", fName, "\"", $end));
+		throw(FileOpenException, String.concat("Impossible to open the file \"", fName, "\"", $end));
 	return f;
 }
 

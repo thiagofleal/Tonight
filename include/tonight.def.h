@@ -193,25 +193,25 @@
 
 	typedef struct{
 		char Text[101];
-	}retString;
+	}fixString;
 
 	typedef struct{
 		char Text[1001];
-	}longRetString;
+	}longFixString;
 
 	typedef struct{
 		wchar_t Text[101];
-	}retWideString;
+	}fixWideString;
 
 	typedef struct{
 		wchar_t Text[1001];
-	}longRetWideString;
+	}longFixWideString;
 
-	typedef retString (*P_retString)(OptionalArgs);
-	typedef longRetString (*P_longRetString)(OptionalArgs);
+	typedef fixString (*P_fixString)(OptionalArgs);
+	typedef longFixString (*P_longFixString)(OptionalArgs);
 
-	typedef retWideString (*P_retWideString)(OptionalArgs);
-	typedef longRetWideString (*P_longRetWideString)(OptionalArgs);
+	typedef fixWideString (*P_fixWideString)(OptionalArgs);
+	typedef longFixWideString (*P_longFixWideString)(OptionalArgs);
 
 	typedef struct tm* Time;
 	typedef Time (*P_Time)(OptionalArgs);

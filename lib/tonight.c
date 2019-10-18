@@ -119,10 +119,10 @@ wstring TONIGHT nwconcat(size_t size, wstring wrd_1, ...){
 	return p;
 }
 
-retWideString TONIGHT wretConcat(wstring wrd_1, ...){
+fixWideString TONIGHT wretConcat(wstring wrd_1, ...){
 	va_list va;
 	wstring p;
-	static retWideString ret;
+	static fixWideString ret;
 	*ret.Text = 0;
 	va_start(va, wrd_1);
 	for (p = wrd_1; p; p = va_arg(va, wstring))
@@ -271,6 +271,10 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 }
 
 /* Functions to Convert */
+static INLINE string TONIGHT byte_toString(byte b){
+	return s_is((int)b);
+}
+
 static char TONIGHT char_fromString(string s){
 	char ret = *s;
 	if(* ++ s)
@@ -287,9 +291,9 @@ static byte TONIGHT $throws byte_fromString(string s){
 }
 
 static bool TONIGHT $throws bool_fromString(string s){
-	if(equal(s, "true"))
+	if(String.equal(s, "true"))
 		return true;
-	if(equal(s, "false"))
+	if(String.equal(s, "false"))
 		return false;
 	throw(ConvertException, "Impossible to convert the string to a bool");
 	return false;

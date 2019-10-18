@@ -36,7 +36,7 @@ static void List_addPos(pointer value, int index){
     struct Node *node = $$(this $as List).list, *newNode;
 
     if(index > $$(this $as List).size || index < 0){
-        string s = concat("Impossible to add the index ", $i(index), $end);
+        string s = String.concat("Impossible to add the index ", $i(index), $end);
         throw(IndexException, s);
         String.free(s);
     }
@@ -64,7 +64,7 @@ static void List_remove(int index){
         static string error = NULL;
 
         if(error)	Memory.free(error);
-        error = concat("Impossible to access the index ", is(index).Text, $end);
+        error = String.concat("Impossible to access the index ", is(index).Text, $end);
         throw(IndexException, error);
     }
 
@@ -94,7 +94,7 @@ static Private struct Node * List_getNode(object self, int index){
 	struct Node *node = $$(self $as List).list;
 
 	if(index >= $$(self $as List).size || index < 0){
-		throw(IndexException, concat("Impossible to access the index ", $i(index), $end));
+		throw(IndexException, String.concat("Impossible to access the index ", $i(index), $end));
 	}
 	for(i = 0; i < index && node->next; i++, node = node->next);
 	return node;
@@ -137,7 +137,7 @@ static object List_select(condition where){
 	return sel;
 }
 
-static void List_setStringMethod(P_retString method){
+static void List_setStringMethod(P_fixString method){
     $$(this $as List).stringMethod = method;
 }
 
@@ -145,8 +145,8 @@ static string List_toString(string sep){
     extern int sprintf(string, const string, ...);
 	string ret;
     register int i, length = $$(this $as List).size;
-    char ARRAY str = Array.Char((sizeof(retString) + String.length(sep)) * length);
-    P_retString method = $$(this $as List).stringMethod;
+    char ARRAY str = Array.Char((sizeof(fixString) + String.length(sep)) * length);
+    P_fixString method = $$(this $as List).stringMethod;
     if(!length)
         return toString("");
     *str = 0;
@@ -265,7 +265,7 @@ static object IList_select(condition where){
     return ret;
 }
 
-static void IList_setStringMethod(P_retString method){
+static void IList_setStringMethod(P_fixString method){
     Method(List){
         getInterface(List).setStringMethod(method);
     }

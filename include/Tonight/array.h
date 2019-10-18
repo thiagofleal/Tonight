@@ -15,7 +15,7 @@
 		size_t (* length)(pointer);
 		size_t (* size)(pointer);
 		pointer (* access)(pointer, int);
-		string (* toString)(pointer, string, P_retString);
+		string (* toString)(pointer, string, P_fixString);
 		pointer (* convert)(pointer, cast);
 		pointer (* where)(pointer, condition);
 		bool (* contains)(pointer, pointer);

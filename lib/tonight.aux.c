@@ -130,7 +130,7 @@ static void classThisError(object obj, pointer args){
     $va_set(args, { Class obj_class; });
     static string error_str = NULL;
     if(error_str) String.free(error_str);
-    error_str = concat(
+    error_str = String.concat(
         "The class \"",
         (obj->class_pointer ? obj->class_pointer->name : "(undefined)"),
         "\" not extends \"",

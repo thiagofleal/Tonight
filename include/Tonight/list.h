@@ -35,7 +35,7 @@
 		unsigned int (* size)(void);
 		pointer (* toArray)(void);
 		object (* where)(condition);
-		void (* setStringMethod)(P_retString);
+		void (* setStringMethod)(P_fixString);
 		string (* toString)(string);
 		void (* setFreeCallBack)(P_freeCallBack);
 	};
@@ -45,7 +45,7 @@
 	struct List{
 		struct Node *list;
 		size_t size;
-		P_retString stringMethod;
+		P_fixString stringMethod;
 		P_freeCallBack freeCallBack;
 	};
 

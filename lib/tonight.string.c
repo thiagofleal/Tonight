@@ -7,68 +7,13 @@
 #include "../include/Tonight/array.h"
 #include "../include/Tonight/string.h"
 
-bool TONIGHT equal(register string const wrd_1, register string const wrd_2){
-	register string s1 = wrd_1, s2 = wrd_2;
-	while(*s1 && *s2){
-		if(*s1 != *s2){
-			if(isupper(*s1))
-				if(tolower(*s1) != *s2)
-					return false;
-			if(islower(*s1))
-				if(toupper(*s1) != *s2)
-					return false;
-		}
-		s1++; s2++;
-	}
-	return *s1 == *s2 ? true : false;
+INLINE string TONIGHT toString(register pointer __array){
+	register size_t size = (strlen(__array) + 1) * sizeof(char);
+	return memcpy(Memory.alloc(size), __array, size);
 }
 
 static INLINE string TONIGHT __concatString(char dest[], char from[], size_t length){
 	return strncat(dest, from, length - strlen(dest) - 1);
-}
-
-retString TONIGHT retConcat(string wrd_1, ...){
-	va_list va;
-	string p;
-	static retString ret;
-	*ret.Text = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, string))
-		__concatString(ret.Text, p, sizeof ret);
-	va_end(va);
-	return ret;
-}
-
-string TONIGHT concat(string wrd_1, ...){
-	va_list va;
-	static char s[10001];
-	static string p;
-	*s = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, string))
-		__concatString(s, p, sizeof s);
-	va_end(va);
-	return toString(s);
-}
-
-string TONIGHT nconcat(size_t size, string wrd_1, ...){
-	va_list va;
-	char ARRAY s = NULL;
-	static string p;
-	s = Array.Char(size + 1);
-	*s = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, string))
-		strcat(s, p);
-	va_end(va);
-	p = toString(s);
-	Array.free(s);
-	return p;
-}
-
-INLINE string TONIGHT toString(register pointer __array){
-	register size_t size = (strlen(__array) + 1) * sizeof(char);
-	return memcpy(Memory.alloc(size), __array, size);
 }
 
 static string TONIGHT wideToString(wstring s){
@@ -148,188 +93,159 @@ INLINE string TONIGHT s_dpsf(double *p, int d){
 	return s_dsf(*p, d);
 }
 
-retString TONIGHT cs(char var){
+fixString TONIGHT cs(char var){
 	register char *s = s_cs(var);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT bs(bool var){
+fixString TONIGHT bs(bool var){
 	register char *s = s_bs(var);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT is(int var){
+fixString TONIGHT is(int var){
 	register char *s = s_is(var);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT fsf(float var, int _decimal){
+fixString TONIGHT fsf(float var, int _decimal){
 	register char *s = s_fsf(var, _decimal);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT dsf(double var, int _decimal){
+fixString TONIGHT dsf(double var, int _decimal){
 	register char *s = s_dsf(var, _decimal);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT ds(double var){
+fixString TONIGHT ds(double var){
 	register char *s = s_ds(var);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT fs(float var){
+fixString TONIGHT fs(float var){
 	register char *s = s_fs(var);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-INLINE retString TONIGHT ps(pointer var){
+INLINE fixString TONIGHT ps(pointer var){
 	register char *s = s_ps(var);
-	static retString ret;
+	static fixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-longRetString TONIGHT longRetConcat(string wrd_1, ...){
-	va_list va;
-	string p;
-	static longRetString ret;
-	*ret.Text = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, string))
-		__concatString(ret.Text, p, sizeof ret);
-	va_end(va);
-	return ret;
-}
-
-INLINE retString TONIGHT cps(char *p){
+INLINE fixString TONIGHT cps(char *p){
 	return cs(*p);
 }
 
-INLINE retString TONIGHT bps(bool *p){
+INLINE fixString TONIGHT bps(bool *p){
 	return bs(*p);
 }
 
-INLINE retString TONIGHT ips(int *p){
+INLINE fixString TONIGHT ips(int *p){
 	return is(*p);
 }
 
-INLINE retString TONIGHT fps(float *p){
+INLINE fixString TONIGHT fps(float *p){
 	return fs(*p);
 }
 
-INLINE retString TONIGHT dps(double *p){
+INLINE fixString TONIGHT dps(double *p){
 	return ds(*p);
 }
 
-INLINE retString TONIGHT fpsf(float *p, int d){
+INLINE fixString TONIGHT fpsf(float *p, int d){
 	return fsf(*p, d);
 }
 
-INLINE retString TONIGHT dpsf(double *p, int d){
+INLINE fixString TONIGHT dpsf(double *p, int d){
 	return dsf(*p, d);
 }
 
-INLINE retString TONIGHT pps(pointer *p){
+INLINE fixString TONIGHT pps(pointer *p){
 	return ps(*p);
 }
 
-longRetString TONIGHT cls(char var){
+longFixString TONIGHT cls(char var){
 	register char *s = s_cs(var);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.Callback.free(s);
 	return ret;
 }
 
-longRetString TONIGHT bls(bool var){
+longFixString TONIGHT bls(bool var){
 	register char *s = s_bs(var);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-longRetString TONIGHT ils(int var){
+longFixString TONIGHT ils(int var){
 	register char *s = s_is(var);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-longRetString TONIGHT fls(float var){
+longFixString TONIGHT fls(float var){
 	register char *s = s_fs(var);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-longRetString TONIGHT dls(double var){
+longFixString TONIGHT dls(double var){
 	register char *s = s_ds(var);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-longRetString TONIGHT flsf(float var, int d){
+longFixString TONIGHT flsf(float var, int d){
 	register char *s = s_fsf(var, d);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-longRetString TONIGHT dlsf(double var, int d){
+longFixString TONIGHT dlsf(double var, int d){
 	register char *s = s_dsf(var, d);
-	static longRetString ret;
+	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
 	Memory.free(s);
 	return ret;
 }
 
-retString TONIGHT formated(const string format, ...){
-	va_list v;
-	retString ret;
-	va_start(v, format);
-	vsnprintf(ret.Text, sizeof ret, format, v);
-	va_end(v);
-	return ret;
-}
-
-longRetString TONIGHT longFormated(const string format, ...){
-	va_list v;
-	longRetString ret;
-	va_start(v, format);
-	vsnprintf(ret.Text, sizeof ret, format, v);
-	va_end(v);
-	return ret;
-}
-
+/* String abstract class */
 static string TONIGHT String_formated(const string frmt, ...){
 	static char s[1001];
 	va_list v;
@@ -339,8 +255,31 @@ static string TONIGHT String_formated(const string frmt, ...){
 	return toString(s);
 }
 
-static INLINE string TONIGHT String_concatenate(string str1, string str2){
-	return concat(str1, str2, $end);
+static string TONIGHT String_concat(string wrd_1, ...){
+	va_list va;
+	static char s[10001];
+	static string p;
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		__concatString(s, p, sizeof s);
+	va_end(va);
+	return toString(s);
+}
+
+static string TONIGHT String_nconcat(size_t size, string wrd_1, ...){
+	va_list va;
+	char ARRAY s = NULL;
+	static string p;
+	s = Array.Char(size + 1);
+	*s = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		strcat(s, p);
+	va_end(va);
+	p = toString(s);
+	Array.free(s);
+	return p;
 }
 
 static string TONIGHT String_upper(const string str){
@@ -359,8 +298,29 @@ static string TONIGHT String_lower(const string str){
 	return aux;
 }
 
-static INLINE string TONIGHT byte_toString(byte b){
-	return s_is((int)b);
+static bool TONIGHT String_equal(register string const wrd_1, register string const wrd_2){
+	register string s1 = wrd_1, s2 = wrd_2;
+	while(*s1 && *s2){
+		if(*s1 != *s2){
+			if(isupper(*s1))
+				if(tolower(*s1) != *s2)
+					return false;
+			if(islower(*s1))
+				if(toupper(*s1) != *s2)
+					return false;
+		}
+		s1++; s2++;
+	}
+	return *s1 == *s2 ? true : false;
+}
+
+static bool TONIGHT String_identic(register string const wrd_1, register string const wrd_2){
+	register string s1 = wrd_1, s2 = wrd_2;
+	while(*s1 && *s2){
+		if(*s1 != *s2) return false;
+		s1++; s2++;
+	}
+	return *s1 == *s2 ? true : false;
 }
 
 static string TONIGHT String_sep(register string *stringp, register const string delim){
@@ -419,15 +379,98 @@ static INLINE void String_free(string str){
 const struct __String String = {
 	.formated = (pointer)String_formated,
 	.copy = (pointer)toString,
-	.concatenate = (pointer)String_concatenate,
-	.upper = (pointer)String_upper,
-	.lower = (pointer)String_lower,
+	.concat = (pointer)String_concat,
+	.nconcat = String_nconcat,
+	.upper = String_upper,
+	.lower = String_lower,
 	.length = (pointer)strlen,
 	.compare = (pointer)strcmp,
-	.sep = (pointer)String_sep,
-	.split = (pointer)String_split,
-	.trim = (pointer)String_trim,
-	.free = (pointer)String_free,
-	.toString = (pointer)toString,
-	//.toWide = stringToWide
+	.equal = String_equal,
+	.identic = String_identic,
+	.sep = String_sep,
+	.split = String_split,
+	.trim = String_trim,
+	.free = String_free
+};
+
+static fixString TONIGHT FixString_concat(string wrd_1, ...){
+	va_list va;
+	string p;
+	static fixString ret;
+	*ret.Text = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		__concatString(ret.Text, p, sizeof ret);
+	va_end(va);
+	return ret;
+}
+
+static fixString TONIGHT FixString_formated(const string format, ...){
+	va_list v;
+	fixString ret;
+	va_start(v, format);
+	vsnprintf(ret.Text, sizeof ret, format, v);
+	va_end(v);
+	return ret;
+}
+
+static INLINE int TONIGHT FixString_compare(fixString s1, fixString s2){
+    return strncmp(getText(s1), getText(s2), sizeof s1);
+}
+
+static INLINE bool TONIGHT FixString_equal(fixString s1, fixString s2){
+    return String_equal(getText(s1), getText(s2));
+}
+
+static INLINE bool TONIGHT FixString_identic(fixString s1, fixString s2){
+    return String_identic(getText(s1), getText(s2));
+}
+
+const struct __FixString FixString = {
+    .concat = FixString_concat,
+    .formated = FixString_formated,
+    .compare = FixString_compare,
+	.equal = FixString_equal,
+	.identic = FixString_identic
+};
+
+static longFixString TONIGHT LongFixString_concat(string wrd_1, ...){
+	va_list va;
+	string p;
+	static longFixString ret;
+	*ret.Text = 0;
+	va_start(va, wrd_1);
+	for (p = wrd_1; p; p = va_arg(va, string))
+		__concatString(ret.Text, p, sizeof ret);
+	va_end(va);
+	return ret;
+}
+
+static longFixString TONIGHT LongFixString_formated(const string format, ...){
+	va_list v;
+	longFixString ret;
+	va_start(v, format);
+	vsnprintf(ret.Text, sizeof ret, format, v);
+	va_end(v);
+	return ret;
+}
+
+static INLINE int TONIGHT LongFixString_compare(longFixString s1, longFixString s2){
+    return strncmp(getText(s1), getText(s2), sizeof s1);
+}
+
+static INLINE bool TONIGHT LongFixString_equal(longFixString s1, longFixString s2){
+    return String_equal(getText(s1), getText(s2));
+}
+
+static INLINE bool TONIGHT LongFixString_identic(longFixString s1, longFixString s2){
+    return String_identic(getText(s1), getText(s2));
+}
+
+const struct __LongFixString LongFixString = {
+    .concat = LongFixString_concat,
+    .formated = LongFixString_formated,
+    .compare = LongFixString_compare,
+    .equal = LongFixString_equal,
+    .identic = LongFixString_identic
 };
