@@ -145,8 +145,11 @@ struct IObject{
 	bool (* equal)(object);
 	object (* copy)(void);
 	string (* toString)(void);
+	wstring (* toWideString)(void);
 	fixString (* toFixString)(void);
 	longFixString (* toLongFixString)(void);
+	fixWideString (* toFixWideString)(void);
+	longFixWideString (* toLongFixWideString)(void);
 };
 
 interface(IObject);

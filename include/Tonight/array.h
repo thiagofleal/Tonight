@@ -25,11 +25,12 @@
 		char* (*Char)(size_t);
 		byte* (*Byte)(size_t);
 		bool* (*Bool)(size_t);
+		wchar_t* (*WideChar)(size_t);
 		int* (*Int)(size_t);
 		float* (*Float)(size_t);
 		double* (*Double)(size_t);
 		string* (*String)(size_t);
-		wstring* (*Wstring)(size_t);
+		wstring* (*WideString)(size_t);
 		object* (*Object)(size_t);
 		pointer* (*Pointer)(size_t);
 		pointer	(*Generic)(size_t, size_t);

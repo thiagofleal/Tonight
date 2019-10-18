@@ -49,7 +49,7 @@
 #	define  ARRAY    *
 #	define  $Empty(Type)	((Type){0})
 #	define  $end			((string)0)
-#	define  getText(str) ((string)&((str).Text)[0])
+#	define  getText(str) &(((str).Text)[0])
 
 #	ifndef __cplusplus
 #		define and      &&
@@ -274,22 +274,6 @@
 	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
-
-	struct __WideString{
-		void (* free)(wstring);
-		wstring (* formated)(const wstring, ...);
-		wstring (* copy)(wstring);
-		wstring (* concatenate)(wstring, wstring);
-		wstring (* upper)(const wstring);
-		wstring (* lower)(const wstring);
-		wstring (* trim)(const wstring);
-		wstring (* sep)(wstring*, const wstring);
-		wstring* (* split)(const wstring, const wstring);
-		size_t (* length)(const wstring);
-		int (* compare)(const wstring, const wstring);
-		string (* toString)(const wstring);
-		wstring (* toWide)(const wstring);
-	};
 
 	/* Keys */
 	struct __Key{

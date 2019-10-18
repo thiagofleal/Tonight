@@ -1,9 +1,9 @@
 #include <string.h>
-
 #include "../include/tonight.h"
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/collection.h"
 #include "../include/Tonight/string.h"
+#include "../include/Tonight/wstring.h"
 
 object This = NULL;
 
@@ -84,6 +84,10 @@ static string Object_toString(void){
 	return String.formated("%s at 0x%p", this->class_pointer->name, this);
 }
 
+static wstring Object_toWideString(void){
+	return WideString.formated(L"%s at 0x%p", this->class_pointer->name, this);
+}
+
 static fixString Object_toFixString(void){
 	fixString ret;
     memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
@@ -96,12 +100,27 @@ static longFixString Object_toLongFixString(void){
 	return ret;
 }
 
+static fixWideString Object_toFixWideString(void){
+	fixWideString ret;
+    memcpy(ret.Text, $(this $as Object).toWideString(), sizeof ret);
+    return ret;
+}
+
+static longFixWideString Object_toLongFixWideString(void){
+	longFixWideString ret;
+    memcpy(ret.Text, $(this $as Object).toWideString(), sizeof ret);
+	return ret;
+}
+
 static IObject Object_vtble = {
 	.equal = Object_equal,
 	.copy = Object_clone,
 	.toString = Object_toString,
+	.toWideString = Object_toWideString,
 	.toFixString = Object_toFixString,
-	.toLongFixString = Object_toLongFixString
+	.toLongFixString = Object_toLongFixString,
+	.toFixWideString = Object_toFixWideString,
+	.toLongFixWideString = Object_toLongFixWideString
 };
 
 static bool IObject_equal(object obj){
@@ -128,6 +147,14 @@ static string IObject_toString(void){
     return ret;
 }
 
+static wstring IObject_toWideString(void){
+	wstring ret = $Empty(wstring);
+    Method(Object){
+        ret = getInterface(Object).toWideString();
+	}
+    return ret;
+}
+
 static fixString IObject_toFixString(void){
 	fixString ret = $Empty(fixString);
 	Method(Object){
@@ -144,12 +171,31 @@ static longFixString IObject_toLongFixString(void){
 	return ret;
 }
 
+static fixWideString IObject_toFixWideString(void){
+	fixWideString ret = $Empty(fixWideString);
+	Method(Object){
+        ret = getInterface(Object).toFixWideString();
+	}
+    return ret;
+}
+
+static longFixWideString IObject_toLongFixWideString(void){
+	longFixWideString ret = $Empty(longFixWideString);
+	Method(Object){
+        ret = getInterface(Object).toLongFixWideString();
+	}
+	return ret;
+}
+
 static IObject iObject = {
 	.equal = IObject_equal,
 	.copy = IObject_clone,
 	.toString = IObject_toString,
+	.toWideString = IObject_toWideString,
 	.toFixString = IObject_toFixString,
-	.toLongFixString = IObject_toLongFixString
+	.toLongFixString = IObject_toLongFixString,
+	.toFixWideString = IObject_toFixWideString,
+	.toLongFixWideString = IObject_toLongFixWideString
 };
 
 static void new_Object(pointer args){

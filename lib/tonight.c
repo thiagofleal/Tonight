@@ -333,85 +333,6 @@ static string TONIGHT $throws string_fromDate(Time t){
 	return toString(s);
 }
 
-/* Functions to WideString */
-static wstring TONIGHT WString_formated(const wstring frmt, ...){
-	static wchar_t w[1001];
-	va_list v;
-	va_start(v, frmt);
-	vswprintf(w, (wstring)frmt, v);
-	va_end(v);
-	return toWide(w);
-}
-
-static INLINE wstring TONIGHT WString_concatenate(wstring str1, wstring str2){
-	return wconcat(str1, str2, $end);
-}
-
-static wstring TONIGHT WString_upper(const wstring str){
-	register wstring s, aux = toWide(str);
-	for(s = aux; *(wchar_t*)s; s++){
-		*(wchar_t*)s = toupper(*(wchar_t*)s);
-	}
-	return aux;
-}
-
-static wstring TONIGHT WString_lower(const wstring str){
-	register wstring s, aux = toWide(str);
-	for(s = aux; *(wchar_t*)s; s++){
-		*(wchar_t*)s = tolower(*(wchar_t*)s);
-	}
-	return aux;
-}
-
-static wstring TONIGHT WString_sep(register wstring *stringp, register const wstring delim){
-	register wchar_t* s;
-	register wchar_t* spanp;
-	register int c, sc;
-	wstring tok;
-
-	if (!(s = *stringp))
-		return NULL;
-	for (tok = s;;) {
-		c = *s++;
-		spanp = delim;
-		do {
-			if ((sc = *spanp++) == c){
-				if (!c)
-					s = NULL;
-				else
-					s[-1] = 0;
-				*stringp = s;
-				return tok;
-			}
-		} while (sc != 0);
-	}
-}
-
-static wstring ARRAY WString_split(wstring src, wstring lim){
-	register int i, ret_len;
-	wstring ARRAY ret = NULL;
-	wstring aux, aux2;
-	for(aux2 = aux = toWide(src), i = 0; WString_sep(&aux, lim); i++);
-	Memory.free(aux2);
-	ret_len = i;
-	ret = Array.Generic(sizeof(wstring), ret_len);
-	aux = src;
-	for(aux2 = aux = toWide(src), i = 0; i < ret_len; i++)
-		ret[i] = toWide(WString_sep(&aux, lim));
-	Memory.free(aux2);
-	return ret;
-}
-
-static wstring WString_trim(const wstring _str){
-	register wstring str = _str;
-	register wstring aux = str + wcslen(str) - 1;
-	while(isspace(*str))
-		++str;
-	while(isspace(*aux))
-		*aux-- = 0;
-	return toWide(str);
-}
-
 static string ARRAY __args = NULL;
 
 static void onExit(void){
@@ -506,22 +427,6 @@ const TONIGHT struct __New New = {
 	.Double = __new_double,
 	.String = __new_String,
 	.Pointer = __new_pointer
-};
-
-const struct __WideString WideString = {
-	.formated = (pointer)WString_formated,
-	.copy = (pointer)toWide,
-	.concatenate = (pointer)WString_concatenate,
-	.upper = (pointer)WString_upper,
-	.lower = (pointer)WString_lower,
-	.length = (pointer)wcslen,
-	.compare = (pointer)wcscmp,
-	.sep = (pointer)WString_sep,
-	.split = (pointer)WString_split,
-	.trim = (pointer)WString_trim,
-//	.free = (pointer)__memory_free,
-//	.toString = (pointer)wideToString,
-	.toWide = (pointer)toWide
 };
 
 /* Key */

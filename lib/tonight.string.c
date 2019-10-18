@@ -193,7 +193,7 @@ longFixString TONIGHT cls(char var){
 	register char *s = s_cs(var);
 	static longFixString ret;
 	strncpy(ret.Text, s, sizeof ret);
-	Memory.Callback.free(s);
+	Memory.free(s);
 	return ret;
 }
 

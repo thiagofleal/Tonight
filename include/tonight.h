@@ -27,7 +27,6 @@
 #	include "tonight.OO.h"
 
     /* Objects */
-    extern const TONIGHT struct __WideString WideString;
     extern const TONIGHT struct __Key Key;
     extern const TONIGHT struct __Exit Exit;
 

@@ -161,6 +161,10 @@ static INLINE bool* TONIGHT $throws __new_array_bool(size_t q){
 	return alloc_array(sizeof(bool), q);
 }
 
+static INLINE wchar_t* TONIGHT $throws __new_array_wchar(size_t q){
+	return alloc_array(sizeof(wchar_t), q);
+}
+
 static INLINE int* TONIGHT $throws __new_array_int(size_t q){
 	return alloc_array(sizeof(int), q);
 }
@@ -209,11 +213,12 @@ const struct __Array Array = {
 	.Char = __new_array_char,
 	.Byte = __new_array_byte,
 	.Bool = __new_array_bool,
+	.WideChar = __new_array_wchar,
 	.Int = __new_array_int,
 	.Float = __new_array_float,
 	.Double = __new_array_double,
 	.String = __new_array_String,
-	.Wstring = __new_array_Wstring,
+	.WideString = __new_array_Wstring,
 	.Object = __new_array_Object,
 	.Pointer = __new_array_pointer,
 	.Generic = __new_array_generic
