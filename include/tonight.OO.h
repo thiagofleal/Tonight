@@ -17,7 +17,7 @@
 #	define	TONIGHT_OO_MACROS
 
 #	ifndef TONIGHT_LIBRARY
-#		error "Include the Tonight library with #include<Tonight/tonight.h>"
+#		error "Include the Tonight library"
 #	endif
 
 /*	Declare classes and interfaces	*/
@@ -169,21 +169,5 @@ extern const struct Interface_Object{
 
 extern IObject ___Object_select___(object);
 extern const Class Object;
-
-/*	new and delete	*/
-extern object TONIGHT newInstance(const Class, ...);
-extern void TONIGHT construct(const Class, ...);
-extern void TONIGHT deleteInstance(object);
-extern void TONIGHT destruct(const Class);
-
-extern Class TONIGHT classOf(const object);
-extern bool TONIGHT isType(const object, const Class);
-extern size_t TONIGHT sizeOf(const object);
-extern object TONIGHT copy(const object);
-extern bool TONIGHT compare(const object, const object);
-
-extern INLINE void TONIGHT setCurrentObject(const object);
-extern INLINE object TONIGHT getCurrentObject(void);
-extern object TONIGHT getCurrentObjectChecked(const Class, P_void, ...);
 
 #endif	// ifndef TONIGHT_OO_MACROS

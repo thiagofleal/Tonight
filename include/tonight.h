@@ -26,10 +26,6 @@
 #	include "tonight.def.h"
 #	include "tonight.OO.h"
 
-    /* Objects */
-    extern const TONIGHT struct __Key Key;
-    extern const TONIGHT struct __Exit Exit;
-
     extern void TONIGHT NO_CALL __create_using_context(size_t, pointer);
     extern bool TONIGHT NO_CALL __function_using(pointer, P_void);
 
@@ -40,12 +36,22 @@
     extern bool TONIGHT NO_CALL __function_this(void);
 
     extern INLINE pointer TONIGHT useContext(void);
-
-    extern wstring TONIGHT toWide(pointer);
-    extern wstring TONIGHT wconcat(wstring, ...);
-    extern wstring TONIGHT nwconcat(size_t, wstring, ...);
-    extern fixWideString TONIGHT wfixConcat(wstring, ...);
     extern INLINE void TONIGHT checkArgumentPointer(pointer);
+
+    extern object TONIGHT newInstance(const Class, ...);
+    extern void TONIGHT construct(const Class, ...);
+    extern void TONIGHT deleteInstance(object);
+    extern void TONIGHT destruct(const Class);
+
+    extern Class TONIGHT classOf(const object);
+    extern bool TONIGHT isType(const object, const Class);
+    extern size_t TONIGHT sizeOf(const object);
+    extern object TONIGHT copy(const object);
+    extern bool TONIGHT compare(const object, const object);
+
+    extern INLINE void TONIGHT setCurrentObject(const object);
+    extern INLINE object TONIGHT getCurrentObject(void);
+    extern object TONIGHT getCurrentObjectChecked(const Class, P_void, ...);
 
 #	ifdef __cplusplus
 		}

@@ -17,33 +17,13 @@
 #	define TONIGHT_DEFINITIONS
 
 #	ifndef TONIGHT_LIBRARY
-#		error "Include the Tonight library with #include<Tonight/tonight.h>"
+#		error "Include the Tonight library"
 #	endif
 
 #	define	TONIGHT
 #	define	NO_CALL
 
 /* Definitions */
-#	ifdef _WIN32
-#		define key_right	295
-#		define key_left		293
-#		define key_up		294
-#		define key_down		296
-#		define key_ESC		27
-#		define key_ENTER	13
-#		define key_SPACE	32
-#		define key_BS		8
-#	else
-#		define key_right	185
-#		define key_left		186
-#		define key_up		183
-#		define key_down		184
-#		define key_ESC		27
-#		define key_ENTER	10
-#		define key_SPACE	32
-#		define key_BS		127
-#	endif
-
 #	define main	__main__
 
 #	define  ARRAY    *
@@ -254,47 +234,9 @@
 		int (*year)(OptionalArgs);
 	}Timer;
 
-	/* Conversor */
-	typedef struct __Conversor_set{
-		char (*toChar)(string);
-		byte (*toByte)(string);
-		bool (*toBool)(string);
-		int (*toInt)(string);
-		float (*toFloat)(string);
-		double (*toDouble)(string);
-		string (*fromChar)(char);
-		string (*fromByte)(byte);
-		string (*fromBool)(bool);
-		string (*fromInt)(int);
-		string (*fromFloat)(float);
-		string (*fromDouble)(double);
-		string (*fromTime)(Time);
-	}*__Conversor_set;
-
 	typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
-
-	/* Keys */
-	struct __Key{
-		int Right;
-		int Left;
-		int Up;
-		int Down;
-		int Escape;
-		int Enter;
-		int Space;
-		int BackSpace;
-	};
-
-	/* Exit codes */
-	struct __Exit{
-		int Success;
-		int Failure;
-		void (* With)(int);
-		void (* WithSuccess)(void);
-		void (* WithFail)(void);
-	};
 
 	/* Constructors */
 	struct __New{

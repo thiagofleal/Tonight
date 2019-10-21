@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <locale.h>
 #include <time.h>
 #include <math.h>
 #include <ctype.h>
+#include <errno.h>
+#include <string.h>
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
@@ -10,8 +13,6 @@
 #include "../include/Tonight/string.h"
 
 #undef main
-
-#include "tonight.sys.h"
 
 /* Functions */
 
@@ -59,76 +60,6 @@ INLINE static pointer __Default_void_function(){
 
 INLINE static void __initRandom(void){
 	srand((unsigned int)time(NULL));
-}
-
-static INLINE void TONIGHT __enableASCII(file src){
-	#ifdef _WIN32
-		//_setmode(fileno((FILE*)src), _O_TEXT);
-	#endif
-}
-
-static INLINE void TONIGHT __enableUTF8(file src){
-	#ifdef _WIN32
-		//_setmode(fileno((FILE*)src), _O_U8TEXT);
-	#endif
-}
-
-static INLINE wstring TONIGHT __wconcatString(wchar_t dest[], wchar_t from[], size_t length){
-	return wcsncat(dest, from, length - wcslen(dest) - 1);
-}
-
-static INLINE wstring TONIGHT __concatWString(wchar_t dest[], wchar_t from[], size_t length){
-	return wcsncat(dest, from, length - wcslen(dest) - 1);
-}
-
-static wstring TONIGHT stringToWide(string s){
-    wchar_t wstr[1001];
-	snwprintf(wstr, ARRAY_LENGTH(wstr) - 1, L"%hs", s);
-	return toWide(wstr);
-}
-
-INLINE wstring TONIGHT toWide(register pointer __array){
-	register size_t size = (wcslen(__array) + 1) * sizeof(wchar_t);
-	return memcpy(Memory.alloc(size), __array, size);
-}
-
-wstring TONIGHT wconcat(wstring wrd_1, ...){
-	va_list va;
-	static wchar_t s[10001];
-	static wstring p;
-	*s = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, wstring))
-		__wconcatString(s, p, sizeof s);
-	va_end(va);
-	return toWide(s);
-}
-
-wstring TONIGHT nwconcat(size_t size, wstring wrd_1, ...){
-	va_list va;
-	wchar_t ARRAY s = NULL;
-	static wstring p;
-	s = Array.Generic(sizeof(wchar_t), size + 1);
-	*s = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, wstring))
-		wcscat(s, p);
-	va_end(va);
-	p = toWide(s);
-	Array.free(s);
-	return p;
-}
-
-fixWideString TONIGHT wretConcat(wstring wrd_1, ...){
-	va_list va;
-	wstring p;
-	static fixWideString ret;
-	*ret.Text = 0;
-	va_start(va, wrd_1);
-	for (p = wrd_1; p; p = va_arg(va, wstring))
-		__concatWString(ret.Text, p, sizeof ret);
-	va_end(va);
-	return ret;
 }
 
 /* Functions to the Random class */
@@ -270,69 +201,6 @@ static pointer TONIGHT $throws __new_pointer(pointer value){
 	return p;
 }
 
-/* Functions to Convert */
-static INLINE string TONIGHT byte_toString(byte b){
-	return s_is((int)b);
-}
-
-static char TONIGHT char_fromString(string s){
-	char ret = *s;
-	if(* ++ s)
-		throw(ConvertException, "Impossible to convert the string to a char");
-	return ret;
-}
-
-static byte TONIGHT $throws byte_fromString(string s){
-	string a;
-	byte b = (byte)strtol(s, &a, 0);
-	if(*a)
-		throw(ConvertException, "Impossible to convert the string to byte");
-	return b;
-}
-
-static bool TONIGHT $throws bool_fromString(string s){
-	if(String.equal(s, "true"))
-		return true;
-	if(String.equal(s, "false"))
-		return false;
-	throw(ConvertException, "Impossible to convert the string to a bool");
-	return false;
-}
-
-static int TONIGHT $throws int_fromString(string s){
-	int i;
-	string a;
-	i = (int)strtol(s, &a, 0);
-	if(*a)
-		throw(ConvertException, "Impossible to convert the string to integer");
-	return i;
-}
-
-static float TONIGHT $throws float_fromString(string s){
-	float f;
-	string a;
-	f = strtof(s, &a);
-	if(*a)
-		throw(ConvertException, "Impossible to convert the string to float");
-	return f;
-}
-
-static double TONIGHT $throws double_fromString(string s){
-	double d;
-	string a;
-	d = strtod(s, &a);
-	if(*a)
-		throw(ConvertException, "Impossible to convert the string to double");
-	return d;
-}
-
-static string TONIGHT $throws string_fromDate(Time t){
-	static char s[100] = {0};
-	if(!strftime(s, sizeof s, "%c", t))
-		throw(ConvertException, strerror(errno));
-	return toString(s);
-}
-
 static string ARRAY __args = NULL;
 
 static void onExit(void){
@@ -427,25 +295,4 @@ const TONIGHT struct __New New = {
 	.Double = __new_double,
 	.String = __new_String,
 	.Pointer = __new_pointer
-};
-
-/* Key */
-const struct __Key Key = {
-	.Right = key_right,
-	.Left = key_left,
-	.Up = key_up,
-	.Down = key_down,
-	.Escape = key_ESC,
-	.Enter = key_ENTER,
-	.Space = key_SPACE,
-	.BackSpace = key_BS
-};
-
-/* Exit */
-const struct __Exit Exit = {
-	.Success = EXIT_SUCCESS,
-	.Failure = EXIT_FAILURE,
-	.With = exit,
-	.WithSuccess = Exit_WithSuccess,
-	.WithFail = Exit_WithFail
 };

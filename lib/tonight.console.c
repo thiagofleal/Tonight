@@ -226,3 +226,14 @@ const struct __ConsoleColor ConsoleColor = {
     .yellow = &ConsoleColor_yellow,
     .white = &ConsoleColor_white
 };
+
+const struct __ConsoleKey ConsoleKey = {
+	.Right = key_right,
+	.Left = key_left,
+	.Up = key_up,
+	.Down = key_down,
+	.Escape = key_ESC,
+	.Enter = key_ENTER,
+	.Space = key_SPACE,
+	.BackSpace = key_BS
+};
