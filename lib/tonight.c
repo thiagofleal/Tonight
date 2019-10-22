@@ -1,9 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-#include <time.h>
-#include <math.h>
-#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include "../include/tonight.h"
@@ -56,100 +52,6 @@ static INLINE void TONIGHT __setName(string name){
 INLINE static pointer __Default_void_function(){
 	Throw(NotImplementException, "Function not implemented");
 	return NULL;
-}
-
-INLINE static void __initRandom(void){
-	srand((unsigned int)time(NULL));
-}
-
-/* Functions to the Random class */
-static char TONIGHT __Random_simple_nextChar(void){
-	return (char)(rand()%256);
-}
-
-static INLINE int TONIGHT __Random_simple_nextInt(void){
-	return rand();
-}
-
-static INLINE double TONIGHT __Random_simple_nextDouble(int _decimal){
-	double d = floor((double)rand() / RAND_MAX * pow(10.0, _decimal)) / pow(10.0, _decimal);
-	return _decimal ? rand() * d : (double)rand();
-}
-
-static INLINE float TONIGHT __Random_simple_nextFloat(int _decimal){
-	return (float)__Random_simple_nextDouble(_decimal);
-}
-
-static INLINE char TONIGHT __Random_end_nextChar(char _end){
-	return (char)(rand() % (_end + 1));
-}
-
-static INLINE int TONIGHT __Random_end_nextInt(int _end){
-	return rand() % (_end + 1);
-}
-
-static INLINE double TONIGHT __Random_end_nextDouble(double _end, int _decimal){
-	double d = floor((double)rand() / RAND_MAX * pow(10.0, _decimal)) / pow(10.0, _decimal);
-	return _decimal ? ((rand() % (int)_end) + 1.0) * d : (double)(rand() % ((int)_end) + 1);
-}
-
-static INLINE float TONIGHT __Random_end_nextFloat(float _end, int _decimal){
-	return (float)__Random_end_nextDouble((double)_end, _decimal);
-}
-
-static INLINE char TONIGHT __Random_begin_end_nextChar(char _begin, char _end){
-	return __Random_end_nextChar(_end - _begin) + _begin;
-}
-
-static INLINE int TONIGHT __Random_begin_end_nextInt(int _begin, int _end){
-	return __Random_end_nextInt(_end - _begin) + _begin;
-}
-
-static INLINE double TONIGHT __Random_begin_end_nextDouble(double _begin, double _end, int _decimal){
-	return __Random_end_nextDouble(_end - _begin, _decimal) + _begin;
-}
-
-static INLINE float TONIGHT __Random_begin_end_nextFloat(float _begin, float _end, int _decimal){
-	return (float)__Random_begin_end_nextDouble((double)_begin, (double)_end, _decimal);
-}
-
-/* Functions to Tonight.std.TimeNow */
-static Time TONIGHT __time(void){
-	time_t s;
-	time(&s);
-	return localtime(&s);
-}
-
-static INLINE int TONIGHT __Time_hours(void){
-	return (__time()->tm_hour);
-}
-
-static INLINE int TONIGHT __Time_minutes(void){
-	return (__time()->tm_min);
-}
-
-static INLINE int TONIGHT __Time_seconds(void){
-	return (__time()->tm_sec);
-}
-
-static INLINE int TONIGHT __Time_day_week(void){
-	return (__time()->tm_wday);
-}
-
-static INLINE int TONIGHT __Time_day_month(void){
-	return (__time()->tm_mday);
-}
-
-static INLINE int TONIGHT __Time_day_year(void){
-	return (__time()->tm_yday);
-}
-
-static INLINE int TONIGHT __Time_month(void){
-	return (__time()->tm_mon + 1);
-}
-
-static INLINE int TONIGHT __Time_year(void){
-	return (__time()->tm_year + 1900);
 }
 
 /* Alloc pointers */
@@ -268,14 +170,6 @@ int main(int argc, string argv[]){
 		return TonightModeDefault(argc, argv);
 	if((pointer)Setup)
 		return TonightModeLoop(argc, argv);
-}
-
-static INLINE void TONIGHT Exit_WithSuccess(void){
-	exit(EXIT_SUCCESS);
-}
-
-static INLINE void TONIGHT Exit_WithFail(void){
-	exit(EXIT_FAILURE);
 }
 
 INLINE void TONIGHT checkArgumentPointer(pointer arg){

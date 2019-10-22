@@ -149,6 +149,13 @@
 #   define $va_set(var, __data__)   struct __data__ *__args__ = (pointer)var
 #   define $va_get                  (*__args__)
 
+#ifndef FIX_LENGTH
+#   define FIX_LENGTH 100
+#endif
+#ifndef LONG_FIX_LENGTH
+#   define LONG_FIX_LENGTH 1000
+#endif
+
 /* data types definitions */
 #	ifndef __cplusplus
 		typedef unsigned char bool;
@@ -172,19 +179,19 @@
 	typedef object (*P_object)	(OptionalArgs);
 
 	typedef struct{
-		char Text[101];
+		char Text[FIX_LENGTH + 1];
 	}fixString;
 
 	typedef struct{
-		char Text[1001];
+		char Text[LONG_FIX_LENGTH + 1];
 	}longFixString;
 
 	typedef struct{
-		wchar_t Text[101];
+		wchar_t Text[FIX_LENGTH + 1];
 	}fixWideString;
 
 	typedef struct{
-		wchar_t Text[1001];
+		wchar_t Text[LONG_FIX_LENGTH + 1];
 	}longFixWideString;
 
 	typedef fixString (*P_fixString)(OptionalArgs);
@@ -192,9 +199,6 @@
 
 	typedef fixWideString (*P_fixWideString)(OptionalArgs);
 	typedef longFixWideString (*P_longFixWideString)(OptionalArgs);
-
-	typedef struct tm* Time;
-	typedef Time (*P_Time)(OptionalArgs);
 
 	/* Objects structs */
 	typedef struct str_Class *Class;
@@ -221,20 +225,7 @@
 
 	typedef bool (* condition)(pointer);
 
-	/* Class Timer */
-	typedef struct Timer{
-		Time (*getTime)(OptionalArgs);
-		int (*hours)(OptionalArgs);
-		int (*minutes)(OptionalArgs);
-		int (*seconds)(OptionalArgs);
-		int (*month)(OptionalArgs);
-		int (*day_month)(OptionalArgs);
-		int (*day_week)(OptionalArgs);
-		int (*day_year)(OptionalArgs);
-		int (*year)(OptionalArgs);
-	}Timer;
-
-	typedef struct{
+    typedef struct{
 		void (* free)(OptionalArgs);
 	}IFree;
 
