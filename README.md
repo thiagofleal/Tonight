@@ -1,77 +1,34 @@
-# Tonight: The highest-level C library in someplace
- ![alt tag](/Images/Logo.png)
+# Tonight: The highest-level C framework in someplace
 
-The Tonight Library was created to make hight-level C programming easy code.
-This library implements the following resources:
+The Tonight Framework was created to make hight-level C programming easy code.
+This framework implements the following resources:
 
  ### Error tratement
   
-  * **try** statement
-  * **catch** statement
-  * **finally** statement
-  * **throw** statement
+  * **try** (**Try**)
+  * **catch** (**Catch**)
+  * **finally** (**Finally**)
+  * **throw** (**Throw**)
  
  ### Object-like programming style
   
-  * interface objects
-  * pseudo-objects
-  * **class** and objects
-  * **new** statement
+  * **class**, **interface** and **object**
+  * **new** and **delete**
   * **$(**\<object> **$as** \<class>**).**\<method>**(**\<args>**);**
  
- ### String handle functions
-  
-  * concat
-  * equal
-  * retConcat
-  * toString
- 
- ### Implicit pointers
- 
-  * Generic pointers
-  * Pointers to strings
-  * Pointers to functions
-  * Pointers to objects
- 
- ### Object oriented programming
-  
-  * classes
-  * interfaces
-  * inheritance
-  * polymorphism
- 
- ### Lots of data types defined
-  
-  * Strings types
-  * Exceptions types
-  * Interfaces
-  * Pseudo-classes
-  * Resources classes
-  
- ### Dynamically memory allocation whith error tratement
-  
-  * Arrays allocation
-  * Matrixes allocation
-  * Memory allocation
- 
- ### Input and output
-  
-  * Scanner pseudo-class
-  * Writer pseudo-class
-  * Input resources class
-  * Output resources class
-  
- ### Generic resources implemented
-  
-  * *Tonight* pseudo-object
+### Collections
 
-### Command structures
-
-  * **using**
-  * **with**
-  * **forindex**
+  * *Collection*
+  * **foreachkey**
   * **foreach**
 
-And all of it is implemented in pure C.
+### Statements
 
- ## Author: Thiago Fernandes Leal
+  * **using** (**Using**)
+  * **with** (**With**)
+
+#### And much more...
+
+All of it is implemented in pure C.
+
+ ## Author: Thiago Fernandes Leal <thiagofernandesleal@yahoo.com.br>

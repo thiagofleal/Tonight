@@ -69,7 +69,7 @@ static string TONIGHT Array_toString(pointer array, string sep, P_fixString meth
 }
 
 static pointer TONIGHT Array_convert(pointer array, cast casting){
-	register int i, length=Array.length(array);
+	register int i, length=Array_length(array);
 	pointer ret = __new_array_generic(casting.result, length);
 	for(i=0;i<length;i++)
 		casting.parse(Array_access(array, i), Array_access(ret, i));

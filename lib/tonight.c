@@ -1,6 +1,4 @@
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
@@ -9,18 +7,11 @@
 
 #undef main
 
-INLINE static pointer __Default_void_function(){
-	Throw(NotImplementException, "Function not implemented");
-	return NULL;
-}
-
 static string ARRAY __args = NULL;
 
 static void onExit(void){
 	if(__args){
-        register int lenth = Array.length(__args);
-        register int i = 0;
-        for(;i<lenth;i++) free(__args[i]);
+        Array.forEach(__args, free);
 		Array.free(__args);
 		__args = NULL;
 	}
