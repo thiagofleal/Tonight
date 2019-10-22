@@ -94,3 +94,76 @@ const struct __Memory Memory = {
         .free = Callback_free
     }
 };
+
+static char* TONIGHT $throws __new_char(char value){
+	char* c = __new_memory(sizeof(char));
+	*c = value;
+	return c;
+}
+
+static byte* TONIGHT $throws __new_byte(byte value){
+	byte* b = __new_memory(sizeof(byte));
+	*b = value;
+	return b;
+}
+
+static bool* TONIGHT $throws __new_bool(bool value){
+	bool *b = __new_memory(sizeof(bool));
+	*b = value;
+	return b;
+}
+
+static wchar_t* TONIGHT $throws __new_wchar_t(wchar_t value){
+	wchar_t* c = __new_memory(sizeof(wchar_t));
+	*c = value;
+	return c;
+}
+
+static int* TONIGHT $throws __new_int(int value){
+	int *i = __new_memory(sizeof(int));
+	*i = value;
+	return i;
+}
+
+static float* TONIGHT $throws __new_float(float value){
+	float *f = __new_memory(sizeof(float));
+	*f = value;
+	return f;
+}
+
+static double* TONIGHT $throws __new_double(double value){
+	double *d = __new_memory(sizeof(double));
+	*d = value;
+	return d;
+}
+
+static string* TONIGHT $throws __new_string(string value){
+	string *s = __new_memory(sizeof(string));
+	*s = value;
+	return s;
+}
+
+static wstring* TONIGHT $throws __new_wstring(wstring value){
+	wstring *w = __new_memory(sizeof(wstring));
+	*w = value;
+	return w;
+}
+
+static pointer TONIGHT $throws __new_pointer(pointer value){
+	pointer *p = __new_memory(sizeof(pointer));
+	*p = value;
+	return p;
+}
+
+const struct __InstanceOf InstanceOf = {
+    .Char = __new_char,
+    .Byte = __new_byte,
+    .Bool = __new_bool,
+    .WideChar = __new_wchar_t,
+    .Int = __new_int,
+    .Float = __new_float,
+    .Double = __new_double,
+    .String = __new_string,
+    .WideString = __new_wstring,
+    .Pointer = __new_pointer
+};

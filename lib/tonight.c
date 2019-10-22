@@ -42,55 +42,6 @@ INLINE static pointer __Default_void_function(){
 	return NULL;
 }
 
-/* Alloc pointers */
-static char* TONIGHT $throws __new_char(char value){
-	char* c = Memory.alloc(sizeof(char));
-	*c = value;
-	return c;
-}
-
-static byte* TONIGHT $throws __new_byte(byte value){
-	byte* b = Memory.alloc(sizeof(byte));
-	*b = value;
-	return b;
-}
-
-static bool* TONIGHT $throws __new_bool(bool value){
-	bool *b = Memory.alloc(sizeof(bool));
-	*b = value;
-	return b;
-}
-
-static int* TONIGHT $throws __new_int(int value){
-	int *i = Memory.alloc(sizeof(int));
-	*i = value;
-	return i;
-}
-
-static float* TONIGHT $throws __new_float(float value){
-	float *f = Memory.alloc(sizeof(float));
-	*f = value;
-	return f;
-}
-
-static double* TONIGHT $throws __new_double(double value){
-	double *d = Memory.alloc(sizeof(double));
-	*d = value;
-	return d;
-}
-
-static string* TONIGHT $throws __new_String(string value){
-	string *s = Memory.alloc(sizeof(string));
-	*s = value;
-	return s;
-}
-
-static pointer TONIGHT $throws __new_pointer(pointer value){
-	pointer *p = Memory.alloc(sizeof(pointer));
-	*p = value;
-	return p;
-}
-
 static string ARRAY __args = NULL;
 
 static void onExit(void){
@@ -159,17 +110,3 @@ int main(int argc, string argv[]){
 	if((pointer)Setup)
 		return TonightModeLoop(argc, argv);
 }
-
-/* New */
-const TONIGHT struct __New New = {
-	.Object = (pointer)newInstance,
-
-	.Char = __new_char,
-	.Byte = __new_byte,
-	.Bool = __new_bool,
-	.Int = __new_int,
-	.Float = __new_float,
-	.Double = __new_double,
-	.String = __new_String,
-	.Pointer = __new_pointer
-};

@@ -24,6 +24,19 @@
         }Callback;
     }Memory;
 
+    extern const struct __InstanceOf{
+		char* (*Char)(char);
+		byte* (*Byte)(byte);
+		bool* (*Bool)(bool);
+		wchar_t* (*WideChar)(wchar_t);
+		int* (*Int)(int);
+		float* (*Float)(float);
+		double* (*Double)(double);
+		string* (*String)(string);
+		wstring* (*WideString)(wstring);
+		pointer (*Pointer)(pointer);
+	}InstanceOf;
+
     #ifdef __cplusplus
         }
     #endif // __cplusplus

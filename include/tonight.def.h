@@ -229,18 +229,4 @@
 		void (* free)(OptionalArgs);
 	}IFree;
 
-	/* Constructors */
-	struct __New{
-		object (*Object)(Class, ...);
-
-		char* (*Char)(char);
-		byte* (*Byte)(byte);
-		bool* (*Bool)(bool);
-		int* (*Int)(int);
-		float* (*Float)(float);
-		double* (*Double)(double);
-		string* (*String)(string);
-		pointer (*Pointer)(pointer);
-	};
-
 #endif
