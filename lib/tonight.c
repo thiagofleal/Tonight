@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <locale.h>
 #include <errno.h>
 #include <string.h>
 #include "../include/tonight.h"
@@ -9,33 +8,6 @@
 #include "../include/Tonight/string.h"
 
 #undef main
-
-static int __category = LC_ALL;
-static string __name = "C";
-
-static INLINE string TONIGHT __locale(void){
-	return setlocale(__category, __name);
-}
-
-static INLINE string __getlocale(int category){
-	return setlocale(category, NULL);
-}
-
-static INLINE int TONIGHT __getCategory(void){
-	return __category;
-}
-
-static INLINE void TONIGHT __setCategory(int category){
-	__category = category;
-}
-
-static INLINE string TONIGHT __getName(void){
-	return __name;
-}
-
-static INLINE void TONIGHT __setName(string name){
-	__name = name;
-}
 
 INLINE static pointer __Default_void_function(){
 	Throw(NotImplementException, "Function not implemented");
@@ -68,7 +40,7 @@ static void TONIGHT __Base_TonightMode(register int argc, string argv[]){
 	static int f;
 	__args = Array.String(argc);
 	if(f++)
-		throw(ApplicationException, "Application previosly initialized");
+		throw(ApplicationException, "Application previously initialized");
 	for(i = 0; i < argc; i++)
 		__args[i] = toString(argv[i]);
 	atexit(onExit);
