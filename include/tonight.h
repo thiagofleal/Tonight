@@ -36,7 +36,6 @@
     extern bool TONIGHT NO_CALL __function_this(void);
 
     extern INLINE pointer TONIGHT useContext(void);
-    extern INLINE void TONIGHT checkArgumentPointer(pointer);
 
     extern object TONIGHT newInstance(const Class, ...);
     extern void TONIGHT construct(const Class, ...);

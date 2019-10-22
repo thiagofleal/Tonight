@@ -10,18 +10,6 @@
 
 #undef main
 
-/* Functions */
-
-static void __assert(bool test){
-	if(!test)
-		throw(AssertException, "Assert test failed");
-}
-
-static void __checkErrno(void){
-	if(errno)
-		throw(ErrnoException, strerror(errno));
-}
-
 static int __category = LC_ALL;
 static string __name = "C";
 
@@ -170,11 +158,6 @@ int main(int argc, string argv[]){
 		return TonightModeDefault(argc, argv);
 	if((pointer)Setup)
 		return TonightModeLoop(argc, argv);
-}
-
-INLINE void TONIGHT checkArgumentPointer(pointer arg){
-	if(!arg)
-		throw(NullArgumentException, "Null argument");
 }
 
 /* New */

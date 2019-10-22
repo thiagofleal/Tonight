@@ -7,6 +7,7 @@
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/array.h"
 #include "../include/Tonight/string.h"
+#include "../include/Tonight/test.h"
 
 typedef struct{
 	size_t length;
@@ -29,12 +30,12 @@ static INLINE pointer TONIGHT $throws __new_array_generic(size_t, size_t);
 
 /* Functions to Array */
 static INLINE size_t TONIGHT Array_length(pointer array){
-	checkArgumentPointer(array);
+	Test.checkPointer(array);
 	return ((ArrayData*)(array - sizeof(ArrayData)))->length;
 }
 
 static INLINE size_t TONIGHT Array_size(pointer array){
-	checkArgumentPointer(array);
+	Test.checkPointer(array);
 	return ((ArrayData*)(array - sizeof(ArrayData)))->size;
 }
 
