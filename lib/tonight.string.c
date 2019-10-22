@@ -390,7 +390,8 @@ const struct __String String = {
 	.sep = String_sep,
 	.split = String_split,
 	.trim = String_trim,
-	.free = String_free
+	.free = String_free,
+	.fromWide = wideToString
 };
 
 static fixString TONIGHT FixString_concat(string wrd_1, ...){

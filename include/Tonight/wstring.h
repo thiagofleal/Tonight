@@ -51,6 +51,7 @@
 		int (* compare)(const wstring, const wstring);
 		bool (* equal)(register wstring const, register wstring const);
 		bool (* identic)(register wstring const, register wstring const);
+		wstring (* fromString)(string);
 	}WideString;
 
 	extern const struct __FixWideString{

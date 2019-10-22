@@ -390,7 +390,8 @@ const struct __WideString WideString = {
 	.sep = WideString_sep,
 	.split = WideString_split,
 	.trim = WideString_trim,
-	.free = WideString_free
+	.free = WideString_free,
+	.fromString = stringToWide
 };
 
 static fixWideString TONIGHT FixWideString_concat(wstring wrd_1, ...){

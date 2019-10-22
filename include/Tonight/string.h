@@ -51,6 +51,7 @@
 		int (* compare)(const string, const string);
 		bool (* equal)(register string const, register string const);
 		bool (* identic)(register string const, register string const);
+		string (* fromWide)(wstring);
 	}String;
 
 	extern const struct __FixString{
