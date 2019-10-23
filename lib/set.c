@@ -39,14 +39,15 @@ static ISet Set_vtble = {
 	.setCollection = Set_setCollection
 };
 
+extern int puts(const string);
+
 static void Set_constructor(pointer args){
-	static ICollection _default;
+	static ICollection _default = $Empty(ICollection);
 	construct(superOf(Set));
-	_default = *getICollection(this);
 	$$(this $as Set).collection = Memory.alloc(sizeof _default);
 	*$$(this $as Set).collection = _default;
 	setInterface(Set, Set_vtble);
-	*getICollection(this) = Set_ICollection;
+	setICollection(this, &Set_ICollection);
 }
 
 static void Set_destructor(void){

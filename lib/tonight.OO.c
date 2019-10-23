@@ -9,14 +9,16 @@ object This = NULL;
 
 struct objectAdditionalData{
     ICollection *collection;
+    byte obj[0];
 };
 
 object TONIGHT newInstance(const Class class, ...){
-    object _new = Memory.alloc(sizeof(struct objectAdditionalData) + sizeof(Intern_Object));
+    struct objectAdditionalData* data = Memory.alloc(sizeof(struct objectAdditionalData) + sizeof(Intern_Object));
+    object _new;
 	va_list args;
 	va_start(args, class);
-	((struct objectAdditionalData*)_new)->collection = NULL;
-	_new = (pointer)_new + sizeof(struct objectAdditionalData);
+	data->collection = NULL;
+	_new = (object)data->obj;
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
 	class->ctor(_new, args);

@@ -40,5 +40,6 @@
     extern bool TONIGHT NO_CALL foreachIterator(pointer);
 
 	extern INLINE ICollection * TONIGHT getICollection(pointer);
+	extern INLINE void TONIGHT setICollection(pointer, ICollection*);
 
 #endif //___TONIGHT_COLLECTION___

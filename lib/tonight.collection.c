@@ -7,6 +7,10 @@ INLINE ICollection* TONIGHT getICollection(pointer p){
 	return *(ICollection**)(p - sizeof(ICollection*));
 }
 
+INLINE void TONIGHT setICollection(pointer p, ICollection *value){
+	*(ICollection**)(p - sizeof(ICollection*)) = value;
+}
+
 static INLINE size_t TONIGHT Collection_lenght(pointer p){
 	return getICollection(p)->length(p);
 }
