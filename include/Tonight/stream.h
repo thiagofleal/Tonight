@@ -6,8 +6,10 @@
 #	endif
 
     typedef struct IStream{
-        int (* scan)(pointer, const pointer, pointer);
-        int (* print)(pointer, const pointer, pointer);
+        int (* scan)(pointer, const string, pointer);
+        int (* print)(pointer, const string, pointer);
+        int (* wscan)(pointer, const wstring, pointer);
+        int (* wprint)(pointer, const wstring, pointer);
     }IStream;
 
     extern const IStream Stream;

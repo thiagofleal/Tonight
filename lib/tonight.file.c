@@ -20,9 +20,27 @@ struct __file_data__{
     byte data[0];
 };
 
+static INLINE int file_stream_scan(pointer f, const string frmt, pointer args){
+    return vfscanf(((file)f)->data, frmt, args);
+}
+
+static INLINE int file_stream_print(pointer f, const string frmt, pointer args){
+    return vfprintf(((file)f)->data, frmt, args);
+}
+
+static INLINE int file_stream_wscan(pointer f, const wstring frmt, pointer args){
+    return vfwscanf(((file)f)->data, frmt, args);
+}
+
+static INLINE int file_stream_wprint(pointer f, const wstring frmt, pointer args){
+    return vfwprintf(((file)f)->data, frmt, args);
+}
+
 static IStream file_stream = {
-    .scan = (pointer)vfscanf,
-    .print = (pointer)vfprintf
+    .scan = file_stream_scan,
+    .print = file_stream_print,
+    .wscan = file_stream_wscan,
+    .wprint = file_stream_wprint
 };
 
 static file TONIGHT $throws __new_File(string fName, FileModeDescriptor fMode){
@@ -49,16 +67,27 @@ static INLINE void TONIGHT File_rewind(file f){
 	if(f) rewind(*(FILE**)f);
 }
 
+static file create_file_from(pointer _fd, pointer from){
+    struct __file_data__ *fd = _fd;
+	file f = (file)fd->data;
+	fd->_stream = &file_stream;
+	f->data = from;
+	return f;
+}
+
 static INLINE file TONIGHT File_stdInput(void){
-	return (file){stdin};
+    static byte data[sizeof(struct __file_data__) + sizeof(file)];
+	return create_file_from(&data[0], stdin);
 }
 
 static INLINE file TONIGHT File_stdOutput(void){
-	return (file){stdout};
+    static byte data[sizeof(struct __file_data__) + sizeof(file)];
+	return create_file_from(&data[0], stdout);
 }
 
 static INLINE file TONIGHT File_stdError(void){
-	return (file){stderr};
+    static byte data[sizeof(struct __file_data__) + sizeof(file)];
+	return create_file_from(&data[0], stderr);
 }
 
 struct FileModeDescriptor File_Mode_read = {"r"};

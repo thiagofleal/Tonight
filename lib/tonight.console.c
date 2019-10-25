@@ -26,13 +26,31 @@ struct ColorDescriptor{
     int code;
 };
 
+static INLINE int Console_stream_scan(pointer null, const string frmt, pointer args){
+    return vscanf(frmt, args);
+}
+
+static INLINE int Console_stream_print(pointer null, const string frmt, pointer args){
+    return vprintf(frmt, args);
+}
+
+static INLINE int Console_stream_wscan(pointer null, const wstring frmt, pointer args){
+    return vwscanf(frmt, args);
+}
+
+static INLINE int Console_stream_wprint(pointer null, const wstring frmt, pointer args){
+    return vwprintf(frmt, args);
+}
+
 static IStream console_stream = {
-    .scan = (pointer)vscanf,
-    .print = (pointer)vprintf
+    .scan = Console_stream_scan,
+    .print = Console_stream_print,
+    .wscan = Console_stream_wscan,
+    .wprint = Console_stream_wprint
 };
 
 static pointer Console_getStream(void){
-    static struct ret{
+    static struct {
         IStream *stream;
         pointer null;
     } ret = {
