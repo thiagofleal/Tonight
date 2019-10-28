@@ -173,10 +173,6 @@ void TONIGHT Throw(EXCEPTION __exc, string message){
 	}
 }
 
-static Exception TONIGHT getException(void){
-	return except.value;
-}
-
 static INLINE string TONIGHT Error(Exception exc){
 	return exc->exception->error_name;
 }
@@ -189,9 +185,41 @@ static INLINE EXCEPTION TONIGHT ExceptionType(Exception exc){
 	return exc->exception;
 }
 
-struct Exceptions Exceptions = {
-    .getCurrent = getException,
-    .Error = Error,
-    .Message = Message,
-    .ExceptionType = ExceptionType
+static INLINE void TONIGHT ThrowException(Exception exc){
+    throw(exc->exception, exc->message);
+}
+
+const struct ExceptionManager ExceptionManager = {
+    .error = Error,
+    .message = Message,
+    .type = ExceptionType,
+    .throwException = ThrowException
+};
+
+static Exception TONIGHT CurrentException_get(void){
+	return except.value;
+}
+
+static INLINE string TONIGHT CurrentException_Error(void){
+	return except.value->exception->error_name;
+}
+
+static INLINE string TONIGHT CurrentException_Message(void){
+	return except.value->message;
+}
+
+static INLINE EXCEPTION TONIGHT CurrentException_ExceptionType(void){
+	return except.value->exception;
+}
+
+static INLINE void TONIGHT CurrentException_ThrowAgain(void){
+    throw(except.value->exception, except.value->message);
+}
+
+const struct CurrentException CurrentException = {
+    .get = CurrentException_get,
+    .error = CurrentException_Error,
+    .message = CurrentException_Message,
+    .type = CurrentException_ExceptionType,
+    .throwAgain = CurrentException_ThrowAgain
 };

@@ -88,12 +88,20 @@
     extern  bool    TONIGHT NO_CALL __function_catch(EXCEPTION);
     extern  bool    TONIGHT NO_CALL __function_finally(void);
 
-    extern struct Exceptions{
-        Exception (* getCurrent)(void);
-        string (* Error)(Exception);
-        string (* Message)(Exception);
-        EXCEPTION (* ExceptionType)(Exception);
-    }Exceptions;
+    extern const struct ExceptionManager{
+        string (* error)(Exception);
+        string (* message)(Exception);
+        EXCEPTION (* type)(Exception);
+        void (* throwException)(Exception);
+    }ExceptionManager;
+
+    extern const struct CurrentException{
+        Exception (* get)(void);
+        string (* error)(void);
+        string (* message)(void);
+        EXCEPTION (* type)(void);
+        void (* throwAgain)(void);
+    }CurrentException;
 
     #ifdef __cplusplus
         }
