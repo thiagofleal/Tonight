@@ -14,17 +14,7 @@ static INLINE int Stream_print(pointer obj, const string frmt, pointer args){
     return getIStream(obj)->print(obj, frmt, args);
 }
 
-static INLINE int Stream_wscan(pointer obj, const wstring frmt, pointer args){
-    return getIStream(obj)->wscan(obj, frmt, args);
-}
-
-static INLINE int Stream_wprint(pointer obj, const wstring frmt, pointer args){
-    return getIStream(obj)->wprint(obj, frmt, args);
-}
-
 const IStream Stream = {
     .scan = Stream_scan,
-    .print = Stream_print,
-    .wscan = Stream_wscan,
-    .wprint = Stream_wprint
+    .print = Stream_print
 };

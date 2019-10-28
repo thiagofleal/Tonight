@@ -37,6 +37,7 @@
             void (* reset)(void);
         }setColor;
         pointer (* getStream)(void);
+        pointer (* getWideStream)(void);
         void (* clearScreen)(void);
         bool (* pressedKey)(void);
         int (* getKey)(void);

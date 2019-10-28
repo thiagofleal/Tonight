@@ -20,6 +20,7 @@
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
+#include "../include/Tonight/wstring.h"
 #include "../include/Tonight/console.h"
 
 struct ColorDescriptor{
@@ -34,19 +35,24 @@ static INLINE int Console_stream_print(pointer null, const string frmt, pointer 
     return vprintf(frmt, args);
 }
 
-static INLINE int Console_stream_wscan(pointer null, const wstring frmt, pointer args){
-    return vwscanf(frmt, args);
+static INLINE int Console_stream_wscan(pointer null, const string frmt, pointer args){
+    fixWideString _frmt = FixWideString.formated(L"%hs", frmt);
+    return vwscanf((const wstring)getText(_frmt), args);
 }
 
-static INLINE int Console_stream_wprint(pointer null, const wstring frmt, pointer args){
-    return vwprintf(frmt, args);
+static INLINE int Console_stream_wprint(pointer null, const string frmt, pointer args){
+    fixWideString _frmt = FixWideString.formated(L"%hs", frmt);
+    return vwprintf((const wstring)getText(_frmt), args);
 }
 
 static IStream console_stream = {
     .scan = Console_stream_scan,
-    .print = Console_stream_print,
-    .wscan = Console_stream_wscan,
-    .wprint = Console_stream_wprint
+    .print = Console_stream_print
+};
+
+static IStream console_wstream = {
+    .scan = Console_stream_wscan,
+    .print = Console_stream_wprint
 };
 
 static pointer Console_getStream(void){
@@ -55,6 +61,17 @@ static pointer Console_getStream(void){
         pointer null;
     } ret = {
         .stream = &console_stream,
+        .null = NULL
+    };
+    return &ret.null;
+}
+
+static pointer Console_getWideStream(void){
+    static struct {
+        IStream *stream;
+        pointer null;
+    } ret = {
+        .stream = &console_wstream,
         .null = NULL
     };
     return &ret.null;
@@ -200,6 +217,7 @@ const struct __Console Console = {
         .reset = Console_setColor_reset
     },
     .getStream = Console_getStream,
+    .getWideStream = Console_getWideStream,
     .clearScreen = Console_clearScreen,
     .pressedKey = Console_pressedKey,
     .getKey = Console_getKey,

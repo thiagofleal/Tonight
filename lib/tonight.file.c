@@ -5,6 +5,7 @@
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/string.h"
+#include "../include/Tonight/wstring.h"
 #include "../include/Tonight/file.h"
 
 struct FileModeDescriptor{
@@ -27,22 +28,27 @@ static INLINE int file_stream_scan(pointer f, const string frmt, pointer args){
 static INLINE int file_stream_print(pointer f, const string frmt, pointer args){
     return vfprintf(((file)f)->data, frmt, args);
 }
-
-static INLINE int file_stream_wscan(pointer f, const wstring frmt, pointer args){
-    return vfwscanf(((file)f)->data, frmt, args);
+/*
+static INLINE int file_stream_wscan(pointer f, const string frmt, pointer args){
+    fixWideString _frmt = FixWideString.formated(L"%hs", frmt);
+    return vfwscanf(((file)f)->data, (const wstring)getText(_frmt), args);
 }
 
-static INLINE int file_stream_wprint(pointer f, const wstring frmt, pointer args){
-    return vfwprintf(((file)f)->data, frmt, args);
+static INLINE int file_stream_wprint(pointer f, const string frmt, pointer args){
+    fixWideString _frmt = FixWideString.formated(L"%hs", frmt);
+    return vfwprintf(((file)f)->data, (const wstring)getText(_frmt), args);
 }
-
+*/
 static IStream file_stream = {
     .scan = file_stream_scan,
-    .print = file_stream_print,
-    .wscan = file_stream_wscan,
-    .wprint = file_stream_wprint
+    .print = file_stream_print
 };
-
+/*
+static IStream file_wstream = {
+    .scan = file_stream_wscan,
+    .print = file_stream_wprint
+};
+*/
 static file TONIGHT $throws __new_File(string fName, FileModeDescriptor fMode){
 	struct __file_data__ *fd = Memory.alloc(sizeof(struct __file_data__) + sizeof(file));
 	file f = (file)fd->data;

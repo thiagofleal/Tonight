@@ -391,7 +391,8 @@ const struct __String String = {
 	.split = String_split,
 	.trim = String_trim,
 	.free = String_free,
-	.fromWide = wideToString
+	.fromWide = wideToString,
+	.empty = ""
 };
 
 static fixString TONIGHT FixString_concat(string wrd_1, ...){
@@ -415,6 +416,10 @@ static fixString TONIGHT FixString_formated(const string format, ...){
 	return ret;
 }
 
+static INLINE string TONIGHT FixString_append(fixString fix, string add){
+    return strcat(getText(fix), add);
+}
+
 static INLINE int TONIGHT FixString_compare(fixString s1, fixString s2){
     return strncmp(getText(s1), getText(s2), sizeof s1);
 }
@@ -430,9 +435,11 @@ static INLINE bool TONIGHT FixString_identic(fixString s1, fixString s2){
 const struct __FixString FixString = {
     .concat = FixString_concat,
     .formated = FixString_formated,
+    .append = FixString_append,
     .compare = FixString_compare,
 	.equal = FixString_equal,
-	.identic = FixString_identic
+	.identic = FixString_identic,
+	.empty = {""}
 };
 
 static longFixString TONIGHT LongFixString_concat(string wrd_1, ...){
@@ -456,6 +463,10 @@ static longFixString TONIGHT LongFixString_formated(const string format, ...){
 	return ret;
 }
 
+static INLINE string TONIGHT LongFixString_append(longFixString fix, string add){
+    return strcat(getText(fix), add);
+}
+
 static INLINE int TONIGHT LongFixString_compare(longFixString s1, longFixString s2){
     return strncmp(getText(s1), getText(s2), sizeof s1);
 }
@@ -471,7 +482,9 @@ static INLINE bool TONIGHT LongFixString_identic(longFixString s1, longFixString
 const struct __LongFixString LongFixString = {
     .concat = LongFixString_concat,
     .formated = LongFixString_formated,
+    .append = LongFixString_append,
     .compare = LongFixString_compare,
     .equal = LongFixString_equal,
-    .identic = LongFixString_identic
+    .identic = LongFixString_identic,
+	.empty = {""}
 };

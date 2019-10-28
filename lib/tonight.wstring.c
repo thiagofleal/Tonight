@@ -391,7 +391,8 @@ const struct __WideString WideString = {
 	.split = WideString_split,
 	.trim = WideString_trim,
 	.free = WideString_free,
-	.fromString = stringToWide
+	.fromString = stringToWide,
+	.empty = L""
 };
 
 static fixWideString TONIGHT FixWideString_concat(wstring wrd_1, ...){
@@ -415,6 +416,10 @@ static fixWideString TONIGHT FixWideString_formated(const wstring format, ...){
 	return ret;
 }
 
+static INLINE wstring TONIGHT FixWideString_append(fixWideString fix, wstring add){
+    return wcscat(getText(fix), add);
+}
+
 static INLINE int TONIGHT FixWideString_compare(fixWideString s1, fixWideString s2){
     return wcsncmp(getText(s1), getText(s2), sizeof s1);
 }
@@ -430,9 +435,11 @@ static INLINE bool TONIGHT FixWideString_identic(fixWideString s1, fixWideString
 const struct __FixWideString FixWideString = {
     .concat = FixWideString_concat,
     .formated = FixWideString_formated,
+    .append = FixWideString_append,
     .compare = FixWideString_compare,
 	.equal = FixWideString_equal,
-	.identic = FixWideString_identic
+	.identic = FixWideString_identic,
+	.empty = {L""}
 };
 
 static longFixWideString TONIGHT LongFixWideString_concat(wstring wrd_1, ...){
@@ -456,6 +463,10 @@ static longFixWideString TONIGHT LongFixWideString_formated(const wstring format
 	return ret;
 }
 
+static INLINE wstring TONIGHT LongFixWideString_append(longFixWideString fix, wstring add){
+    return wcscat(getText(fix), add);
+}
+
 static INLINE int TONIGHT LongFixWideString_compare(longFixWideString s1, longFixWideString s2){
     return wcsncmp(getText(s1), getText(s2), sizeof s1);
 }
@@ -471,7 +482,9 @@ static INLINE bool TONIGHT LongFixWideString_identic(longFixWideString s1, longF
 const struct __LongFixWideString LongFixWideString = {
     .concat = LongFixWideString_concat,
     .formated = LongFixWideString_formated,
+    .append = LongFixWideString_append,
     .compare = LongFixWideString_compare,
     .equal = LongFixWideString_equal,
-    .identic = LongFixWideString_identic
+    .identic = LongFixWideString_identic,
+	.empty = {L""}
 };

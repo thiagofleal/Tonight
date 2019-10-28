@@ -52,22 +52,27 @@
 		bool (* equal)(register wstring const, register wstring const);
 		bool (* identic)(register wstring const, register wstring const);
 		wstring (* fromString)(string);
+		wstring empty;
 	}WideString;
 
 	extern const struct __FixWideString{
 		fixWideString (* concat)(wstring, ...);
         fixWideString (* formated)(const wstring, ...);
+		wstring (* append)(fixWideString, wstring);
 		int (* compare)(fixWideString, fixWideString);
 		bool (* equal)(fixWideString, fixWideString);
 		bool (* identic)(fixWideString, fixWideString);
+		fixWideString empty;
 	}FixWideString;
 
 	extern const struct __LongFixWideString{
 		longFixWideString (* concat)(wstring, ...);
         longFixWideString (* formated)(const wstring, ...);
+		wstring (* append)(longFixWideString, wstring);
 		int (* compare)(longFixWideString, longFixWideString);
 		bool (* equal)(longFixWideString, longFixWideString);
 		bool (* identic)(longFixWideString, longFixWideString);
+		longFixWideString empty;
 	}LongFixWideString;
 
     extern wstring TONIGHT toWideString(pointer);
