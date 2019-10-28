@@ -58,7 +58,7 @@
 	extern const struct __FixString{
 		fixString (* concat)(string, ...);
         fixString (* formated)(const string, ...);
-		string (* append)(fixString, string);
+		fixString (* append)(fixString, string);
 		int (* compare)(fixString, fixString);
 		bool (* equal)(fixString, fixString);
 		bool (* identic)(fixString, fixString);
@@ -68,7 +68,7 @@
 	extern const struct __LongFixString{
 		longFixString (* concat)(string, ...);
         longFixString (* formated)(const string, ...);
-		string (* append)(longFixString, string);
+		longFixString (* append)(longFixString, string);
 		int (* compare)(longFixString, longFixString);
 		bool (* equal)(longFixString, longFixString);
 		bool (* identic)(longFixString, longFixString);

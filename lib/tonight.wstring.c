@@ -416,8 +416,9 @@ static fixWideString TONIGHT FixWideString_formated(const wstring format, ...){
 	return ret;
 }
 
-static INLINE wstring TONIGHT FixWideString_append(fixWideString fix, wstring add){
-    return wcscat(getText(fix), add);
+static INLINE fixWideString TONIGHT FixWideString_append(fixWideString fix, wstring add){
+    wcsncat(getText(fix), add, sizeof fix - wcslen(getText(fix)));
+    return fix;
 }
 
 static INLINE int TONIGHT FixWideString_compare(fixWideString s1, fixWideString s2){
@@ -463,8 +464,9 @@ static longFixWideString TONIGHT LongFixWideString_formated(const wstring format
 	return ret;
 }
 
-static INLINE wstring TONIGHT LongFixWideString_append(longFixWideString fix, wstring add){
-    return wcscat(getText(fix), add);
+static INLINE longFixWideString TONIGHT LongFixWideString_append(longFixWideString fix, wstring add){
+    wcsncat(getText(fix), add, sizeof fix - wcslen(getText(fix)));
+    return fix;
 }
 
 static INLINE int TONIGHT LongFixWideString_compare(longFixWideString s1, longFixWideString s2){

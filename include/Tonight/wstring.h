@@ -58,7 +58,7 @@
 	extern const struct __FixWideString{
 		fixWideString (* concat)(wstring, ...);
         fixWideString (* formated)(const wstring, ...);
-		wstring (* append)(fixWideString, wstring);
+		fixWideString (* append)(fixWideString, wstring);
 		int (* compare)(fixWideString, fixWideString);
 		bool (* equal)(fixWideString, fixWideString);
 		bool (* identic)(fixWideString, fixWideString);
@@ -68,7 +68,7 @@
 	extern const struct __LongFixWideString{
 		longFixWideString (* concat)(wstring, ...);
         longFixWideString (* formated)(const wstring, ...);
-		wstring (* append)(longFixWideString, wstring);
+		longFixWideString (* append)(longFixWideString, wstring);
 		int (* compare)(longFixWideString, longFixWideString);
 		bool (* equal)(longFixWideString, longFixWideString);
 		bool (* identic)(longFixWideString, longFixWideString);

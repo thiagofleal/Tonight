@@ -416,8 +416,9 @@ static fixString TONIGHT FixString_formated(const string format, ...){
 	return ret;
 }
 
-static INLINE string TONIGHT FixString_append(fixString fix, string add){
-    return strcat(getText(fix), add);
+static INLINE fixString TONIGHT FixString_append(fixString fix, string add){
+    strncat(getText(fix), add, sizeof fix - strlen(getText(fix)));
+    return fix;
 }
 
 static INLINE int TONIGHT FixString_compare(fixString s1, fixString s2){
@@ -463,8 +464,9 @@ static longFixString TONIGHT LongFixString_formated(const string format, ...){
 	return ret;
 }
 
-static INLINE string TONIGHT LongFixString_append(longFixString fix, string add){
-    return strcat(getText(fix), add);
+static INLINE longFixString TONIGHT LongFixString_append(longFixString fix, string add){
+    strncat(getText(fix), add, sizeof fix - strlen(getText(fix)));
+    return fix;
 }
 
 static INLINE int TONIGHT LongFixString_compare(longFixString s1, longFixString s2){
