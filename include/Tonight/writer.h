@@ -4,11 +4,11 @@
 #   include "stream.h"
 
     struct IWriter{
-        void (* text)(string);
-        void (* textln)(string);
-        void (* print)(string, ...);
-        void (* println)(string, ...);
-        void (* printargln)(string, ...);
+        void (* text)(pointer);
+        void (* textln)(pointer);
+        void (* print)(pointer, ...);
+        void (* println)(pointer, ...);
+        void (* printargln)(pointer, ...);
         void (* newLine)(void);
         void (* addLines)(int);
     };
