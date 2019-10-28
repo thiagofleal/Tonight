@@ -3,6 +3,10 @@
 
 #   include "stream.h"
 
+#	ifdef __cplusplus
+		extern "C"{
+#	endif
+
     struct IWriter{
         void (* text)(pointer);
         void (* textln)(pointer);
@@ -20,5 +24,9 @@
     };
 
     Class(Writer $extends Object $implements IWriter);
+
+#	ifdef __cplusplus
+		}
+#	endif
 
 #endif
