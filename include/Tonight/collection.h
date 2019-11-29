@@ -31,6 +31,13 @@
 		void (* index)(pointer, pointer, int);
 	}ICollection;
 
+	extern struct ___Collection_select_data___{
+		size_t (* length)(void);
+		size_t (* size)(void);
+		pointer (* access)(int);
+		void (* index)(pointer, int);
+	}___Collection_select___(pointer);
+
     extern const TONIGHT ICollection Collection;
 
     extern INLINE bool TONIGHT NO_CALL initForeachkey(pointer);
