@@ -224,3 +224,63 @@ const struct __Array Array = {
 	.Pointer = __new_array_pointer,
 	.Generic = __new_array_generic
 };
+
+/* $(<array> $as Array) */
+static INLINE size_t TONIGHT Array_select_length(void){
+	return Array_length(getCurrentObject());
+}
+
+static INLINE size_t TONIGHT Array_select_size(void){
+	return Array_size(getCurrentObject());
+}
+
+static INLINE pointer TONIGHT $throws Array_select_access(int index){
+	return Array_access(getCurrentObject(), index);
+}
+
+static INLINE void TONIGHT Array_select_free(void){
+	Array_free(getCurrentObject());
+}
+
+static INLINE string TONIGHT Array_select_toString(string sep, P_fixString method){
+	return Array_toString(getCurrentObject(), sep, method);
+}
+
+static INLINE pointer TONIGHT Array_select_convert(cast casting){
+	return Array_convert(getCurrentObject(), casting);
+}
+
+static INLINE pointer TONIGHT $throws Array_select_where(condition where){
+	return Array_where(getCurrentObject(), where);
+}
+
+static INLINE bool TONIGHT $throws Array_select_contains(pointer sub){
+	return Array_contains(getCurrentObject(), sub);
+}
+
+static INLINE void TONIGHT $throws Array_select_sort(pointer function){
+    Array_sort(getCurrentObject(), function);
+}
+
+static INLINE void TONIGHT $throws Array_select_forEach(pointer function){
+    Array_forEach(getCurrentObject(), function);
+}
+
+/* ___Array_select___ */
+static const struct ___Array_select_data___ data = {
+	.length = Array_select_length,
+	.size = Array_select_size,
+	.access = Array_select_access,
+	.free = Array_select_free,
+	.toString = Array_select_toString,
+	.convert = Array_select_convert,
+	.where = Array_select_where,
+	.contains = Array_select_contains,
+	.sort = Array_select_sort,
+    .forEach = Array_select_forEach
+};
+
+INLINE struct ___Array_select_data___ ___Array_select___(pointer array){
+    setCurrentObject(array);
+    return data;
+}

@@ -7,6 +7,7 @@
 
     extern const struct __Test {
         void (* assert)(bool);
+        void (* assertMessage)(bool, string);
         int (* getError)(void);
         void (* checkError)(void);
         void (* checkPointer)(pointer);
