@@ -74,11 +74,11 @@ INLINE pointer useContext(void){
 *   Objects
 */
 static struct object_stack{
-	object value;
+	pointer value;
 	pointer next;
 }*objstk = NULL;
 
-static void push_object(object value){
+static void push_object(pointer value){
 	struct object_stack *p = Memory.alloc(sizeof(struct object_stack));
 	p->value = value;
 	p->next = objstk;
@@ -96,11 +96,11 @@ static object pop_object(void){
 	return NULL;
 }
 
-INLINE void TONIGHT setCurrentObject(const object obj){
+INLINE void TONIGHT setCurrentObject(const pointer obj){
 	push_object(obj);
 }
 
-INLINE object TONIGHT getCurrentObject(void){
+INLINE pointer TONIGHT getCurrentObject(void){
 	return pop_object();
 }
 

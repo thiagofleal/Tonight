@@ -24,6 +24,13 @@
         }Callback;
     }Memory;
 
+    $_add(Memory, {
+        void	(* free)(void);
+        pointer	(* realloc)(size_t);
+        size_t	(* size)(void);
+        pointer	(* copy)(void);
+    });
+
     extern const struct __InstanceOf{
 		char* (*Char)(char);
 		byte* (*Byte)(byte);

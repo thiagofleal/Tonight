@@ -95,6 +95,29 @@ const struct __Memory Memory = {
     }
 };
 
+static INLINE void TONIGHT Memory_select_free(void){
+    __memory_free(getCurrentObject());
+}
+
+static INLINE pointer TONIGHT Memory_select_realloc(size_t q){
+    return __realloc_memory(getCurrentObject(), q);
+}
+
+static INLINE size_t TONIGHT Memory_select_size(void){
+    return __memory_size(getCurrentObject());
+}
+
+static INLINE pointer TONIGHT Memory_select_copy(void){
+    return __memory_copy(getCurrentObject());
+}
+
+$_interface(Memory, {
+    .free = Memory_select_free,
+    .realloc = Memory_select_realloc,
+    .size = Memory_select_size,
+    .copy = Memory_select_copy
+});
+
 static char* TONIGHT $throws __new_char(char value){
 	char* c = __new_memory(sizeof(char));
 	*c = value;

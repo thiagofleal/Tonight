@@ -48,8 +48,8 @@
     extern object TONIGHT copy(const object);
     extern bool TONIGHT compare(const object, const object);
 
-    extern INLINE void TONIGHT setCurrentObject(const object);
-    extern INLINE object TONIGHT getCurrentObject(void);
+    extern INLINE void TONIGHT setCurrentObject(const pointer);
+    extern INLINE pointer TONIGHT getCurrentObject(void);
     extern object TONIGHT getCurrentObjectChecked(const Class, P_void, ...);
 
 #	ifdef __cplusplus
