@@ -52,17 +52,12 @@ static INLINE void TONIGHT Collection_select_index(pointer v, int i){
 }
 
 /* $(<obj> $as Collection) */
-static const struct ___Collection_select_data___ data = {
+$_interface(Collection, {
 	.length = Collection_select_lenght,
 	.size = Collection_select_size,
 	.access = Collection_select_access,
 	.index = Collection_select_index
-};
-
-INLINE struct ___Collection_select_data___ ___Collection_select___(pointer collection){
-    setCurrentObject(collection);
-    return data;
-};
+});
 
 /*
 *   foreachkey

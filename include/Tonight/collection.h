@@ -31,12 +31,12 @@
 		void (* index)(pointer, pointer, int);
 	}ICollection;
 
-	extern struct ___Collection_select_data___{
+	$_add(Collection, {
 		size_t (* length)(void);
 		size_t (* size)(void);
 		pointer (* access)(int);
 		void (* index)(pointer, int);
-	}___Collection_select___(pointer);
+	});
 
     extern const TONIGHT ICollection Collection;
 

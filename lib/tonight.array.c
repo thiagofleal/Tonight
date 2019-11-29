@@ -267,7 +267,7 @@ static INLINE void TONIGHT $throws Array_select_forEach(pointer function){
 }
 
 /* ___Array_select___ */
-static const struct ___Array_select_data___ data = {
+$_interface(Array, {
 	.length = Array_select_length,
 	.size = Array_select_size,
 	.access = Array_select_access,
@@ -278,9 +278,4 @@ static const struct ___Array_select_data___ data = {
 	.contains = Array_select_contains,
 	.sort = Array_select_sort,
     .forEach = Array_select_forEach
-};
-
-INLINE struct ___Array_select_data___ ___Array_select___(pointer array){
-    setCurrentObject(array);
-    return data;
-}
+});

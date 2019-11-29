@@ -116,3 +116,21 @@ const struct __FileMode FileMode = {
     .write = &File_Mode_write,
     .append = &File_Mode_append
 };
+
+static INLINE void TONIGHT File_select_close(void){
+    File_close((file)getCurrentObject());
+}
+
+static INLINE void TONIGHT File_select_rewind(void){
+    File_rewind((file)getCurrentObject());
+}
+
+static INLINE bool TONIGHT File_select_end(void){
+    return File_end((file)getCurrentObject());
+}
+
+$_interface(File, {
+    .close = File_select_close,
+    .rewind = File_select_rewind,
+    .end = File_select_end
+});

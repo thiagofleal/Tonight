@@ -25,6 +25,12 @@
         FileModeDescriptor append;
     }FileMode;
 
+    $_add(File, {
+        void (* close)(void);
+		void (* rewind)(void);
+		bool (* end)(void);
+    });
+
 #	ifdef __cplusplus
 		}
 #	endif

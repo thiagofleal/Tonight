@@ -36,7 +36,7 @@
 		pointer	(*Generic)(size_t, size_t);
     }Array;
 
-    extern INLINE struct ___Array_select_data___{
+    $_add(Array, {
         void (* free)(void);
 		size_t (* length)(void);
 		size_t (* size)(void);
@@ -47,7 +47,7 @@
 		bool (* contains)(pointer);
 		void (* sort)(pointer);
 		void (* forEach)(pointer);
-    }___Array_select___(pointer);
+    });
 
     extern pointer TONIGHT NO_CALL __create_array(size_t, size_t, pointer);
 
