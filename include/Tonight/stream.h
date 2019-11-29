@@ -10,6 +10,11 @@
         int (* print)(pointer, const string, pointer);
     }IStream;
 
+    $_add(Stream, {
+        int (* scan)(const string, pointer);
+        int (* print)(const string, pointer);
+    });
+
     extern const IStream Stream;
     extern INLINE IStream* getIStream(pointer);
 

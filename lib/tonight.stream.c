@@ -18,3 +18,16 @@ const IStream Stream = {
     .scan = Stream_scan,
     .print = Stream_print
 };
+
+static INLINE int Stream_select_scan(const string frmt, pointer args){
+    return Stream_scan(getCurrentObject(), frmt, args);
+}
+
+static INLINE int Stream_select_print(const string frmt, pointer args){
+    return Stream_print(getCurrentObject(), frmt, args);
+}
+
+$_interface(Stream, {
+    .scan = Stream_select_scan,
+    .print = Stream_select_print
+});
