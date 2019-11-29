@@ -38,3 +38,16 @@ const struct __Shared Shared = {
     .get = Shared_get,
     .close = Shared_close
 };
+
+static INLINE pointer TONIGHT Shared_select_get(string proc){
+    return Shared_get(getCurrentObject(), proc);
+}
+
+static INLINE void TONIGHT Shared_select_close(void){
+    Shared_close(getCurrentObject());
+}
+
+$_interface(Shared, {
+    .get = Shared_select_get,
+    .close = Shared_select_close
+});

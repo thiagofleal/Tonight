@@ -11,6 +11,11 @@
         void (* close)(pointer);
     }Shared;
 
+    $_add(Shared, {
+        pointer (* get)(string);
+        void (* close)(void);
+    });
+
 #	ifdef __cplusplus
 		}
 #	endif
