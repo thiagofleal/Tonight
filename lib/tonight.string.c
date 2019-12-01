@@ -490,3 +490,41 @@ const struct __LongFixString LongFixString = {
     .identic = LongFixString_identic,
 	.empty = {""}
 };
+
+static INLINE void String_select_free(void){
+    String_free(getCurrentObject());
+}
+
+static INLINE string String_select_copy(void){
+    return toString(getCurrentObject());
+}
+
+static INLINE string String_select_upper(void){
+    return String_upper(getCurrentObject());
+}
+
+static INLINE string String_select_lower(void){
+    return String_lower(getCurrentObject());
+}
+
+static INLINE string String_select_trim(void){
+    return String_trim(getCurrentObject());
+}
+
+static INLINE string* String_select_split(const string lim){
+    return String_split(getCurrentObject(), lim);
+}
+
+static INLINE size_t String_select_length(void){
+    return strlen(getCurrentObject());
+}
+
+$_interface(String, {
+    .free = String_select_free,
+    .copy = String_select_copy,
+    .upper = String_select_upper,
+    .lower = String_select_lower,
+    .trim = String_select_trim,
+    .split = String_select_split,
+    .length = String_select_length
+});

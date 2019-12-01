@@ -75,6 +75,16 @@
 		const longFixString empty;
 	}LongFixString;
 
+	$_add(String, {
+		void (* free)(void);
+		string (* copy)(void);
+		string (* upper)(void);
+		string (* lower)(void);
+		string (* trim)(void);
+		string* (* split)(const string);
+		size_t (* length)(void);
+    });
+
     extern string TONIGHT toString(pointer);
     extern string TONIGHT s_cs(char);
     extern string TONIGHT s_bs(bool);
