@@ -490,3 +490,41 @@ const struct __LongFixWideString LongFixWideString = {
     .identic = LongFixWideString_identic,
 	.empty = {L""}
 };
+
+static INLINE void WideString_select_free(void){
+    WideString_free(getCurrentObject());
+}
+
+static INLINE wstring WideString_select_copy(void){
+    return toWideString(getCurrentObject());
+}
+
+static INLINE wstring WideString_select_upper(void){
+    return WideString_upper(getCurrentObject());
+}
+
+static INLINE wstring WideString_select_lower(void){
+    return WideString_lower(getCurrentObject());
+}
+
+static INLINE wstring WideString_select_trim(void){
+    return WideString_trim(getCurrentObject());
+}
+
+static INLINE wstring* WideString_select_split(const wstring lim){
+    return WideString_split(getCurrentObject(), lim);
+}
+
+static INLINE size_t WideString_select_length(void){
+    return wcslen(getCurrentObject());
+}
+
+$_interface(WideString, {
+    .free = WideString_select_free,
+    .copy = WideString_select_copy,
+    .upper = WideString_select_upper,
+    .lower = WideString_select_lower,
+    .trim = WideString_select_trim,
+    .split = WideString_select_split,
+    .length = WideString_select_length
+});

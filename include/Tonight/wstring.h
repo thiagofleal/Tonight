@@ -75,6 +75,16 @@
 		longFixWideString empty;
 	}LongFixWideString;
 
+	$_add(WideString, {
+		void (* free)(void);
+		wstring (* copy)(void);
+		wstring (* upper)(void);
+		wstring (* lower)(void);
+		wstring (* trim)(void);
+		wstring* (* split)(const wstring);
+		size_t (* length)(void);
+    });
+
     extern wstring TONIGHT toWideString(pointer);
     extern wstring TONIGHT w_cs(wchar_t);
     extern wstring TONIGHT w_bs(bool);
