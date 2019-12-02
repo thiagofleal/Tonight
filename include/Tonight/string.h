@@ -45,8 +45,8 @@
 		string (* upper)(const string);
 		string (* lower)(const string);
 		string (* trim)(const string);
-		string (* sep)(string*, const string);
 		string* (* split)(const string, const string);
+		string (* replace)(const string, const string, const string);
 		size_t (* length)(const string);
 		int (* compare)(const string, const string);
 		bool (* equal)(register string const, register string const);
@@ -82,6 +82,7 @@
 		string (* lower)(void);
 		string (* trim)(void);
 		string* (* split)(const string);
+		string (* replace)(const string, const string);
 		size_t (* length)(void);
     });
 

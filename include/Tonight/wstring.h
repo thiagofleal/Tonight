@@ -45,8 +45,8 @@
 		wstring (* upper)(const wstring);
 		wstring (* lower)(const wstring);
 		wstring (* trim)(const wstring);
-		wstring (* sep)(wstring*, const wstring);
 		wstring* (* split)(const wstring, const wstring);
+		wstring (* replace)(const wstring, const wstring, const wstring);
 		size_t (* length)(const wstring);
 		int (* compare)(const wstring, const wstring);
 		bool (* equal)(register wstring const, register wstring const);
@@ -82,6 +82,7 @@
 		wstring (* lower)(void);
 		wstring (* trim)(void);
 		wstring* (* split)(const wstring);
+		wstring (* replace)(const wstring, const wstring);
 		size_t (* length)(void);
     });
 

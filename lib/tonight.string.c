@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
@@ -245,7 +246,7 @@ longFixString TONIGHT dlsf(double var, int d){
 	return ret;
 }
 
-/* String abstract class */
+/* String static class */
 static string TONIGHT String_formated(const string frmt, ...){
 	static char s[1001];
 	va_list v;
@@ -362,6 +363,29 @@ static string ARRAY String_split(string src, string lim){
 	return ret;
 }
 
+static string String_replace(const string src, const string search, const string alt){
+	string ret = NULL, str = NULL, aux;
+	size_t src_len = strlen(src), search_len = strlen(search), alt_len = strlen(alt);
+    search_len = search_len ? search_len : 1U;
+    alt_len = alt_len ? alt_len : 1U;
+	aux = str = Memory.alloc((src_len*ceil((double)alt_len/search_len)+1)*sizeof(char));
+    strcpy(aux, src);
+    while(*aux){
+        if(!strncmp(aux, search, search_len)){
+            string p = toString(aux + search_len);
+            strcpy(aux, alt);
+            strcat(aux, p);
+            Memory.free(p);
+            aux += alt_len;
+        }else{
+            aux++;
+        }
+    }
+	ret = toString(str);
+	Memory.free(str);
+	return ret;
+}
+
 static string String_trim(const string _str){
     register string str = _str;
 	register string aux = str + strlen(str) - 1;
@@ -387,8 +411,8 @@ const struct __String String = {
 	.compare = (pointer)strcmp,
 	.equal = String_equal,
 	.identic = String_identic,
-	.sep = String_sep,
 	.split = String_split,
+	.replace = String_replace,
 	.trim = String_trim,
 	.free = String_free,
 	.fromWide = wideToString,
@@ -515,6 +539,10 @@ static INLINE string* String_select_split(const string lim){
     return String_split(getCurrentObject(), lim);
 }
 
+static INLINE string String_select_replace(const string search, const string alt){
+    return String_replace(getCurrentObject(), search, alt);
+}
+
 static INLINE size_t String_select_length(void){
     return strlen(getCurrentObject());
 }
@@ -526,5 +554,6 @@ $_interface(String, {
     .lower = String_select_lower,
     .trim = String_select_trim,
     .split = String_select_split,
+    .replace = String_select_replace,
     .length = String_select_length
 });

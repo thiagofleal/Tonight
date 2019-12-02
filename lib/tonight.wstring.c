@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
+#include <math.h>
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
 #include "../include/Tonight/memory.h"
@@ -245,7 +246,7 @@ longFixWideString TONIGHT wdlsf(double var, int d){
 	return ret;
 }
 
-/* WideString abstract class */
+/* WideString static class */
 static wstring TONIGHT WideString_formated(const wstring frmt, ...){
 	static wchar_t s[1001];
 	va_list v;
@@ -362,6 +363,29 @@ static wstring ARRAY WideString_split(wstring src, wstring lim){
 	return ret;
 }
 
+static wstring WideString_replace(const wstring src, const wstring search, const wstring alt){
+	wstring ret = NULL, str = NULL, aux;
+	size_t src_len = wcslen(src), search_len = wcslen(search), alt_len = wcslen(alt);
+    search_len = search_len ? search_len : 1U;
+    alt_len = alt_len ? alt_len : 1U;
+	aux = str = Memory.alloc((src_len*ceil((double)alt_len/search_len)+1)*sizeof(wchar_t));
+    wcscpy(aux, src);
+    while(*aux){
+        if(!wcsncmp(aux, search, search_len)){
+            wstring p = toWideString(aux + search_len);
+            wcscpy(aux, alt);
+            wcscat(aux, p);
+            Memory.free(p);
+            aux += alt_len;
+        }else{
+            aux++;
+        }
+    }
+	ret = toWideString(str);
+	Memory.free(str);
+	return ret;
+}
+
 static wstring WideString_trim(const wstring _str){
     register wstring str = _str;
 	register wstring aux = str + wcslen(str) - 1;
@@ -387,8 +411,8 @@ const struct __WideString WideString = {
 	.compare = (pointer)wcscmp,
 	.equal = WideString_equal,
 	.identic = WideString_identic,
-	.sep = WideString_sep,
 	.split = WideString_split,
+	.replace = WideString_replace,
 	.trim = WideString_trim,
 	.free = WideString_free,
 	.fromString = stringToWide,
@@ -515,6 +539,10 @@ static INLINE wstring* WideString_select_split(const wstring lim){
     return WideString_split(getCurrentObject(), lim);
 }
 
+static INLINE wstring WideString_select_replace(const wstring search, const wstring alt){
+    return WideString_replace(getCurrentObject(), search, alt);
+}
+
 static INLINE size_t WideString_select_length(void){
     return wcslen(getCurrentObject());
 }
@@ -526,5 +554,6 @@ $_interface(WideString, {
     .lower = WideString_select_lower,
     .trim = WideString_select_trim,
     .split = WideString_select_split,
+    .replace = WideString_select_replace,
     .length = WideString_select_length
 });
