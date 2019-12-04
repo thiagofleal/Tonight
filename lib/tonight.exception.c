@@ -223,3 +223,30 @@ const struct CurrentException CurrentException = {
     .type = CurrentException_ExceptionType,
     .throwAgain = CurrentException_ThrowAgain
 };
+
+static INLINE string TONIGHT Exception_error(void){
+    Exception exc = getCurrentObject();
+	return exc->exception->error_name;
+}
+
+static INLINE string TONIGHT Exception_message(void){
+    Exception exc = getCurrentObject();
+	return exc->message;
+}
+
+static INLINE EXCEPTION TONIGHT Exception_type(void){
+    Exception exc = getCurrentObject();
+	return exc->exception;
+}
+
+static INLINE void TONIGHT Exception_throwAgain(void){
+    Exception exc = getCurrentObject();
+    throw(exc->exception, exc->message);
+}
+
+$_interface(Exception, {
+    .error = Exception_error,
+    .message = Exception_message,
+    .type = Exception_type,
+    .throwAgain = Exception_throwAgain
+});

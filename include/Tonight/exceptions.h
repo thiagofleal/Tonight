@@ -103,6 +103,13 @@
         void (* throwAgain)(void);
     }CurrentException;
 
+    $_add(Exception, {
+        string (* error)(void);
+        string (* message)(void);
+        EXCEPTION (* type)(void);
+        void (* throwAgain)(void);
+    });
+
     #ifdef __cplusplus
         }
     #endif // __cplusplus
