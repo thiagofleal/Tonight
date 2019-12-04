@@ -225,23 +225,19 @@ const struct CurrentException CurrentException = {
 };
 
 static INLINE string TONIGHT Exception_error(void){
-    Exception exc = getCurrentObject();
-	return exc->exception->error_name;
+    return Error(getCurrentObject());
 }
 
 static INLINE string TONIGHT Exception_message(void){
-    Exception exc = getCurrentObject();
-	return exc->message;
+    return Message(getCurrentObject());
 }
 
 static INLINE EXCEPTION TONIGHT Exception_type(void){
-    Exception exc = getCurrentObject();
-	return exc->exception;
+    return ExceptionType(getCurrentObject());
 }
 
 static INLINE void TONIGHT Exception_throwAgain(void){
-    Exception exc = getCurrentObject();
-    throw(exc->exception, exc->message);
+    ThrowException(getCurrentObject());
 }
 
 $_interface(Exception, {
