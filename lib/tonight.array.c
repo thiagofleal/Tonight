@@ -7,11 +7,11 @@
 #include "../include/Tonight/memory.h"
 #include "../include/Tonight/array.h"
 #include "../include/Tonight/string.h"
-#include "../include/Tonight/test.h"
 
 typedef struct{
 	size_t length;
 	size_t size;
+	int current;
 	ICollection *collection;
 	byte data[0];
 }ArrayData;
@@ -29,24 +29,22 @@ static INLINE pointer* TONIGHT $throws __new_array_pointer(size_t);
 static INLINE pointer TONIGHT $throws __new_array_generic(size_t, size_t);
 
 /* Functions to Array */
+static INLINE ArrayData* getArrayData(pointer array){
+	return array - sizeof(ArrayData);
+}
+
 static INLINE size_t TONIGHT Array_length(pointer array){
-	Test.checkPointer(array);
-	return ((ArrayData*)(array - sizeof(ArrayData)))->length;
+	return getArrayData(array)->length;
 }
 
 static INLINE size_t TONIGHT Array_size(pointer array){
-	Test.checkPointer(array);
-	return ((ArrayData*)(array - sizeof(ArrayData)))->size;
+	return getArrayData(array)->size;
 }
 
 static INLINE pointer TONIGHT $throws Array_access(pointer array, int index){
 	if(index < 0 || index >= Array_length(array))
         throw(ArrayIndexBoundException, "Index out of array bounds");
 	return array + index * Array_size(array);
-}
-
-static INLINE void TONIGHT Array_index(pointer array, pointer var, int index){
-	*(int*)var = index;
 }
 
 static INLINE void TONIGHT Array_free(pointer array){
@@ -124,12 +122,28 @@ static void TONIGHT $throws Array_forEach(pointer array, pointer function){
     }
 }
 
+static INLINE void Array_currentValue(pointer array, pointer var){
+    memcpy(var, Array_access(array, getArrayData(array)->current), Array_size(array));
+}
+
+static INLINE void Array_currentKey(pointer array, pointer var){
+    *(int*)var = getArrayData(array)->current;
+}
+
+static INLINE bool Array_next(pointer array){
+    return ++ getArrayData(array)->current < (int)getArrayData(array)->length ? true : false;
+}
+
+static INLINE void Array_reset(pointer array){
+    getArrayData(array)->current = -1;
+}
+
 /* Initialize arrays */
 static ICollection __Array_collection = {
-	.length = Array_length,
-	.size = Array_size,
-	.access = Array_access,
-	.index = Array_index
+	.currentValue = Array_currentValue,
+	.currentKey = Array_currentKey,
+	.next = Array_next,
+	.reset = Array_reset
 };
 
 static pointer TONIGHT $throws alloc_array(size_t size, size_t lenght){
@@ -139,6 +153,7 @@ static pointer TONIGHT $throws alloc_array(size_t size, size_t lenght){
 	p->length = lenght;
 	p->size = size;
 	p->collection = &__Array_collection;
+	Array_reset(p->data);
 	return p->data;
 }
 

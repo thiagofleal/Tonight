@@ -175,36 +175,46 @@ static IList List_vtble = {
 	.setFreeCallBack = List_setFreeCallBack
 };
 
-static inline size_t List_ICollection_length(pointer collect){
-	return $(collect $as List).size();
+static inline void List_ICollection_currentValue(pointer collect, pointer var){
+	*(pointer*)var = $$(collect $as List).current->value;
 }
 
-static inline size_t List_ICollection_size(pointer collect){
-	return sizeof(pointer);
+static inline void List_ICollection_currentKey(pointer collect, pointer var){
+	*(int*)var = $$(collect $as List).currentKey;
 }
 
-static inline pointer List_ICollection_access(pointer collect, int index){
-	return List_getNode(collect, index);
+static bool List_ICollection_next(pointer collect){
+    struct Node **node = &$$(collect $as List).current;
+	if(*node){
+        *node = (*node)->next;
+        ++ $$(collect $as List).currentKey;
+	}else{
+	    *node = $$(collect $as List).list;
+	    $$(collect $as List).currentKey = 0;
+	}
+	return *node ? true : false;
 }
 
-static inline void List_ICollection_index(pointer collect, pointer var, int index){
-	*(int*)var = index;
+static inline void List_ICollection_reset(pointer collect){
+	$$(collect $as List).current = NULL;
+	$$(collect $as List).currentKey = -1;
 }
 
 static ICollection List_collection = {
-	.length = List_ICollection_length,
-	.size = List_ICollection_size,
-	.access = List_ICollection_access,
-	.index = List_ICollection_index
+	.currentValue = List_ICollection_currentValue,
+	.currentKey = List_ICollection_currentKey,
+	.next = List_ICollection_next,
+	.reset = List_ICollection_reset
 };
 
 static void List_constructor(pointer args){
 	construct(superOf(List));
 	$$(this $as List).list = NULL;
 	$$(this $as List).size = 0;
-	$$(this $as List).freeCallBack = NULL;
+	List_ICollection_reset(this);
 	setInterface(List, List_vtble);
 	$(this $as Set).setCollection(List_collection);
+	$$(this $as List).freeCallBack = NULL;
 }
 
 static void List_destructor(void){

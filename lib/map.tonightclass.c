@@ -43,7 +43,7 @@ static void Map_remove(object self, int index){
     if(index >= $$(self $as Map).size || index < 0){
         static string error = NULL;
         if(error)	Memory.free(error);
-        error = String.concat("Impossible to access the index ", is(index).Text, $end);
+        error = String.concat("Impossible to remove the index ", is(index).Text, $end);
         throw(MapException, error);
     }
 
@@ -67,15 +67,6 @@ static void Map_remove(object self, int index){
 
     Memory.free(aux);
     $$(self $as Map).size--;
-}
-
-static struct map_node * Map_getNode(object self, unsigned int index){
-    register unsigned int i;
-    struct map_node *node = $$(self $as Map).list;
-    for(i = 0; i < index; i++){
-        node = node->next;
-    }
-    return node;
 }
 
 extern int strcmp(const string, const string);
@@ -140,27 +131,33 @@ static IMap Map_vtble = {
     .setFreeCallBack = Map_setFreeCallBack
 };
 
-static inline size_t Map_ICollection_length(pointer collect){
-	return $$(collect $as Map).size;
+static inline void Map_ICollection_currentValue(pointer collect, pointer var){
+	*(pointer*)var = $$(collect $as Map).current->item.value;
 }
 
-static inline size_t Map_ICollection_size(pointer collect){
-	return sizeof(pointer);
+static inline void Map_ICollection_currentKey(pointer collect, pointer var){
+	*(string*)var = $$(collect $as Map).current->item.index;
 }
 
-static inline pointer Map_ICollection_access(pointer collect, int index){
-	return Map_getNode(collect, (unsigned)index);
+static bool Map_ICollection_next(pointer collect){
+    struct map_node **node = &$$(collect $as Map).current;
+	if(*node){
+        *node = (*node)->next;
+	}else{
+	    *node = $$(collect $as Map).list;
+	}
+	return *node ? true : false;
 }
 
-static inline void Map_ICollection_index(pointer collect, pointer var, int index){
-	*(string*)var = Map_getNode(collect, index)->item.index;
+static inline void Map_ICollection_reset(pointer collect){
+    $$(collect $as Map).current = NULL;
 }
 
 static ICollection Map_collection = {
-	.length = Map_ICollection_length,
-	.size = Map_ICollection_size,
-	.access = Map_ICollection_access,
-	.index = Map_ICollection_index
+	.currentValue = Map_ICollection_currentValue,
+	.currentKey = Map_ICollection_currentKey,
+	.next = Map_ICollection_next,
+	.reset = Map_ICollection_reset
 };
 
 static void Map_constructor(pointer args){
@@ -169,6 +166,7 @@ static void Map_constructor(pointer args){
 	$$(this $as Map).size = 0;
 	setInterface(Map, Map_vtble);
 	$(this $as Set).setCollection(Map_collection);
+	Map_ICollection_reset(this);
 }
 
 static void Map_destructor(void){

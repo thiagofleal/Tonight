@@ -3,27 +3,27 @@
 #include "../include/Tonight/set.h"
 
 /* Set */
-static size_t Set_ICollection_length(pointer collect){
-	return $(collect $as Set).getCollection()->length(collect);
+static void Set_ICollection_currentValue(pointer collect, pointer var){
+	$$(collect $as Set).collection->currentValue(collect, var);
 }
 
-static size_t Set_ICollection_size(pointer collect){
-	return $(collect $as Set).getCollection()->size(collect);
+static void Set_ICollection_currentKey(pointer collect, pointer var){
+	$$(collect $as Set).collection->currentKey(collect, var);
 }
 
-static pointer Set_ICollection_access(pointer collect, int index){
-	return $(collect $as Set).getCollection()->access(collect, index);
+static bool Set_ICollection_next(pointer collect){
+	return $$(collect $as Set).collection->next(collect);
 }
 
-static void Set_ICollection_index(pointer collect, pointer var, int index){
-	$(collect $as Set).getCollection()->index(collect, var, index);
+static void Set_ICollection_reset(pointer collect){
+	$$(collect $as Set).collection->reset(collect);
 }
 
 static ICollection Set_ICollection = {
-	.length = Set_ICollection_length,
-	.size = Set_ICollection_size,
-	.access = Set_ICollection_access,
-	.index = Set_ICollection_index
+	.currentValue = Set_ICollection_currentValue,
+	.currentKey = Set_ICollection_currentKey,
+	.next = Set_ICollection_next,
+	.reset = Set_ICollection_reset
 };
 
 static ICollection * Set_getCollection(void){

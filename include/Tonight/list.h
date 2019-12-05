@@ -45,6 +45,8 @@
 	struct List{
 		struct Node *list;
 		size_t size;
+		int currentKey;
+		struct Node *current;
 		P_fixString stringMethod;
 		P_freeCallBack freeCallBack;
 	};

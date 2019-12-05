@@ -21,22 +21,15 @@
 #	define  __foreachkey__(var, collect)    if(initForeachkey(collect))while(foreachkeyIterator(&var))
 #	define  foreachkey(_args_)				__foreachkey__(_args_)
 
-#	define  __foreach__(var, collect)    if(initForeach(collect))while(foreachIterator(&var))
-#	define  foreach(_args_)				__foreach__(_args_)
+#	define  __foreach__(var, collect)   if(initForeach(collect))while(foreachIterator(&var))
+#	define  foreach(_args_)             __foreach__(_args_)
 
 	typedef struct{
-		size_t (* length)(pointer);
-		size_t (* size)(pointer);
-		pointer (* access)(pointer, int);
-		void (* index)(pointer, pointer, int);
+		void (* currentValue)(pointer, pointer);
+		void (* currentKey)(pointer, pointer);
+		bool (* next)(pointer);
+		void (* reset)(pointer);
 	}ICollection;
-
-	$_add(Collection, {
-		size_t (* length)(void);
-		size_t (* size)(void);
-		pointer (* access)(int);
-		void (* index)(pointer, int);
-	});
 
     extern const TONIGHT ICollection Collection;
 

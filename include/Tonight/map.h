@@ -33,6 +33,7 @@
 	struct Map {
 	    struct map_node *list;
 	    size_t size;
+	    struct map_node *current;
 	    MapItemFreeCallBack freeCallback;
 	};
 
