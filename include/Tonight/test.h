@@ -5,19 +5,26 @@
 		extern "C"{
 #	endif
 
-    typedef struct test_t {
-        string name;
-        P_void func;
-        pointer arg;
-        P_fixString argToString;
-    }test_t, *test_p;
-
-    typedef struct test_result {
+    typedef struct TestResultItem {
         bool success;
-        string info;
-        test_p test;
         Exception except;
-    }test_result;
+        pointer data;
+    }TestResultItem;
+
+    typedef struct TestResult {
+        TestResultItem *results;
+        struct count{
+            int tests;
+            int success;
+            int failed;
+            int except;
+        }count;
+        struct statistic{
+            double success;
+            double failed;
+            double except;
+        }statistic;
+    }TestResult;
 
     extern const struct __Test {
         void (* assert)(bool);
@@ -27,9 +34,8 @@
         void (* checkErrorMessage)(string);
         void (* checkPointer)(pointer);
         void (* checkPointerMessage)(pointer, string);
-        test_p (* create)(void);
-        void (* free)(test_p);
-        test_result* (* run)(test_p);
+        TestResult (* run)(P_void);
+        TestResult (* runArguments)(P_void, pointer);
     }Test;
 
 #	ifdef __cplusplus

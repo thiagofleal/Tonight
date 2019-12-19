@@ -35,69 +35,68 @@ static INLINE void TONIGHT Test_checkPointerMessage(pointer test, string message
     if(!test) Throw(NullArgumentException, message, test);
 }
 
-static test_p TONIGHT Test_create(void){
-    test_p p = Memory.alloc(sizeof(test_t));
-    p->arg = NULL;
-    p->argToString = NULL;
-    p->func = NULL;
-    p->name = NULL;
-    return p;
+static INLINE TestResultItem* array_TestResultItem(size_t length){
+    return Array.Generic(sizeof(TestResultItem), length);
 }
 
-static INLINE void TONIGHT Test_free(test_p data){
-    Memory.free(data);
+static void init_TestResult(TestResult *res, size_t length){
+    res->results = array_TestResultItem(length);
+    res->count.except = 0;
+    res->count.failed = 0;
+    res->count.success = 0;
+    res->count.tests = 0;
+    res->statistic.success = 0.0;
+    res->statistic.failed = 0.0;
+    res->statistic.except = 0.0;
 }
 
-static test_result* TONIGHT Test_run(test_p test){
-    bool b_free = false;
-    size_t i, length;
-    test_result ARRAY ret = NULL;
-    Test.checkPointerMessage(test, "Null test");
-    Test.checkPointerMessage(test->func, "Null function pointer");
-    if(test->arg){
-        length = Array.length(test->arg);
-    }else{
-        length = 1;
-        test->arg = Array.Pointer(1);
-        *(pointer*)test->arg = NULL;
-        b_free = true;
+static TestResult TONIGHT Test_run(P_void func){
+    TestResult ret;
+    Test.checkPointer(func);
+    init_TestResult(&ret, 1);
+    ret.results[0].data = NULL;
+    ret.results[0].except = NULL;
+    ret.results[0].success = true;
+    Try{
+        func();
+        ret.count.success = 1;
+        ret.statistic.success = 1.0;
+    }Catch(TestException){
+        ret.count.failed = 1;
+        ret.statistic.failed = 1.0;
+    }Catch(GenericException){
+        ret.count.except = 1;
+        ret.statistic.except = 1.0;
+    }Finally{
+        ret.results[0].except = CurrentException.get();
+        ret.results[0].success = false;
     }
-    ret = Array.Generic(sizeof(test_result), length);
+    return ret;
+}
+
+static TestResult TONIGHT Test_runArguments(P_void func, pointer args){
+    TestResult ret;
+    size_t length = Array.length(args), i;
+    Test.checkPointer(func);
+    init_TestResult(&ret, length);
     for(i = 0; i < length; i++){
-        pointer p = Array.access(test->arg, i);
-        bool b_arg = test->argToString ? true : false;
-        fixString arg = b_arg ? test->argToString(p) : FixString.empty;
-        string append = b_arg ? String.formated(" => (%s)", getText(arg)) : String.copy("");
+        ret.results[i].data = Array.access(args, i);
+        ret.results[i].except = NULL;
+        ret.results[i].success = true;
         Try{
-            ret[i].test = test;
-            test->func(p);
-            ret[i].success = true;
-            ret[i].except = NULL;
-            ret[i].info = String.formated("TEST SUCCESS: %s%s", test->name, append);
+            func(Array.access(args, i));
+            ++ ret.count.success;
+            ret.statistic.success += 1.0 / length;
         }Catch(TestException){
-            Exception e = CurrentException.get();
-            Try{
-                Throw(
-                    ExceptionManager.type(e),
-                    ExceptionManager.message(e),
-                    test,
-                    test->name
-                );
-            }Catch(GenericException){
-                ret[i].except = CurrentException.get();
-                ret[i].info = String.formated("TEST FAILED: %s%s", test->name, append);
-            }
+            ++ ret.count.failed;
+            ret.statistic.failed += 1.0 / length;
         }Catch(GenericException){
-            ret[i].except = CurrentException.get();
-            ret[i].info = String.formated("EXCEPTION: %s%s", test->name, append);
+            ++ ret.count.except;
+            ret.statistic.except += 1.0 / length;
         }Finally{
-            ret[i].success = false;
+            ret.results[i].except = CurrentException.get();
+            ret.results[i].success = false;
         }
-        String.free(append);
-    }
-    if(b_free){
-        Array.free(test->arg);
-        test->arg = NULL;
     }
     return ret;
 }
@@ -110,7 +109,6 @@ const struct __Test Test = {
     .checkErrorMessage = Test_checkErrorMessage,
     .checkPointer = Test_checkPointer,
     .checkPointerMessage = Test_checkPointerMessage,
-    .create = Test_create,
-    .free = Test_free,
-    .run = Test_run
+    .run = Test_run,
+    .runArguments = Test_runArguments
 };
