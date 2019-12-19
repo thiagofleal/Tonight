@@ -44,7 +44,7 @@ static void init_TestResult(TestResult *res, size_t length){
     res->count.except = 0;
     res->count.failed = 0;
     res->count.success = 0;
-    res->count.tests = 0;
+    res->count.tests = length;
     res->statistic.success = 0.0;
     res->statistic.failed = 0.0;
     res->statistic.except = 0.0;
