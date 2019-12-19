@@ -29,7 +29,7 @@
 #	define  ARRAY    *
 #	define  $Empty(Type)	((Type){0})
 #	define  $end			((string)0)
-#	define  getText(str) &(((str).Text)[0])
+#	define  getText(str)    &(((str).Text)[0])
 
 #	ifndef __cplusplus
 #		define and      &&
@@ -63,15 +63,15 @@
 #		define OptionalArgs
 #	endif
 
-#   define first(a, b...)          a
-#   define second(a, b, c...)      b
-#   define third(a, b, c, d...)    c
-#   define __import__(name, space...)  __##name##_set second(space, name) = first(space)->name
-#   define import(args...) __import__(args)
+#   define first(a, b...)               a
+#   define second(a, b, c...)           b
+#   define third(a, b, c, d...)         c
+#   define fourth(a, b, c, d, e...)     d
+#   define fifth(a, b, c, d, e, f...)   e
 
-#	define	__using__(var, from, iFree...)	__create_using_context(sizeof var, &var);\
-											var = from;\
-											while(__function_using(&var, ((IFree){iFree}).free))
+#	define	__using__(var, args...)         __create_using_context(sizeof var, &var);\
+											var = first(args);\
+											while(__function_using(&var, second(args, NULL)))
 #	define Using(_arg_)						__using__(_arg_)
 
 #	define	With(var)	__create_with_context(var);\
@@ -90,7 +90,7 @@
 
 #	define __DefineCastPointer__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
 																	(pointer from, pointer to){\
-																		*(typeTo*)to = (typeTo)(**(typeFrom*)from);\
+																		*(typeTo*)to = (typeTo)(*(typeFrom*)from);\
 																	}\
 																	_arg cast _cast = (cast){\
 																		sizeof(typeFrom),\
@@ -231,9 +231,5 @@
 	}cast, (* P_cast)(OptionalArgs);
 
 	typedef bool (* condition)(pointer);
-
-    typedef struct{
-		void (* free)(OptionalArgs);
-	}IFree;
 
 #endif

@@ -6,14 +6,18 @@
 typedef struct __struct_exception{
 	EXCEPTION exception;
 	string message;
+	pointer data;
+	pointer info;
 }_Exception, *Exception;
 
 /* Exceptions */
 static EXCEPTION_DEFINE ___GenericException = {"Generic exception throwed", NULL};
 EXCEPTION TONIGHT GenericException = &___GenericException;
 
-Define_Exception(AssertException $as "Assert fail" $extends GenericException);
-Define_Exception(ErrnoException $as "Errno error" $extends GenericException);
+Define_Exception(TestException $as "Test failed" $extends GenericException);
+Define_Exception(AssertException $as "Assert test failed" $extends TestException);
+Define_Exception(ErrnoException $as "C error system" $extends TestException);
+Define_Exception(NullArgumentException $as "Null argument error" $extends TestException);
 Define_Exception(MemoryAllocException $as "Memory allocate error" $extends GenericException);
 Define_Exception(ArrayIndexBoundException $as "Invalid array index" $extends GenericException);
 Define_Exception(FileOpenException $as "File open error" $extends GenericException);
@@ -22,7 +26,6 @@ Define_Exception(ConvertException $as "Convert error" $extends GenericException)
 Define_Exception(NotImplementException $as "Not implemented method error" $extends GenericException);
 Define_Exception(ArgumentException $as "Argument error" $extends GenericException);
 Define_Exception(IllegalAccessException $as "Illegal access error" $extends GenericException);
-Define_Exception(NullArgumentException $as "Null argument error" $extends ArgumentException);
 Define_Exception(ApplicationException $as "Application error" $extends ArgumentException);
 
 /* try - catch - throw */
@@ -161,11 +164,13 @@ bool TONIGHT __function_finally(void){
 	return false;
 }
 
-void TONIGHT Throw(EXCEPTION __exc, string message){
+void TONIGHT __Throw__(EXCEPTION __exc, string message, pointer data, pointer info){
 	if(except.current->inside_try){
 		static _Exception exc;
 		exc.exception = __exc;
 		exc.message = message;
+		exc.data = data;
+		exc.info = info;
 		except.current->thrown = true;
 		except.value = &exc;
 		except.current->ctrl = CTRL_CATCH;
@@ -185,14 +190,24 @@ static INLINE EXCEPTION TONIGHT ExceptionType(Exception exc){
 	return exc->exception;
 }
 
+static INLINE pointer TONIGHT ExceptionData(Exception exc){
+	return exc->data;
+}
+
+static INLINE pointer TONIGHT ExceptionInfo(Exception exc){
+	return exc->info;
+}
+
 static INLINE void TONIGHT ThrowException(Exception exc){
-    throw(exc->exception, exc->message);
+    throw(exc->exception, exc->message, exc->data);
 }
 
 const struct ExceptionManager ExceptionManager = {
     .error = Error,
     .message = Message,
     .type = ExceptionType,
+    .data = ExceptionData,
+    .info = ExceptionInfo,
     .throwException = ThrowException
 };
 
@@ -212,6 +227,14 @@ static INLINE EXCEPTION TONIGHT CurrentException_ExceptionType(void){
 	return except.value->exception;
 }
 
+static INLINE pointer TONIGHT CurrentException_ExceptionData(void){
+	return except.value->data;
+}
+
+static INLINE pointer TONIGHT CurrentException_ExceptionInfo(void){
+	return except.value->info;
+}
+
 static INLINE void TONIGHT CurrentException_ThrowAgain(void){
     throw(except.value->exception, except.value->message);
 }
@@ -221,6 +244,8 @@ const struct CurrentException CurrentException = {
     .error = CurrentException_Error,
     .message = CurrentException_Message,
     .type = CurrentException_ExceptionType,
+    .data = CurrentException_ExceptionData,
+    .info = CurrentException_ExceptionInfo,
     .throwAgain = CurrentException_ThrowAgain
 };
 
@@ -236,6 +261,14 @@ static INLINE EXCEPTION TONIGHT Exception_type(void){
     return ExceptionType(getCurrentObject());
 }
 
+static INLINE pointer TONIGHT Exception_data(void){
+    return ExceptionData(getCurrentObject());
+}
+
+static INLINE pointer TONIGHT Exception_info(void){
+    return ExceptionInfo(getCurrentObject());
+}
+
 static INLINE void TONIGHT Exception_throwAgain(void){
     ThrowException(getCurrentObject());
 }
@@ -244,5 +277,7 @@ $_interface(Exception, {
     .error = Exception_error,
     .message = Exception_message,
     .type = Exception_type,
+    .data = Exception_data,
+    .info = Exception_info,
     .throwAgain = Exception_throwAgain
 });

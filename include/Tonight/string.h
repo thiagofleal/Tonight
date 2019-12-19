@@ -49,8 +49,8 @@
 		string (* replace)(const string, const string, const string);
 		size_t (* length)(const string);
 		int (* compare)(const string, const string);
-		bool (* equal)(register string const, register string const);
-		bool (* identic)(register string const, register string const);
+		bool (* equal)(const string, const string);
+		bool (* identic)(const string, const string);
 		string (* fromWide)(wstring);
 		const string empty;
 	}String;

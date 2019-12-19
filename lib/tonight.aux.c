@@ -32,7 +32,7 @@ bool __function_using(pointer point, P_void destroy){
 	}
 	else{
 		struct Stack *tmp = stack;
-		if(destroy) if(*(pointer*)point) destroy(*(pointer*)point);
+		if(destroy && *(pointer*)point) destroy(*(pointer*)point);
 		memcpy(point, stack->current, stack->size);
 		stack = stack->prev;
 		Memory.free(tmp->current);

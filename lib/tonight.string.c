@@ -299,24 +299,20 @@ static string TONIGHT String_lower(const string str){
 	return aux;
 }
 
-static bool TONIGHT String_equal(register string const wrd_1, register string const wrd_2){
-	register string s1 = wrd_1, s2 = wrd_2;
+static bool TONIGHT String_equal(const string wrd_1, const string wrd_2){
+	register unsigned char *s1 = (unsigned char*)wrd_1;
+	register unsigned char *s2 = (unsigned char*)wrd_2;
 	while(*s1 && *s2){
-		if(*s1 != *s2){
-			if(isupper(*s1))
-				if(tolower(*s1) != *s2)
-					return false;
-			if(islower(*s1))
-				if(toupper(*s1) != *s2)
-					return false;
-		}
+		if(tolower(*s1) != tolower(*s2))
+            return false;
 		s1++; s2++;
 	}
 	return *s1 == *s2 ? true : false;
 }
 
-static bool TONIGHT String_identic(register string const wrd_1, register string const wrd_2){
-	register string s1 = wrd_1, s2 = wrd_2;
+static bool TONIGHT String_identic(const string wrd_1, const string wrd_2){
+	register unsigned char *s1 = (unsigned char*)wrd_1;
+	register unsigned char *s2 = (unsigned char*)wrd_2;
 	while(*s1 && *s2){
 		if(*s1 != *s2) return false;
 		s1++; s2++;

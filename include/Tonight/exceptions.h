@@ -42,12 +42,18 @@
 #	endif
 
 #	define  $throws
+#	define  Throw(args...)      __Throw__(\
+                                    first(args),\
+                                    second(args, "Exception throwed"),\
+                                    third(args, NULL, NULL),\
+                                    fourth(args, NULL, NULL, NULL)\
+                                )
 #	define  Try                 if(setjmp(__create_try_context())||1)while(__try_context())if(__function_try())
 #	define  Catch(exception)    else if(__function_catch(exception))
 #	define  Finally             else if(__function_finally())
 
 #	define  ___Define_Exception___(exc, msg, super) static EXCEPTION_DEFINE __##exc = {msg, &super};\
-                                                        EXCEPTION exc = &__##exc
+                                                    EXCEPTION exc = &__##exc
 #	define Define_Exception(_args_)                 ___Define_Exception___(_args_)
 
 #   ifndef __cplusplus
@@ -67,8 +73,10 @@
     };
 
     extern EXCEPTION TONIGHT GenericException;
+    extern EXCEPTION TONIGHT TestException;
     extern EXCEPTION TONIGHT AssertException;
     extern EXCEPTION TONIGHT ErrnoException;
+    extern EXCEPTION TONIGHT NullArgumentException;
     extern EXCEPTION TONIGHT MemoryAllocException;
     extern EXCEPTION TONIGHT ArrayIndexBoundException;
     extern EXCEPTION TONIGHT FileOpenException;
@@ -77,11 +85,10 @@
     extern EXCEPTION TONIGHT NotImplementException;
     extern EXCEPTION TONIGHT ArgumentException;
     extern EXCEPTION TONIGHT IllegalAccessException;
-    extern EXCEPTION TONIGHT NullArgumentException;
     extern EXCEPTION TONIGHT ApplicationException;
 
     /* Exceptions control */
-    extern  void    TONIGHT         Throw(EXCEPTION, string);
+    extern  void    TONIGHT NO_CALL __Throw__(EXCEPTION, string, pointer, pointer);
     extern  pointer TONIGHT NO_CALL __create_try_context(void);
     extern  bool    TONIGHT NO_CALL __try_context(void);
     extern  bool    TONIGHT NO_CALL __function_try(void);
@@ -92,6 +99,8 @@
         string (* error)(Exception);
         string (* message)(Exception);
         EXCEPTION (* type)(Exception);
+        pointer (* data)(Exception);
+        pointer (* info)(Exception);
         void (* throwException)(Exception);
     }ExceptionManager;
 
@@ -100,6 +109,8 @@
         string (* error)(void);
         string (* message)(void);
         EXCEPTION (* type)(void);
+        pointer (* data)(void);
+        pointer (* info)(void);
         void (* throwAgain)(void);
     }CurrentException;
 
@@ -107,6 +118,8 @@
         string (* error)(void);
         string (* message)(void);
         EXCEPTION (* type)(void);
+        pointer (* data)(void);
+        pointer (* info)(void);
         void (* throwAgain)(void);
     });
 

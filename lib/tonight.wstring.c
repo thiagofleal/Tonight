@@ -299,24 +299,20 @@ static wstring TONIGHT WideString_lower(const wstring str){
 	return aux;
 }
 
-static bool TONIGHT WideString_equal(register wstring const wrd_1, register wstring const wrd_2){
-	register wstring s1 = wrd_1, s2 = wrd_2;
+static bool TONIGHT WideString_equal(const wstring wrd_1, const wstring wrd_2){
+	register wchar_t *s1 = (wchar_t*)wrd_1;
+	register wchar_t *s2 = (wchar_t*)wrd_2;
 	while(*s1 && *s2){
-		if(*s1 != *s2){
-			if(iswupper(*s1))
-				if(towlower(*s1) != *s2)
-					return false;
-			if(iswlower(*s1))
-				if(towupper(*s1) != *s2)
-					return false;
-		}
+		if(towlower(*s1) != towlower(*s2))
+            return false;
 		s1++; s2++;
 	}
 	return *s1 == *s2 ? true : false;
 }
 
-static bool TONIGHT WideString_identic(register wstring const wrd_1, register wstring const wrd_2){
-	register wstring s1 = wrd_1, s2 = wrd_2;
+static bool TONIGHT WideString_identic(const wstring wrd_1, const wstring wrd_2){
+	register wchar_t *s1 = (wchar_t*)wrd_1;
+	register wchar_t *s2 = (wchar_t*)wrd_2;
 	while(*s1 && *s2){
 		if(*s1 != *s2) return false;
 		s1++; s2++;
