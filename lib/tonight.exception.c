@@ -17,7 +17,7 @@ EXCEPTION TONIGHT GenericException = &___GenericException;
 Define_Exception(TestException $as "Test failed" $extends GenericException);
 Define_Exception(AssertException $as "Assert test failed" $extends TestException);
 Define_Exception(ErrnoException $as "C error system" $extends TestException);
-Define_Exception(NullArgumentException $as "Null argument error" $extends TestException);
+Define_Exception(NullArgumentException $as "Null argument error" $extends GenericException);
 Define_Exception(MemoryAllocException $as "Memory allocate error" $extends GenericException);
 Define_Exception(ArrayIndexBoundException $as "Invalid array index" $extends GenericException);
 Define_Exception(FileOpenException $as "File open error" $extends GenericException);
@@ -198,6 +198,15 @@ static INLINE pointer TONIGHT ExceptionInfo(Exception exc){
 	return exc->info;
 }
 
+static bool TONIGHT ExceptionIsType(Exception exc, EXCEPTION type){
+    EXCEPTION *_e = &exc->exception;
+    while(_e){
+        if(*_e == type) return true;
+        _e = (*_e)->_super;
+    }
+    return false;
+}
+
 static INLINE void TONIGHT ThrowException(Exception exc){
     throw(exc->exception, exc->message, exc->data);
 }
@@ -208,6 +217,7 @@ const struct ExceptionManager ExceptionManager = {
     .type = ExceptionType,
     .data = ExceptionData,
     .info = ExceptionInfo,
+    .isType = ExceptionIsType,
     .throwException = ThrowException
 };
 

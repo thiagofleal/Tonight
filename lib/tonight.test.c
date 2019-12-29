@@ -7,32 +7,48 @@
 #include "../include/Tonight/string.h"
 #include "../include/Tonight/test.h"
 
-static INLINE void TONIGHT Test_assert(bool test){
-    if(!test) Throw(AssertException, "Assert test failed");
-}
-
 static INLINE void TONIGHT Test_assertMessage(bool test, string message){
     if(!test) Throw(AssertException, message);
 }
 
-static INLINE int TONIGHT Test_getError(void){
-    return errno;
+static INLINE void TONIGHT Test_assert(bool test){
+    Test_assertMessage(test, "Assert test failed");
 }
 
-static INLINE void TONIGHT Test_checkError(void){
-    if(errno) Throw(ErrnoException, "Error occurred with a C standard function", &errno, strerror(errno));
+static INLINE void TONIGHT Test_assertNullMessage(pointer test, string message){
+    if(test) Throw(AssertException, message);
 }
 
-static INLINE void TONIGHT Test_checkErrorMessage(string message){
-    if(errno) Throw(ErrnoException, message, &errno, strerror(errno));
+static INLINE void TONIGHT Test_assertNull(pointer test){
+    Test_assertNullMessage(test, "Null assert test failed");
 }
 
-static INLINE void TONIGHT Test_checkPointer(pointer test){
-    if(!test) Throw(NullArgumentException, "Null argument", test);
+static INLINE void TONIGHT Test_assertNotNullMessage(pointer test, string message){
+    if(!test) Throw(AssertException, message);
 }
 
-static INLINE void TONIGHT Test_checkPointerMessage(pointer test, string message){
-    if(!test) Throw(NullArgumentException, message, test);
+static INLINE void TONIGHT Test_assertNotNull(pointer test){
+    Test_assertNotNullMessage(test, "Not null assert test failed");
+}
+
+static INLINE void TONIGHT Test_assertErrorMessage(int error, string message){
+    if(errno != error) Throw(AssertException, message);
+}
+
+static INLINE void TONIGHT Test_assertError(int error){
+    Test_assertErrorMessage(error, "Error assert test failed");
+}
+
+static void TONIGHT Test_assertExceptionMessage(P_void func, EXCEPTION expect, string message){
+    Try{
+        func();
+    }Catch(GenericException){
+        if(!ExceptionManager.isType(CurrentException.get(), expect)) Throw(AssertException, message);
+    }
+}
+
+static INLINE void TONIGHT Test_assertException(P_void func, EXCEPTION expect){
+    Test_assertExceptionMessage(func, expect, "Exception assert test failed");
 }
 
 static INLINE TestResultItem* array_TestResultItem(size_t length){
@@ -52,7 +68,7 @@ static void init_TestResult(TestResult *res, size_t length){
 
 static TestResult TONIGHT Test_run(P_void func){
     TestResult ret;
-    Test.checkPointer(func);
+    Check.pointer(func);
     init_TestResult(&ret, 1);
     ret.results[0].data = NULL;
     ret.results[0].except = NULL;
@@ -74,10 +90,10 @@ static TestResult TONIGHT Test_run(P_void func){
     return ret;
 }
 
-static TestResult TONIGHT Test_runArguments(P_void func, pointer args){
+static TestResult TONIGHT Test_runWithArguments(P_void func, pointer args){
     TestResult ret;
     size_t length = Array.length(args), i;
-    Test.checkPointer(func);
+    Check.pointer(func);
     init_TestResult(&ret, length);
     for(i = 0; i < length; i++){
         ret.results[i].data = Array.access(args, i);
@@ -103,12 +119,51 @@ static TestResult TONIGHT Test_runArguments(P_void func, pointer args){
 
 const struct __Test Test = {
     .assert = Test_assert,
+    .assertNull = Test_assertNull,
+    .assertNotNull = Test_assertNotNull,
+    .assertError = Test_assertError,
+    .assertException = Test_assertException,
     .assertMessage = Test_assertMessage,
-    .getError = Test_getError,
-    .checkError = Test_checkError,
-    .checkErrorMessage = Test_checkErrorMessage,
-    .checkPointer = Test_checkPointer,
-    .checkPointerMessage = Test_checkPointerMessage,
+    .assertNullMessage = Test_assertNullMessage,
+    .assertNotNullMessage = Test_assertNotNullMessage,
+    .assertErrorMessage = Test_assertErrorMessage,
+    .assertExceptionMessage = Test_assertExceptionMessage,
     .run = Test_run,
-    .runArguments = Test_runArguments
+    .runWithArguments = Test_runWithArguments
+};
+
+static INLINE void TONIGHT Check_pointerMessage(pointer check, string message){
+    if(!check) Throw(NullArgumentException, message);
+}
+
+static INLINE void TONIGHT Check_pointer(pointer check){
+    Check_pointerMessage(check, "Null pointer");
+}
+
+const struct __Check Check = {
+    .pointer = Check_pointer,
+    .pointerMessage = Check_pointerMessage
+};
+
+static INLINE int TONIGHT Error_getNumber(void){
+    return errno;
+}
+
+static INLINE void TONIGHT Error_setNumber(int value){
+    errno = value;
+}
+
+static INLINE void TONIGHT Error_throwExceptionMessage(string message){
+    if(errno) Throw(ErrnoException, message, strerror(errno));
+}
+
+static INLINE void TONIGHT Error_throwException(void){
+    Error_throwExceptionMessage("C Error-System");
+}
+
+const struct __Error Error = {
+    .getNumber = Error_getNumber,
+    .setNumber = Error_setNumber,
+    .throwException = Error_throwException,
+    .throwExceptionMessage = Error_throwExceptionMessage
 };

@@ -41,7 +41,6 @@
 #       endif
 #	endif
 
-#	define  $throws
 #	define  Throw(args...)      __Throw__(\
                                     first(args),\
                                     second(args, "Exception throwed"),\
@@ -101,6 +100,7 @@
         EXCEPTION (* type)(Exception);
         pointer (* data)(Exception);
         pointer (* info)(Exception);
+        bool (* isType)(Exception, EXCEPTION);
         void (* throwException)(Exception);
     }ExceptionManager;
 

@@ -47,7 +47,7 @@ static INLINE void TONIGHT Callback_free(pointer mem){
 	p_free(mem);
 }
 
-static pointer TONIGHT $throws __new_memory(size_t q){
+static pointer TONIGHT __new_memory(size_t q){
 	MemoryData *p = p_malloc(sizeof(MemoryData) + q);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
@@ -55,7 +55,7 @@ static pointer TONIGHT $throws __new_memory(size_t q){
 	return p->data;
 }
 
-static pointer TONIGHT $throws __realloc_memory(pointer mem, size_t q){
+static pointer TONIGHT __realloc_memory(pointer mem, size_t q){
 	MemoryData *p = p_realloc(mem - sizeof(MemoryData), sizeof(MemoryData) + q);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
@@ -118,61 +118,61 @@ $_interface(Memory, {
     .copy = Memory_select_copy
 });
 
-static char* TONIGHT $throws __new_char(char value){
+static char* TONIGHT __new_char(char value){
 	char* c = __new_memory(sizeof(char));
 	*c = value;
 	return c;
 }
 
-static byte* TONIGHT $throws __new_byte(byte value){
+static byte* TONIGHT __new_byte(byte value){
 	byte* b = __new_memory(sizeof(byte));
 	*b = value;
 	return b;
 }
 
-static bool* TONIGHT $throws __new_bool(bool value){
+static bool* TONIGHT __new_bool(bool value){
 	bool *b = __new_memory(sizeof(bool));
 	*b = value;
 	return b;
 }
 
-static wchar_t* TONIGHT $throws __new_wchar_t(wchar_t value){
+static wchar_t* TONIGHT __new_wchar_t(wchar_t value){
 	wchar_t* c = __new_memory(sizeof(wchar_t));
 	*c = value;
 	return c;
 }
 
-static int* TONIGHT $throws __new_int(int value){
+static int* TONIGHT __new_int(int value){
 	int *i = __new_memory(sizeof(int));
 	*i = value;
 	return i;
 }
 
-static float* TONIGHT $throws __new_float(float value){
+static float* TONIGHT __new_float(float value){
 	float *f = __new_memory(sizeof(float));
 	*f = value;
 	return f;
 }
 
-static double* TONIGHT $throws __new_double(double value){
+static double* TONIGHT __new_double(double value){
 	double *d = __new_memory(sizeof(double));
 	*d = value;
 	return d;
 }
 
-static string* TONIGHT $throws __new_string(string value){
+static string* TONIGHT __new_string(string value){
 	string *s = __new_memory(sizeof(string));
 	*s = value;
 	return s;
 }
 
-static wstring* TONIGHT $throws __new_wstring(wstring value){
+static wstring* TONIGHT __new_wstring(wstring value){
 	wstring *w = __new_memory(sizeof(wstring));
 	*w = value;
 	return w;
 }
 
-static pointer TONIGHT $throws __new_pointer(pointer value){
+static pointer TONIGHT __new_pointer(pointer value){
 	pointer *p = __new_memory(sizeof(pointer));
 	*p = value;
 	return p;

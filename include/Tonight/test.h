@@ -28,15 +28,30 @@
 
     extern const struct __Test {
         void (* assert)(bool);
+        void (* assertNull)(pointer);
+        void (* assertNotNull)(pointer);
+        void (* assertError)(int);
+        void (* assertException)(P_void, EXCEPTION);
         void (* assertMessage)(bool, string);
-        int (* getError)(void);
-        void (* checkError)(void);
-        void (* checkErrorMessage)(string);
-        void (* checkPointer)(pointer);
-        void (* checkPointerMessage)(pointer, string);
+        void (* assertNullMessage)(pointer, string);
+        void (* assertNotNullMessage)(pointer, string);
+        void (* assertErrorMessage)(int, string);
+        void (* assertExceptionMessage)(P_void, EXCEPTION, string);
         TestResult (* run)(P_void);
-        TestResult (* runArguments)(P_void, pointer);
+        TestResult (* runWithArguments)(P_void, pointer);
     }Test;
+
+    extern const struct __Check {
+        void (* pointer)(pointer);
+        void (* pointerMessage)(pointer, string);
+    }Check;
+
+    extern const struct __Error {
+        int (* getNumber)(void);
+        void (* setNumber)(int);
+        void (* throwException)(void);
+        void (* throwExceptionMessage)(string);
+    }Error;
 
 #	ifdef __cplusplus
 		}

@@ -49,7 +49,7 @@ static IStream file_wstream = {
     .print = file_stream_wprint
 };
 */
-static file TONIGHT $throws __new_File(string fName, FileModeDescriptor fMode){
+static file TONIGHT __new_File(string fName, FileModeDescriptor fMode){
 	struct __file_data__ *fd = Memory.alloc(sizeof(struct __file_data__) + sizeof(file));
 	file f = (file)fd->data;
 	fd->_stream = &file_stream;

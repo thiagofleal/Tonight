@@ -17,7 +17,7 @@ static char TONIGHT char_fromString(string s){
 	return ret;
 }
 
-static byte TONIGHT $throws byte_fromString(string s){
+static byte TONIGHT byte_fromString(string s){
 	string a;
 	byte b = (byte)strtol(s, &a, 0);
 	if(*a){
@@ -27,7 +27,7 @@ static byte TONIGHT $throws byte_fromString(string s){
 	return b;
 }
 
-static bool TONIGHT $throws bool_fromString(string s){
+static bool TONIGHT bool_fromString(string s){
 	if(String.equal(s, "true"))
 		return true;
 	if(String.equal(s, "false"))
@@ -39,7 +39,7 @@ static bool TONIGHT $throws bool_fromString(string s){
 	return false;
 }
 
-static int TONIGHT $throws int_fromString(string s){
+static int TONIGHT int_fromString(string s){
 	int i;
 	string a;
 	i = (int)strtol(s, &a, 0);
@@ -50,7 +50,7 @@ static int TONIGHT $throws int_fromString(string s){
 	return i;
 }
 
-static float TONIGHT $throws float_fromString(string s){
+static float TONIGHT float_fromString(string s){
 	float f;
 	string a;
 	f = strtof(s, &a);
@@ -61,7 +61,7 @@ static float TONIGHT $throws float_fromString(string s){
 	return f;
 }
 
-static double TONIGHT $throws double_fromString(string s){
+static double TONIGHT double_fromString(string s){
 	double d;
 	string a;
 	d = strtod(s, &a);

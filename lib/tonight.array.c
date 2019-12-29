@@ -16,17 +16,17 @@ typedef struct{
 	byte data[0];
 }ArrayData;
 
-static NORMAL pointer TONIGHT $throws alloc_array(size_t, size_t);
-static INLINE char* TONIGHT $throws __new_array_char(size_t);
-static INLINE byte* TONIGHT $throws __new_array_byte(size_t);
-static INLINE bool* TONIGHT $throws __new_array_bool(size_t);
-static INLINE int* TONIGHT $throws __new_array_int(size_t);
-static INLINE float* TONIGHT $throws __new_array_float(size_t);
-static INLINE double* TONIGHT $throws __new_array_double(size_t);
-static INLINE string* TONIGHT $throws __new_array_String(size_t);
-static INLINE object* TONIGHT $throws __new_array_Object(size_t);
-static INLINE pointer* TONIGHT $throws __new_array_pointer(size_t);
-static INLINE pointer TONIGHT $throws __new_array_generic(size_t, size_t);
+static NORMAL pointer TONIGHT alloc_array(size_t, size_t);
+static INLINE char* TONIGHT __new_array_char(size_t);
+static INLINE byte* TONIGHT __new_array_byte(size_t);
+static INLINE bool* TONIGHT __new_array_bool(size_t);
+static INLINE int* TONIGHT __new_array_int(size_t);
+static INLINE float* TONIGHT __new_array_float(size_t);
+static INLINE double* TONIGHT __new_array_double(size_t);
+static INLINE string* TONIGHT __new_array_String(size_t);
+static INLINE object* TONIGHT __new_array_Object(size_t);
+static INLINE pointer* TONIGHT __new_array_pointer(size_t);
+static INLINE pointer TONIGHT __new_array_generic(size_t, size_t);
 
 /* Functions to Array */
 static INLINE ArrayData* getArrayData(pointer array){
@@ -41,7 +41,7 @@ static INLINE size_t TONIGHT Array_size(pointer array){
 	return getArrayData(array)->size;
 }
 
-static INLINE pointer TONIGHT $throws Array_access(pointer array, int index){
+static INLINE pointer TONIGHT Array_access(pointer array, int index){
 	if(index < 0 || index >= Array_length(array))
         throw(ArrayIndexBoundException, "Index out of array bounds");
 	return array + index * Array_size(array);
@@ -74,7 +74,7 @@ static pointer TONIGHT Array_convert(pointer array, cast casting){
 	return ret;
 }
 
-static pointer TONIGHT $throws Array_where(pointer array, condition where){
+static pointer TONIGHT Array_where(pointer array, condition where){
 	register size_t i, j, length=Array_length(array), size=Array_size(array);
 	pointer ret=NULL, aux, arr=__new_array_generic(size,length);
 	for(i=0, j=0; i<length; i++){
@@ -91,7 +91,7 @@ static pointer TONIGHT $throws Array_where(pointer array, condition where){
 	return ret;
 }
 
-static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
+static bool TONIGHT Array_contains(pointer array, pointer sub){
 	register size_t array_lenth=Array_length(array);
 	register size_t sub_lenth=Array_length(sub);
 	register size_t array_size=Array_size(array);
@@ -110,12 +110,12 @@ static bool TONIGHT $throws Array_contains(pointer array, pointer sub){
 	return true;
 }
 
-static void TONIGHT $throws Array_sort(pointer array, pointer function){
+static void TONIGHT Array_sort(pointer array, pointer function){
     register size_t size = Array_size(array),length = Array_length(array);
     qsort(array, length, size, function);
 }
 
-static void TONIGHT $throws Array_forEach(pointer array, pointer function){
+static void TONIGHT Array_forEach(pointer array, pointer function){
     register size_t i, length = Array_length(array);
     for(i=0;i<length;i++){
         ((P_void)function)(Array_access(array,i));
@@ -146,7 +146,7 @@ static ICollection __Array_collection = {
 	.reset = Array_reset
 };
 
-static pointer TONIGHT $throws alloc_array(size_t size, size_t lenght){
+static pointer TONIGHT alloc_array(size_t size, size_t lenght){
 	ArrayData *p = Memory.Callback.malloc(sizeof(ArrayData) + size * lenght);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
@@ -165,51 +165,51 @@ pointer TONIGHT NO_CALL __create_array(size_t size, size_t length, pointer array
 	return ret;
 }
 
-static INLINE char* TONIGHT $throws __new_array_char(size_t q){
+static INLINE char* TONIGHT __new_array_char(size_t q){
 	return alloc_array(sizeof(char), q);
 }
 
-static INLINE byte* TONIGHT $throws __new_array_byte(size_t q){
+static INLINE byte* TONIGHT __new_array_byte(size_t q){
 	return alloc_array(sizeof(byte), q);
 }
 
-static INLINE bool* TONIGHT $throws __new_array_bool(size_t q){
+static INLINE bool* TONIGHT __new_array_bool(size_t q){
 	return alloc_array(sizeof(bool), q);
 }
 
-static INLINE wchar_t* TONIGHT $throws __new_array_wchar(size_t q){
+static INLINE wchar_t* TONIGHT __new_array_wchar(size_t q){
 	return alloc_array(sizeof(wchar_t), q);
 }
 
-static INLINE int* TONIGHT $throws __new_array_int(size_t q){
+static INLINE int* TONIGHT __new_array_int(size_t q){
 	return alloc_array(sizeof(int), q);
 }
 
-static INLINE float* TONIGHT $throws __new_array_float(size_t q){
+static INLINE float* TONIGHT __new_array_float(size_t q){
 	return alloc_array(sizeof(float), q);
 }
 
-static INLINE double* TONIGHT $throws __new_array_double(size_t q){
+static INLINE double* TONIGHT __new_array_double(size_t q){
 	return alloc_array(sizeof(double), q);
 }
 
-static INLINE string* TONIGHT $throws __new_array_String(size_t q){
+static INLINE string* TONIGHT __new_array_String(size_t q){
 	return alloc_array(sizeof(string), q);
 }
 
-static INLINE wstring* TONIGHT $throws __new_array_Wstring(size_t q){
+static INLINE wstring* TONIGHT __new_array_Wstring(size_t q){
 	return alloc_array(sizeof(wstring), q);
 }
 
-static INLINE object* TONIGHT $throws __new_array_Object(size_t q){
+static INLINE object* TONIGHT __new_array_Object(size_t q){
 	return alloc_array(sizeof(object), q);
 }
 
-static INLINE pointer* TONIGHT $throws __new_array_pointer(size_t q){
+static INLINE pointer* TONIGHT __new_array_pointer(size_t q){
 	return alloc_array(sizeof(pointer), q);
 }
 
-static INLINE pointer TONIGHT $throws __new_array_generic(size_t size, size_t q){
+static INLINE pointer TONIGHT __new_array_generic(size_t size, size_t q){
 	return alloc_array(size, q);
 }
 
@@ -249,7 +249,7 @@ static INLINE size_t TONIGHT Array_select_size(void){
 	return Array_size(getCurrentObject());
 }
 
-static INLINE pointer TONIGHT $throws Array_select_access(int index){
+static INLINE pointer TONIGHT Array_select_access(int index){
 	return Array_access(getCurrentObject(), index);
 }
 
@@ -265,19 +265,19 @@ static INLINE pointer TONIGHT Array_select_convert(cast casting){
 	return Array_convert(getCurrentObject(), casting);
 }
 
-static INLINE pointer TONIGHT $throws Array_select_where(condition where){
+static INLINE pointer TONIGHT Array_select_where(condition where){
 	return Array_where(getCurrentObject(), where);
 }
 
-static INLINE bool TONIGHT $throws Array_select_contains(pointer sub){
+static INLINE bool TONIGHT Array_select_contains(pointer sub){
 	return Array_contains(getCurrentObject(), sub);
 }
 
-static INLINE void TONIGHT $throws Array_select_sort(pointer function){
+static INLINE void TONIGHT Array_select_sort(pointer function){
     Array_sort(getCurrentObject(), function);
 }
 
-static INLINE void TONIGHT $throws Array_select_forEach(pointer function){
+static INLINE void TONIGHT Array_select_forEach(pointer function){
     Array_forEach(getCurrentObject(), function);
 }
 
