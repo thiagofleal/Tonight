@@ -131,7 +131,7 @@ static object List_select(condition where){
         current = List_getNode(this, i)->value;
 
         if(where(&current)){
-            $(sel $as List).add(current);
+            $(sel $as List)->add(current);
         }
     }
 	return sel;
@@ -213,13 +213,13 @@ static void List_constructor(pointer args){
 	$$(this $as List).size = 0;
 	List_ICollection_reset(this);
 	setInterface(List, List_vtble);
-	$(this $as Set).setCollection(List_collection);
+	$(this $as Set)->setCollection(List_collection);
 	$$(this $as List).freeCallBack = NULL;
 }
 
 static void List_destructor(void){
 	while($$(this $as List).size){
-		$(this $as List).remove(0);
+		$(this $as List)->remove(0);
 	}
 
 	destruct(superOf(List));

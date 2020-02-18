@@ -138,7 +138,6 @@ static INLINE void Array_reset(pointer array){
     getArrayData(array)->current = -1;
 }
 
-/* Initialize arrays */
 static ICollection __Array_collection = {
 	.currentValue = Array_currentValue,
 	.currentKey = Array_currentKey,
@@ -146,6 +145,7 @@ static ICollection __Array_collection = {
 	.reset = Array_reset
 };
 
+/* Initialize arrays */
 static pointer TONIGHT alloc_array(size_t size, size_t lenght){
 	ArrayData *p = Memory.Callback.malloc(sizeof(ArrayData) + size * lenght);
 	if(!p)
@@ -281,7 +281,6 @@ static INLINE void TONIGHT Array_select_forEach(pointer function){
     Array_forEach(getCurrentObject(), function);
 }
 
-/* ___Array_select___ */
 $_interface(Array, {
 	.length = Array_select_length,
 	.size = Array_select_size,

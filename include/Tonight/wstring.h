@@ -12,7 +12,7 @@
 #	define	$wd(arg)	getText(wds(arg))
 #	define	$wp(arg)	getText(wps(arg))
 #	define	$ws(arg)	getText(warg)
-#	define	$wo(arg)	getText($(arg $as Object).toFixWideString())
+#	define	$wo(arg)	getText($(arg $as Object)->toFixWideString())
 #	define	$wff(arg, n)	getText(wfsf(arg, n))
 #	define	$wdf(arg, n)	getText(wdsf(arg, n))
 
@@ -32,7 +32,7 @@
 #	define	$wlf(arg)	getText(wfls(arg))
 #	define	$wld(arg)	getText(wdls(arg))
 #	define	$wls(arg)	getText(arg)
-#	define	$wlo(arg)	getText($(arg $as Object).toLongFixWideString())
+#	define	$wlo(arg)	getText($(arg $as Object)->toLongFixWideString())
 #	define	$wlff(arg, n)	getText(wflsf(arg, n))
 #	define	$wldf(arg, n)	getText(wdlsf(arg, n))
 

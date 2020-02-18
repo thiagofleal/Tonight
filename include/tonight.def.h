@@ -149,11 +149,11 @@
 #   define $va_set(var, __data__)   struct __data__ *__args__ = (pointer)var
 #   define $va_get                  (*__args__)
 
-#   define $_add(_Class, _int)          extern INLINE struct ___##_Class##_select_data___ _int ___##_Class##_select___(pointer)
-#   define $_interface(_Class, _int...) static const struct ___##_Class##_select_data___ __##_Class_##data = _int;\
-                                        INLINE struct ___##_Class##_select_data___ ___##_Class##_select___(pointer instance){\
+#   define $_add(_Class, _int)          extern INLINE struct ___##_Class##_select_data___ _int* ___##_Class##_select___(pointer)
+#   define $_interface(_Class, _int...) static struct ___##_Class##_select_data___ __##_Class_##_data = _int;\
+                                        INLINE struct ___##_Class##_select_data___* ___##_Class##_select___(pointer instance){\
                                             setCurrentObject(instance);\
-                                            return __##_Class_##data;\
+                                            return &__##_Class_##_data;\
                                         };
 
 #ifndef FIX_LENGTH

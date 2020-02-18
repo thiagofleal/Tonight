@@ -66,41 +66,19 @@ static void init_TestResult(TestResult *res, size_t length){
     res->statistic.except = 0.0;
 }
 
-static TestResult TONIGHT Test_run(P_void func){
+static TestResult TONIGHT Test_run(pointer data){
     TestResult ret;
-    Check.pointer(func);
-    init_TestResult(&ret, 1);
-    ret.results[0].data = NULL;
-    ret.results[0].except = NULL;
-    ret.results[0].success = true;
-    Try{
-        func();
-        ret.count.success = 1;
-        ret.statistic.success = 1.0;
-    }Catch(TestException){
-        ret.count.failed = 1;
-        ret.statistic.failed = 1.0;
-    }Catch(GenericException){
-        ret.count.except = 1;
-        ret.statistic.except = 1.0;
-    }Finally{
-        ret.results[0].except = CurrentException.get();
-        ret.results[0].success = false;
-    }
-    return ret;
-}
-
-static TestResult TONIGHT Test_runWithArguments(P_void func, pointer args){
-    TestResult ret;
-    size_t length = Array.length(args), i;
-    Check.pointer(func);
+    size_t length = Array.length(data), i;
+    TestData *test;
+    Check.pointer(data);
     init_TestResult(&ret, length);
     for(i = 0; i < length; i++){
-        ret.results[i].data = Array.access(args, i);
+        test = Array.access(data, i);
         ret.results[i].except = NULL;
         ret.results[i].success = true;
+        ret.results[i].data = *test;
         Try{
-            func(Array.access(args, i));
+            test->function(test->argument);
             ++ ret.count.success;
             ret.statistic.success += 1.0 / length;
         }Catch(TestException){
@@ -128,8 +106,7 @@ const struct __Test Test = {
     .assertNotNullMessage = Test_assertNotNullMessage,
     .assertErrorMessage = Test_assertErrorMessage,
     .assertExceptionMessage = Test_assertExceptionMessage,
-    .run = Test_run,
-    .runWithArguments = Test_runWithArguments
+    .run = Test_run
 };
 
 static INLINE void TONIGHT Check_pointerMessage(pointer check, string message){

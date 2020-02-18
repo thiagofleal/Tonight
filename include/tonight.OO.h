@@ -25,9 +25,9 @@
 #   ifdef __Define_Class__
 #       undef __Define_Class__
 #   endif
-#	define __Define_Class__(_Class, _super, _int, _intVal)	INLINE _int ___##_Class##_select___(object obj){\
+#	define __Define_Class__(_Class, _super, _int, _intVal)	INLINE _int* ___##_Class##_select___(object obj){\
                                                                 setCurrentObject(obj);\
-                                                                return *___##_Class##___.implement.__interface;\
+                                                                return ___##_Class##___.implement.__interface;\
                                                             }\
                                                             static void _Class##_ctor(object obj, pointer args){\
                                                                 setCurrentObject(obj);\
@@ -68,7 +68,7 @@
                                                         const Class __class__;\
                                                         const Class_##_Class implement;\
                                                     }___##_Class##___;\
-                                                    extern _int ___##_Class##_select___(object);\
+                                                    extern _int* ___##_Class##_select___(object);\
                                                     extern const Class _Class
 #   ifdef Class
 #       undef Class

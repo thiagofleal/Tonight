@@ -12,7 +12,7 @@
 #	define	$d(arg)	getText(ds(arg))
 #	define	$p(arg)	getText(ps(arg))
 #	define	$s(arg)	getText(arg)
-#	define	$o(arg)	getText($(arg $as Object).toFixString())
+#	define	$o(arg)	getText($(arg $as Object)->toFixString())
 #	define	$ff(arg, n)	getText(fsf(arg, n))
 #	define	$df(arg, n)	getText(dsf(arg, n))
 
@@ -32,7 +32,7 @@
 #	define	$lf(arg)	getText(fls(arg))
 #	define	$ld(arg)	getText(dls(arg))
 #	define	$ls(arg)	getText(arg)
-#	define	$lo(arg)	getText($(arg $as Object).toLongFixString())
+#	define	$lo(arg)	getText($(arg $as Object)->toLongFixString())
 #	define	$lff(arg, n)	getText(flsf(arg, n))
 #	define	$ldf(arg, n)	getText(dlsf(arg, n))
 

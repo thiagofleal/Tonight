@@ -165,7 +165,7 @@ static void Map_constructor(pointer args){
 	$$(this $as Map).list = NULL;
 	$$(this $as Map).size = 0;
 	setInterface(Map, Map_vtble);
-	$(this $as Set).setCollection(Map_collection);
+	$(this $as Set)->setCollection(Map_collection);
 	Map_ICollection_reset(this);
 }
 
