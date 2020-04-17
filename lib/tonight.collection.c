@@ -3,11 +3,11 @@
 #include "../include/Tonight/collection.h"
 
 INLINE ICollection* TONIGHT getICollection(pointer p){
-	return *(ICollection**)(p - sizeof(ICollection*));
+    return Memory.getHeader(p, (const pointer)&Collection);
 }
 
 INLINE void TONIGHT setICollection(pointer p, ICollection *value){
-	*(ICollection**)(p - sizeof(ICollection*)) = value;
+    Memory.addHeader(p, (const pointer)&Collection, value);
 }
 
 static INLINE void TONIGHT Collection_currentValue(pointer p, pointer var){

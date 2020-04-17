@@ -56,25 +56,17 @@ static IStream console_wstream = {
 };
 
 static pointer Console_getStream(void){
-    static struct {
-        IStream *stream;
-        pointer null;
-    } ret = {
-        .stream = &console_stream,
-        .null = NULL
-    };
-    return &ret.null;
+    static pointer p = NULL;
+    if(!p) p = Memory.alloc(1);
+    setIStream(p, &console_stream);
+    return p;
 }
 
 static pointer Console_getWideStream(void){
-    static struct {
-        IStream *stream;
-        pointer null;
-    } ret = {
-        .stream = &console_wstream,
-        .null = NULL
-    };
-    return &ret.null;
+    static pointer p = NULL;
+    if(!p) p = Memory.alloc(1);
+    setIStream(p, &console_wstream);
+    return p;
 }
 
 static INLINE void Console_clearScreen(void){

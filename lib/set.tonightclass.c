@@ -39,8 +39,6 @@ static ISet Set_vtble = {
 	.setCollection = Set_setCollection
 };
 
-extern int puts(const string);
-
 static void Set_constructor(pointer args){
 	static ICollection _default = $Empty(ICollection);
 	construct(superOf(Set));
@@ -58,14 +56,14 @@ static void Set_destructor(void){
 static ICollection * ISet_getCollection(void){
 	ICollection *ret = $Empty(ICollection*);
 	Method(Set){
-	    ret = getInterface(Set).getCollection();
+	    ret = getInterface(Set)->getCollection();
 	}
 	return ret;
 }
 
 static void ISet_setCollection(ICollection value){
 	Method(Set){
-	    getInterface(Set).setCollection(value);
+	    getInterface(Set)->setCollection(value);
 	}
 }
 

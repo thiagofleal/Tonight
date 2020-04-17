@@ -227,26 +227,26 @@ static void List_destructor(void){
 
 static void IList_add(pointer value){
 	Method(List){
-        getInterface(List).add(value);
+        getInterface(List)->add(value);
 	}
 }
 
 static void IList_addPos(pointer value, int index){
 	Method(List){
-        getInterface(List).addPos(value, index);
+        getInterface(List)->addPos(value, index);
 	}
 }
 
 static void IList_remove(int index){
 	Method(List){
-        getInterface(List).remove(index);
+        getInterface(List)->remove(index);
 	}
 }
 
 static pointer IList_get(int index){
 	pointer ret = $Empty(pointer);
     Method(List){
-        ret = getInterface(List).get(index);
+        ret = getInterface(List)->get(index);
 	}
     return ret;
 }
@@ -254,7 +254,7 @@ static pointer IList_get(int index){
 static unsigned int IList_size(void){
 	unsigned int ret = $Empty(unsigned int);
     Method(List){
-        ret = getInterface(List).size();
+        ret = getInterface(List)->size();
 	}
     return ret;
 }
@@ -262,7 +262,7 @@ static unsigned int IList_size(void){
 static pointer IList_toArray(void){
 	pointer ret = $Empty(pointer);
     Method(List){
-        ret = getInterface(List).toArray();
+        ret = getInterface(List)->toArray();
 	}
     return ret;
 }
@@ -270,28 +270,28 @@ static pointer IList_toArray(void){
 static object IList_select(condition where){
 	object ret = $Empty(object);
     Method(List){
-        ret = getInterface(List).where(where);
+        ret = getInterface(List)->where(where);
 	}
     return ret;
 }
 
 static void IList_setStringMethod(P_fixString method){
     Method(List){
-        getInterface(List).setStringMethod(method);
+        getInterface(List)->setStringMethod(method);
     }
 }
 
 static string IList_toString(string sep){
 	string ret = $Empty(string);
     Method(List){
-        ret = getInterface(List).toString(sep);
+        ret = getInterface(List)->toString(sep);
 	}
     return ret;
 }
 
 static void IList_setFreeCallBack(P_freeCallBack freeCallBack){
 	Method(List){
-        getInterface(List).setFreeCallBack(freeCallBack);
+        getInterface(List)->setFreeCallBack(freeCallBack);
 	}
 }
 

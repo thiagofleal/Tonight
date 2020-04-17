@@ -11,6 +11,9 @@
         pointer	(* realloc)(pointer, size_t);
         size_t	(* size)(pointer);
         pointer	(* copy)(pointer);
+        void    (* addHeader)(pointer, const pointer, pointer);
+        void    (* removeHeader)(pointer, const pointer);
+        pointer (* getHeader)(pointer, const pointer);
 
         struct Callback{
             void (* setMalloc)(pointer(*)(size_t));
@@ -29,6 +32,9 @@
         pointer	(* realloc)(size_t);
         size_t	(* size)(void);
         pointer	(* copy)(void);
+        void    (* addHeader)(const pointer, pointer);
+        void    (* removeHeader)(const pointer);
+        pointer (* getHeader)(const pointer);
     });
 
     extern const struct __InstanceOf{

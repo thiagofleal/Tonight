@@ -17,6 +17,7 @@
 
     extern const IStream Stream;
     extern INLINE IStream* getIStream(pointer);
+    extern INLINE void setIStream(pointer, IStream*);
 
 #	ifdef __cplusplus
 		}

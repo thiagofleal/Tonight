@@ -10,9 +10,16 @@ static P_pointer p_calloc = calloc;
 static P_pointer p_realloc = realloc;
 static P_void p_free = free;
 
+typedef struct mheader_t{
+    pointer type;
+    pointer value;
+}mheader_t;
+
 typedef struct{
-	size_t size;
-	byte data[0];
+    mheader_t *headers;
+    size_t count;
+    size_t size;
+    byte data[0];
 }MemoryData;
 
 static INLINE void TONIGHT Callback_setMalloc(P_pointer callback){
@@ -52,6 +59,8 @@ static pointer TONIGHT __new_memory(size_t q){
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
 	p->size = q;
+	p->headers = NULL;
+	p->count = 0;
 	return p->data;
 }
 
@@ -73,7 +82,45 @@ static INLINE pointer TONIGHT __memory_copy(pointer mem) {
 }
 
 static INLINE void TONIGHT __memory_free(pointer mem){
-	if(mem) p_free(mem - sizeof(MemoryData));
+	if(mem){
+        MemoryData *md = mem - sizeof(MemoryData);
+        p_free(md->headers);
+        p_free(md);
+	}
+}
+
+static void __memory_addHeader(pointer mem, pointer head, pointer value){
+	if(mem){
+        MemoryData *md = mem - sizeof(MemoryData);
+        md->headers = p_realloc(md->headers, (md->count + 1) * sizeof(mheader_t));
+        md->headers[md->count ++] = (mheader_t){head, value};
+	}
+}
+
+static void __memory_removeHeader(pointer mem, pointer head){
+	if(mem){
+        MemoryData *md = mem - sizeof(MemoryData);
+        register size_t i, j;
+        for(i = 0; i < md->count; i++){
+            if(md->headers[i].type == head){
+                for(j = i; j < md->count - 1; j++)
+                    md->headers[j] = md->headers[j + 1];
+                md->count--;
+            }
+        }
+	}
+}
+
+static pointer __memory_getHeader(pointer mem, pointer head){
+	if(mem){
+        MemoryData *md = mem - sizeof(MemoryData);
+        register size_t i;
+        for(i = 0; i < md->count; i++)
+            if(md->headers[i].type == head)
+                return md->headers[i].value;
+	}
+	Throw(NotImplementException, "Header not found");
+	return NULL;
 }
 
 /* Memory */
@@ -83,6 +130,9 @@ const struct __Memory Memory = {
 	.size = __memory_size,
 	.copy = __memory_copy,
 	.free = __memory_free,
+    .addHeader = __memory_addHeader,
+    .removeHeader = __memory_removeHeader,
+    .getHeader = __memory_getHeader,
 	.Callback = {
         .setMalloc = Callback_setMalloc,
         .setCalloc = Callback_setCalloc,
@@ -111,11 +161,26 @@ static INLINE pointer TONIGHT Memory_select_copy(void){
     return __memory_copy(getCurrentObject());
 }
 
+static INLINE void TONIGHT Memory_select_addHeader(pointer head, pointer value){
+    return __memory_addHeader(getCurrentObject(), head, value);
+}
+
+static INLINE void TONIGHT Memory_select_removeHeader(pointer head){
+    return __memory_removeHeader(getCurrentObject(), head);
+}
+
+static INLINE pointer TONIGHT Memory_select_getHeader(pointer head){
+    return __memory_getHeader(getCurrentObject(), head);
+}
+
 $_interface(Memory, {
     .free = Memory_select_free,
     .realloc = Memory_select_realloc,
     .size = Memory_select_size,
-    .copy = Memory_select_copy
+    .copy = Memory_select_copy,
+    .addHeader = Memory_select_addHeader,
+    .removeHeader = Memory_select_removeHeader,
+    .getHeader = Memory_select_getHeader
 });
 
 static char* TONIGHT __new_char(char value){

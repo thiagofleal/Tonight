@@ -7,18 +7,11 @@
 
 object This = NULL;
 
-struct objectAdditionalData{
-    ICollection *collection;
-    byte obj[0];
-};
-
 object TONIGHT newInstance(const Class class, ...){
-    struct objectAdditionalData* data = Memory.alloc(sizeof(struct objectAdditionalData) + sizeof(Intern_Object));
     object _new;
 	va_list args;
 	va_start(args, class);
-	data->collection = NULL;
-	_new = (object)data->obj;
+	_new = Memory.alloc(sizeof(Intern_Object));
 	_new->data = Memory.alloc(class->size);
 	_new->class_pointer = class;
 	class->ctor(_new, args);
@@ -29,7 +22,7 @@ object TONIGHT newInstance(const Class class, ...){
 extern void TONIGHT construct(const Class class, ...){
 	va_list args;
 	va_start(args, class);
-	class->ctor(this, args);
+	class->ctor(This, args);
 	va_end(args);
 }
 
@@ -38,7 +31,8 @@ void TONIGHT deleteInstance(object self){
     if(!self->class_pointer) return;
     if(self->class_pointer->dtor) self->class_pointer->dtor(self);
     self->class_pointer = NULL;
-	Memory.free((pointer)self - sizeof(struct objectAdditionalData));
+	Memory.free(self->data);
+	Memory.free(self);
 }
 
 void TONIGHT destruct(const Class class){
@@ -62,15 +56,14 @@ INLINE size_t TONIGHT sizeOf(const object obj){
 }
 
 INLINE object TONIGHT copy(const object obj){
-	return $(obj $as Object).copy();
+	return $(obj $as Object)->copy();
 }
 
 bool TONIGHT compare(const object a, const object b){
-	return $(a $as Object).equal(b);
+	return $(a $as Object)->equal(b);
 }
 
 /* Object class */
-
 static bool Object_equal(const object obj){
 	return this == obj ? true : false;
 }
@@ -92,25 +85,33 @@ static wstring Object_toWideString(void){
 
 static fixString Object_toFixString(void){
 	fixString ret;
-    memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
+	string str = $(this $as Object)->toString();
+    memcpy(ret.Text, str, sizeof ret);
+    String.free(str);
     return ret;
 }
 
 static longFixString Object_toLongFixString(void){
 	longFixString ret;
-    memcpy(ret.Text, $(this $as Object).toString(), sizeof ret);
-	return ret;
+    string str = $(this $as Object)->toString();
+    memcpy(ret.Text, str, sizeof ret);
+    String.free(str);
+    return ret;
 }
 
 static fixWideString Object_toFixWideString(void){
 	fixWideString ret;
-    memcpy(ret.Text, $(this $as Object).toWideString(), sizeof ret);
+    wstring wstr = $(this $as Object)->toWideString();
+    memcpy(ret.Text, wstr, sizeof ret);
+    WideString.free(wstr);
     return ret;
 }
 
 static longFixWideString Object_toLongFixWideString(void){
 	longFixWideString ret;
-    memcpy(ret.Text, $(this $as Object).toWideString(), sizeof ret);
+    wstring wstr = $(this $as Object)->toWideString();
+    memcpy(ret.Text, wstr, sizeof ret);
+    WideString.free(wstr);
 	return ret;
 }
 
@@ -128,7 +129,7 @@ static IObject Object_vtble = {
 static bool IObject_equal(object obj){
 	bool ret = $Empty(bool);
 	Method(Object){
-        ret = getInterface(Object).equal(obj);
+        ret = getInterface(Object)->equal(obj);
 	}
 	return ret;
 }
@@ -136,7 +137,7 @@ static bool IObject_equal(object obj){
 static object IObject_clone(void){
 	object ret = $Empty(object);
 	Method(Object){
-        ret = getInterface(Object).copy();
+        ret = getInterface(Object)->copy();
 	}
 	return ret;
 }
@@ -144,7 +145,7 @@ static object IObject_clone(void){
 static string IObject_toString(void){
 	string ret = $Empty(string);
     Method(Object){
-        ret = getInterface(Object).toString();
+        ret = getInterface(Object)->toString();
 	}
     return ret;
 }
@@ -152,7 +153,7 @@ static string IObject_toString(void){
 static wstring IObject_toWideString(void){
 	wstring ret = $Empty(wstring);
     Method(Object){
-        ret = getInterface(Object).toWideString();
+        ret = getInterface(Object)->toWideString();
 	}
     return ret;
 }
@@ -160,7 +161,7 @@ static wstring IObject_toWideString(void){
 static fixString IObject_toFixString(void){
 	fixString ret = $Empty(fixString);
 	Method(Object){
-        ret = getInterface(Object).toFixString();
+        ret = getInterface(Object)->toFixString();
 	}
     return ret;
 }
@@ -168,7 +169,7 @@ static fixString IObject_toFixString(void){
 static longFixString IObject_toLongFixString(void){
 	longFixString ret = $Empty(longFixString);
 	Method(Object){
-        ret = getInterface(Object).toLongFixString();
+        ret = getInterface(Object)->toLongFixString();
 	}
 	return ret;
 }
@@ -176,7 +177,7 @@ static longFixString IObject_toLongFixString(void){
 static fixWideString IObject_toFixWideString(void){
 	fixWideString ret = $Empty(fixWideString);
 	Method(Object){
-        ret = getInterface(Object).toFixWideString();
+        ret = getInterface(Object)->toFixWideString();
 	}
     return ret;
 }
@@ -184,7 +185,7 @@ static fixWideString IObject_toFixWideString(void){
 static longFixWideString IObject_toLongFixWideString(void){
 	longFixWideString ret = $Empty(longFixWideString);
 	Method(Object){
-        ret = getInterface(Object).toLongFixWideString();
+        ret = getInterface(Object)->toLongFixWideString();
 	}
 	return ret;
 }
@@ -207,37 +208,7 @@ static void new_Object(pointer args){
 static void del_Object(void){
 }
 
-INLINE IObject ___Object_select___(object obj){
-	setCurrentObject(obj);
-	return *___Object___.implement.__interface;
-}
+static Constructor(Object, new_Object);
+static Destructor(Object, del_Object);
 
-static void Object_ctor(object obj, pointer args){
-	setCurrentObject(obj);
-	Method(Object){
-        new_Object(args);
-	}
-}
-
-static void Object_dtor(object obj){
-	setCurrentObject(obj);
-	Method(Object){
-        del_Object();
-	}
-}
-
-const struct Interface_Object ___Object___ = {
-	._ = (const struct str_Class){
-		.name = "Object",
-		.super = NULL,
-		.size = sizeof(Class_Object),
-		.ctor = Object_ctor,
-		.dtor = Object_dtor
-	},
-	.__class__ = (Class)&Object,
-	.implement = (const Class_Object){
-		.__interface = &iObject
-	}
-};
-
-const Class Object = (const Class)&___Object___;
+___def_base___(Object, IObject, iObject);

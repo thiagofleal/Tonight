@@ -1,9 +1,14 @@
 #include "../include/tonight.h"
 #include "../include/Tonight/exceptions.h"
+#include "../include/Tonight/memory.h"
 #include "../include/Tonight/stream.h"
 
 INLINE IStream* getIStream(pointer obj){
-    return *(IStream**)(obj - sizeof(IStream*));
+    return Memory.getHeader(obj, (const pointer)&Stream);
+}
+
+INLINE void setIStream(pointer obj, IStream *str){
+    Memory.addHeader(obj, (const pointer)&Stream, str);
 }
 
 static INLINE int Stream_scan(pointer obj, const string frmt, pointer args){

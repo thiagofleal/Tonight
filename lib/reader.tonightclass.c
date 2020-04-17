@@ -82,7 +82,7 @@ static void Reader_destructor(void){
 static int IReader_nextChar(void){
     int ret = $Empty(int);
     Method(Reader){
-        ret = getInterface(Reader).nextChar();
+        ret = getInterface(Reader)->nextChar();
     }
     return ret;
 }
@@ -90,7 +90,7 @@ static int IReader_nextChar(void){
 static int IReader_nextInt(void){
     int ret = $Empty(int);
     Method(Reader){
-        ret = getInterface(Reader).nextInt();
+        ret = getInterface(Reader)->nextInt();
     }
     return ret;
 }
@@ -98,7 +98,7 @@ static int IReader_nextInt(void){
 static float IReader_nextFloat(void){
     float ret = $Empty(float);
     Method(Reader){
-        ret = getInterface(Reader).nextFloat();
+        ret = getInterface(Reader)->nextFloat();
     }
     return ret;
 }
@@ -106,7 +106,7 @@ static float IReader_nextFloat(void){
 static double IReader_nextDouble(void){
     double ret = $Empty(double);
     Method(Reader){
-        ret = getInterface(Reader).nextDouble();
+        ret = getInterface(Reader)->nextDouble();
     }
     return ret;
 }
@@ -114,7 +114,7 @@ static double IReader_nextDouble(void){
 static pointer IReader_next(void){
     pointer ret = NULL;
     Method(Reader){
-        ret = getInterface(Reader).next();
+        ret = getInterface(Reader)->next();
     }
     return ret;
 }
@@ -122,7 +122,7 @@ static pointer IReader_next(void){
 static pointer IReader_nextLine(void){
     pointer ret = NULL;
     Method(Reader){
-        ret = getInterface(Reader).nextLine();
+        ret = getInterface(Reader)->nextLine();
     }
     return ret;
 }

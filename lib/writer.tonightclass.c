@@ -96,43 +96,43 @@ static void Writer_destructor(void){
 
 static void IWriter_text(pointer txt){
     Method(Writer){
-        getInterface(Writer).text(txt);
+        getInterface(Writer)->text(txt);
     }
 }
 
 static void IWriter_textln(pointer txt){
     Method(Writer){
-        getInterface(Writer).textln(txt);
+        getInterface(Writer)->textln(txt);
     }
 }
 
 static void IWriter_print(pointer txt, ...){
     Method(Writer){
-        getInterface(Writer).print(&txt);
+        getInterface(Writer)->print(&txt);
     }
 }
 
 static void IWriter_println(pointer txt, ...){
     Method(Writer){
-        getInterface(Writer).println(&txt);
+        getInterface(Writer)->println(&txt);
     }
 }
 
 static void IWriter_printargln(pointer txt, ...){
     Method(Writer){
-        getInterface(Writer).printargln(&txt);
+        getInterface(Writer)->printargln(&txt);
     }
 }
 
 static void IWriter_newLine(void){
     Method(Writer){
-        getInterface(Writer).newLine();
+        getInterface(Writer)->newLine();
     }
 }
 
 static void IWriter_addLines(int qtd){
     Method(Writer){
-        getInterface(Writer).addLines(qtd);
+        getInterface(Writer)->addLines(qtd);
     }
 }
 
