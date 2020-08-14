@@ -11,12 +11,10 @@
     }TestData;
 
     typedef struct TestResultItem {
+        TestData data;
         bool success;
         Exception except;
-        TestData data;
     }TestResultItem;
-
-#   define TestData(func, arg)  ((TestData){func,arg})
 
     typedef struct TestResult {
         TestResultItem *results;
@@ -44,7 +42,13 @@
         void (* assertNotNullMessage)(pointer, string);
         void (* assertErrorMessage)(int, string);
         void (* assertExceptionMessage)(P_void, EXCEPTION, string);
-        TestResult (* run)(pointer);
+        void (* start)(void);
+        void (* run)(P_void);
+        void (* runWith)(P_void, pointer);
+        void (* runWithCollection)(P_void, pointer);
+        TestResult (* finalize)(void);
+        TestResult (* getResult)(void);
+        void (* freeResult)(void);
     }Test;
 
     extern const struct __Check {

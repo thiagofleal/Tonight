@@ -100,14 +100,17 @@
         EXCEPTION (* type)(Exception);
         pointer (* data)(Exception);
         pointer (* info)(Exception);
+        Exception (* copy)(Exception);
         bool (* isType)(Exception, EXCEPTION);
         void (* throwException)(Exception);
+        void (* free)(Exception);
     }ExceptionManager;
 
     extern const struct CurrentException{
         Exception (* get)(void);
         string (* error)(void);
         string (* message)(void);
+        Exception (* copy)(void);
         EXCEPTION (* type)(void);
         pointer (* data)(void);
         pointer (* info)(void);
@@ -118,6 +121,7 @@
         string (* error)(void);
         string (* message)(void);
         EXCEPTION (* type)(void);
+        Exception (* copy)(void);
         pointer (* data)(void);
         pointer (* info)(void);
         void (* throwAgain)(void);

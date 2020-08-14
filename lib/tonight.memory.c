@@ -76,11 +76,6 @@ static INLINE size_t TONIGHT __memory_size(pointer mem){
 	return ((MemoryData*)(mem - sizeof(MemoryData)))->size;
 }
 
-static INLINE pointer TONIGHT __memory_copy(pointer mem) {
-	register size_t size = __memory_size(mem);
-	return memcpy(__new_memory(size), mem, size);
-}
-
 static INLINE void TONIGHT __memory_free(pointer mem){
 	if(mem){
         MemoryData *md = mem - sizeof(MemoryData);
@@ -95,6 +90,17 @@ static void __memory_addHeader(pointer mem, pointer head, pointer value){
         md->headers = p_realloc(md->headers, (md->count + 1) * sizeof(mheader_t));
         md->headers[md->count ++] = (mheader_t){head, value};
 	}
+}
+
+static pointer TONIGHT __memory_copy(pointer mem) {
+	register size_t size = __memory_size(mem);
+	register int i;
+	pointer cp = __new_memory(size);
+	MemoryData *d = mem - sizeof(MemoryData);
+	memcpy(cp, mem, size);
+	for(i = 0; i < d->count; i++)
+        __memory_addHeader(cp, d->headers[i].type, d->headers[i].value);
+	return cp;
 }
 
 static void __memory_removeHeader(pointer mem, pointer head){

@@ -47,13 +47,14 @@
 
 #	define NORMAL
 
-#	define SELECT(_ind, values...)	((int[]){values})[_ind]
+#	define SELECT(_ind, values...)	((int)((pointer[]){values})[_ind])
 
-#	define DOWN_10	10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0
-#	define DOWN_20	20, 19, 18, 17, 16, 15, 14, 13, 12, 11, DOWN_10
-#	define DOWN_30	30, 29, 28, 27, 26, 25, 24, 23, 22, 21, DOWN_20
-#	define DOWN_40	40, 39, 38, 37, 36, 35, 34, 33, 32, 31, DOWN_30
-#	define DOWN_50	50, 49, 48, 47, 46, 45, 44, 43, 42, 41, DOWN_40
+#   define _P_(arg) (pointer)arg
+#	define DOWN_10	_P_(10), _P_( 9), _P_( 8), _P_( 7), _P_( 6), _P_( 5), _P_( 4), _P_( 3), _P_( 2), _P_( 1), 0
+#	define DOWN_20	_P_(20), _P_(19), _P_(18), _P_(17), _P_(16), _P_(15), _P_(14), _P_(13), _P_(12), _P_(11), DOWN_10
+#	define DOWN_30	_P_(30), _P_(29), _P_(28), _P_(27), _P_(26), _P_(25), _P_(24), _P_(23), _P_(22), _P_(21), DOWN_20
+#	define DOWN_40	_P_(40), _P_(39), _P_(38), _P_(37), _P_(36), _P_(35), _P_(34), _P_(33), _P_(32), _P_(31), DOWN_30
+#	define DOWN_50	_P_(50), _P_(49), _P_(48), _P_(47), _P_(46), _P_(45), _P_(44), _P_(43), _P_(42), _P_(41), DOWN_40
 
 #	define COUNT(arg, args...)          SELECT(50 + arg, args, DOWN_50)
 
@@ -155,6 +156,7 @@
                                             setCurrentObject(instance);\
                                             return &__##_Class_##_data;\
                                         };
+#define function(ret, body)   (ret(*)())({ret __f__ body __f__;})
 
 #ifndef FIX_LENGTH
 #   define FIX_LENGTH 100
