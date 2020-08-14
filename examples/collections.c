@@ -23,7 +23,7 @@ int Main(string ARRAY args)
         /* Get the application arguments */
         foreach(s $in args)
         {
-            $(w $as Writer).println("Argument: ", s, $end);
+            $(w $as Writer)->println("Argument: ", s, $end);
         }
 
         /* Array */
@@ -39,7 +39,7 @@ int Main(string ARRAY args)
             /* Get string from array */
             using(s $as Array.toString(intArr, ", ", ips) $with String.free)
             {
-                $(w $as Writer).println("Array: [", s, "]", $end);
+                $(w $as Writer)->println("Array: [", s, "]", $end);
             }
         }
 
@@ -50,32 +50,32 @@ int Main(string ARRAY args)
 
             for(i = 0; i < 10; i++)
             {
-                $(intList $as List).add(InstanceOf.Int(i));
+                $(intList $as List)->add(InstanceOf.Int(i));
             }
 
-            $(intList $as List).setFreeCallBack(Memory.free);
-            $(intList $as List).setStringMethod(ips);
+            $(intList $as List)->setFreeCallBack(Memory.free);
+            $(intList $as List)->setStringMethod(ips);
 
             /* Get string from list */
-            using(s $as $(intList $as List).toString(", ") $with String.free)
+            using(s $as $(intList $as List)->toString(", ") $with String.free)
             {
-                $(w $as Writer).println("List: [", s, "]", $end);
+                $(w $as Writer)->println("List: [", s, "]", $end);
             }
         }
 
         /* Map */
         using(map $as new(Map) $with delete)
         {
-            $(map $as Map).setFreeCallBack(Memory.free);
+            $(map $as Map)->setFreeCallBack(Memory.free);
 
-            $(map $as Map).set("first", InstanceOf.Double(1.2));
-            $(map $as Map).set("second", InstanceOf.Double(3.4));
-            $(map $as Map).set("third", InstanceOf.Double(5.6));
-            $(map $as Map).set("fourth", InstanceOf.Double(7.89));
+            $(map $as Map)->set("first", InstanceOf.Double(1.2));
+            $(map $as Map)->set("second", InstanceOf.Double(3.4));
+            $(map $as Map)->set("third", InstanceOf.Double(5.6));
+            $(map $as Map)->set("fourth", InstanceOf.Double(7.89));
 
             foreachkey(s $in map)
             {
-                $(w $as Writer).println("key: ", s, " => value: ", $dp($(map $as Map).get(s)), $end);
+                $(w $as Writer)->println("key: ", s, " => value: ", $dp($(map $as Map)->get(s)), $end);
             }
         }
     }
