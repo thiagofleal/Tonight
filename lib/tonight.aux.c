@@ -15,7 +15,7 @@ struct Stack{
 	pointer prev;
 }*stack = NULL, *stack_with = NULL;
 
-void __create_using_context(size_t size, pointer point){
+bool __create_using_context(size_t size, pointer point){
 	struct Stack *_new = Memory.alloc(sizeof(struct Stack));
 	_new->current = Memory.alloc(size);
 	memcpy(_new->current, point, size);
@@ -23,6 +23,7 @@ void __create_using_context(size_t size, pointer point){
 	_new->size = size;
 	_new->prev = stack;
 	stack = _new;
+	return true;
 }
 
 bool __function_using(pointer point, P_void destroy){
@@ -44,13 +45,14 @@ bool __function_using(pointer point, P_void destroy){
 /*
 *   with
 */
-void __create_with_context(pointer point){
+bool __create_with_context(pointer point){
 	struct Stack *_new = Memory.alloc(sizeof(struct Stack));
 	_new->current = point;
 	_new->ret = true;
 	_new->size = sizeof(pointer);
 	_new->prev = stack_with;
 	stack_with = _new;
+	return true;
 }
 
 bool __function_with(void){

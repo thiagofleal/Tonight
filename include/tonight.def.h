@@ -70,13 +70,13 @@
 #   define fourth(a, b, c, d, e...)     d
 #   define fifth(a, b, c, d, e, f...)   e
 
-#	define	__using__(var, args...)         __create_using_context(sizeof var, &var);\
-											var = first(args);\
-											while(__function_using(&var, second(args, NULL)))
+#	define	__using__(var, args...)         if(__create_using_context(sizeof var, &var))\
+                                                if((var = first(args))||1)\
+                                                    while(__function_using(&var, second(args, NULL)))
 #	define Using(_arg_)						__using__(_arg_)
 
-#	define	With(var)	__create_with_context(var);\
-                        while(__function_with())
+#	define	With(var)	if(__create_with_context(var))\
+                            while(__function_with())
 
 #	define __DefineCast__(_cast, typeFrom, typeTo, _arg...)	static void _cast##_##cast\
 															(pointer from, pointer to){\
