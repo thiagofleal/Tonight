@@ -46,12 +46,9 @@ static int TONIGHT TonightModeDefault(register int argc, string argv[]){
 	P_int func = Main;
 	__Base_TonightMode(argc, argv);
 	try
-		if(func)
-			return func(__args);
-		else
-			return EXIT_FAILURE;
-	catch(GenericException);
-    return EXIT_FAILURE;
+		return func(__args);
+	catch(GenericException)
+        return EXIT_FAILURE;
 }
 
 static int TONIGHT TonightModeLoop(register int argc, string argv[]){

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <wchar.h>
+#include <stdarg.h>
 
 #ifdef WIN32
 #   define IStream __temp_IStream__
@@ -14,7 +16,6 @@
 #	include <dlfcn.h>
 #	include <sys/select.h>
 #	include <sys/ioctl.h>
-#	include <stropts.h>
 #endif
 
 #include "../include/tonight.h"
@@ -56,25 +57,17 @@ static IStream console_wstream = {
 };
 
 static pointer Console_getStream(void){
-    static struct {
-        IStream *stream;
-        pointer null;
-    } ret = {
-        .stream = &console_stream,
-        .null = NULL
-    };
-    return &ret.null;
+    static pointer p = NULL;
+    if(!p) p = Memory.alloc(1);
+    setIStream(p, &console_stream);
+    return p;
 }
 
 static pointer Console_getWideStream(void){
-    static struct {
-        IStream *stream;
-        pointer null;
-    } ret = {
-        .stream = &console_wstream,
-        .null = NULL
-    };
-    return &ret.null;
+    static pointer p = NULL;
+    if(!p) p = Memory.alloc(1);
+    setIStream(p, &console_wstream);
+    return p;
 }
 
 static INLINE void Console_clearScreen(void){
@@ -118,6 +111,7 @@ static int Console_getKey(void){
         result = 256 + inrec.Event.KeyEvent.wVirtualKeyCode;
     return result;
 #else
+    register int i, c;
     struct termios oldattr, newattr;
     tcgetattr(stdin->_fileno, &oldattr);
     newattr = oldattr;

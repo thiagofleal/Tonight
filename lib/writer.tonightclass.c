@@ -3,62 +3,58 @@
 #include "../include/Tonight/string.h"
 #include "../include/Tonight/writer.h"
 
-static inline void write_text(pointer stream, pointer txt){
-    struct{
-        string arg1;
-    }args = {
-        txt
-    };
-    Stream.print(stream, "%s", &args);
-}
+typedef struct{
+    pointer first;
+    pointer list;
+}print_args;
 
-static inline void write_textln(pointer stream, pointer txt){
-    struct{
-        string arg1;
-    }args = {
-        txt
-    };
-    Stream.print(stream, "%s\n", &args);
+static inline void write_text(pointer stream, ...){
+    va_list list;
+    va_start(list, stream);
+    Stream.print(stream, "%s%s", list);
+    va_end(list);
 }
 
 static void Writer_text(pointer txt){
     pointer stream = $$(this $as Writer).stream;
-    write_text(stream, txt);
+    write_text(stream, txt, "");
 }
 
 static void Writer_textln(pointer txt){
     pointer stream = $$(this $as Writer).stream;
-    write_textln(stream, txt);
+    write_text(stream, txt, "\n");
 }
 
-extern int printf(const string, ...);
-
-static void write_print(pointer stream, va_list list, string endline, string endcmd){
-    register int count = 0;
+static void write_print(pointer stream, pointer first, va_list list, string endline, string endcmd){
     fixString frmt = FixString.empty;
-    pointer p = list;
-    while(va_arg(list, pointer)) ++count;
-    while(count--){
+    va_list p;
+    va_copy(p, list);
+    while(va_arg(list, pointer)){
         frmt = FixString.append(frmt, "%s");
         frmt = FixString.append(frmt, endline);
     }
     frmt = FixString.append(frmt, endcmd);
+    write_text(stream, first, endline);
     Stream.print(stream, (const string)getText(frmt), p);
+    va_end(p);
 }
 
-static void Writer_print(va_list list){
+static void Writer_print(pointer pArgs){
+    print_args *args = pArgs;
     pointer stream = $$(this $as Writer).stream;
-    write_print(stream, list, "", "");
+    write_print(stream, args->first, args->list, "", "");
 }
 
-static void Writer_println(va_list list){
+static void Writer_println(pointer pArgs){
+    print_args *args = pArgs;
     pointer stream = $$(this $as Writer).stream;
-    write_print(stream, list, "", "\n");
+    write_print(stream, args->first, args->list, "", "\n");
 }
 
-static void Writer_printargln(va_list list){
+static void Writer_printargln(pointer pArgs){
+    print_args *args = pArgs;
     pointer stream = $$(this $as Writer).stream;
-    write_print(stream, list, "\n", "");
+    write_print(stream, args->first, args->list, "\n", "");
 }
 
 static void Writer_newLine(void){
@@ -81,12 +77,9 @@ static IWriter Writer_vtble = {
     .addLines = Writer_addLines
 };
 
-static void Writer_constructor(pointer args){
-    $va_set(args, {
-        pointer stream;
-    });
+static void Writer_constructor(va_list args){
     construct(superOf(Writer));
-    $$(this $as Writer).stream = $va_get.stream;
+    $$(this $as Writer).stream = va_arg(args, pointer);
     setInterface(Writer, Writer_vtble);
 }
 
@@ -96,43 +89,64 @@ static void Writer_destructor(void){
 
 static void IWriter_text(pointer txt){
     Method(Writer){
-        getInterface(Writer).text(txt);
+        getInterface(Writer)->text(txt);
     }
 }
 
 static void IWriter_textln(pointer txt){
     Method(Writer){
-        getInterface(Writer).textln(txt);
+        getInterface(Writer)->textln(txt);
     }
 }
 
 static void IWriter_print(pointer txt, ...){
     Method(Writer){
-        getInterface(Writer).print(&txt);
+        va_list list;
+        print_args args = {
+            .first = txt,
+            .list = list
+        };
+        va_start(list, txt);
+        getInterface(Writer)->print(&args);
+        va_end(list);
     }
 }
 
 static void IWriter_println(pointer txt, ...){
     Method(Writer){
-        getInterface(Writer).println(&txt);
+        va_list list;
+        print_args args = {
+            .first = txt,
+            .list = list
+        };
+        va_start(list, txt);
+        getInterface(Writer)->println(&args);
+        va_end(list);
     }
 }
 
 static void IWriter_printargln(pointer txt, ...){
     Method(Writer){
-        getInterface(Writer).printargln(&txt);
+        va_list list;
+        print_args args = {
+            .first = txt,
+            .list = list
+        };
+        va_start(list, txt);
+        getInterface(Writer)->printargln(&args);
+        va_end(list);
     }
 }
 
 static void IWriter_newLine(void){
     Method(Writer){
-        getInterface(Writer).newLine();
+        getInterface(Writer)->newLine();
     }
 }
 
 static void IWriter_addLines(int qtd){
     Method(Writer){
-        getInterface(Writer).addLines(qtd);
+        getInterface(Writer)->addLines(qtd);
     }
 }
 

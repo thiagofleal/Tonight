@@ -5,10 +5,15 @@
 		extern "C"{
 #	endif
 
+    typedef struct TestData {
+        P_void function;
+        pointer argument;
+    }TestData;
+
     typedef struct TestResultItem {
+        TestData data;
         bool success;
         Exception except;
-        pointer data;
     }TestResultItem;
 
     typedef struct TestResult {
@@ -37,8 +42,13 @@
         void (* assertNotNullMessage)(pointer, string);
         void (* assertErrorMessage)(int, string);
         void (* assertExceptionMessage)(P_void, EXCEPTION, string);
-        TestResult (* run)(P_void);
-        TestResult (* runWithArguments)(P_void, pointer);
+        void (* start)(void);
+        void (* run)(P_void);
+        void (* runWith)(P_void, pointer);
+        void (* runWithCollection)(P_void, pointer);
+        TestResult (* finalize)(void);
+        TestResult (* getResult)(void);
+        void (* freeResult)(void);
     }Test;
 
     extern const struct __Check {

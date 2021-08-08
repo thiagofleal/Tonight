@@ -7,6 +7,16 @@
 
 Define_Exception(MapException $as "Map exception" $extends GenericException);
 
+struct map_item {
+    pointer value;
+    string index;
+};
+
+struct map_node {
+    struct map_item item;
+    struct map_node *next;
+};
+
 static pointer iterator(struct map_node *node){
 	struct map_node *i;
 	for(i = node; i->next; i = i->next);
@@ -114,7 +124,7 @@ static pointer Map_get(string index){
     return NULL;
 }
 
-static unsigned int Map_size(void){
+static size_t Map_size(void){
     return $$(this $as Map).size;
 }
 
@@ -165,7 +175,7 @@ static void Map_constructor(pointer args){
 	$$(this $as Map).list = NULL;
 	$$(this $as Map).size = 0;
 	setInterface(Map, Map_vtble);
-	$(this $as Set).setCollection(Map_collection);
+	$(this $as Set)->setCollection(Map_collection);
 	Map_ICollection_reset(this);
 }
 
@@ -179,14 +189,14 @@ static void Map_destructor(void){
 
 static void IMap_set(string index, pointer value){
     Method(Map){
-        getInterface(Map).set(index, value);
+        getInterface(Map)->set(index, value);
     }
 }
 
 static pointer IMap_get(string index){
     pointer ret = $Empty(pointer);
     Method(Map){
-        ret = getInterface(Map).get(index);
+        ret = getInterface(Map)->get(index);
     }
     return ret;
 }
@@ -194,28 +204,28 @@ static pointer IMap_get(string index){
 static bool IMap_isset(string index){
     bool ret = $Empty(bool);
     Method(Map){
-        ret = getInterface(Map).isset(index);
+        ret = getInterface(Map)->isset(index);
     }
     return ret;
 }
 
 static void IMap_unset(string index){
     Method(Map){
-        getInterface(Map).unset(index);
+        getInterface(Map)->unset(index);
     }
 }
 
-static unsigned int IMap_size(void){
-    unsigned int ret = $Empty(unsigned int);
+static size_t IMap_size(void){
+    size_t ret = $Empty(unsigned int);
     Method(Map){
-        ret = getInterface(Map).size();
+        ret = getInterface(Map)->size();
     }
     return ret;
 }
 
 static void IMap_setFreeCallBack(MapItemFreeCallBack callback){
     Method(Map){
-        getInterface(Map).setFreeCallBack(callback);
+        getInterface(Map)->setFreeCallBack(callback);
     }
 }
 

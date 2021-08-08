@@ -12,9 +12,7 @@ typedef struct{
 	size_t length;
 	size_t size;
 	int current;
-	ICollection *collection;
-	byte data[0];
-}ArrayData;
+}ArrayHeader;
 
 static NORMAL pointer TONIGHT alloc_array(size_t, size_t);
 static INLINE char* TONIGHT __new_array_char(size_t);
@@ -29,8 +27,12 @@ static INLINE pointer* TONIGHT __new_array_pointer(size_t);
 static INLINE pointer TONIGHT __new_array_generic(size_t, size_t);
 
 /* Functions to Array */
-static INLINE ArrayData* getArrayData(pointer array){
-	return array - sizeof(ArrayData);
+static INLINE ArrayHeader* getArrayData(pointer array){
+    return Memory.getHeader(array, (const pointer)&Array);
+}
+
+static INLINE void setArrayData(pointer array, ArrayHeader* data){
+    Memory.addHeader(array, (const pointer)&Array, data);
 }
 
 static INLINE size_t TONIGHT Array_length(pointer array){
@@ -48,7 +50,10 @@ static INLINE pointer TONIGHT Array_access(pointer array, int index){
 }
 
 static INLINE void TONIGHT Array_free(pointer array){
-	if(array) Memory.Callback.free(array - sizeof(ArrayData));
+	if(array){
+        Memory.free(Memory.getHeader(array, (const pointer)&Array));
+        Memory.free(array);
+	}
 }
 
 static string TONIGHT Array_toString(pointer array, string sep, P_fixString method){
@@ -138,7 +143,6 @@ static INLINE void Array_reset(pointer array){
     getArrayData(array)->current = -1;
 }
 
-/* Initialize arrays */
 static ICollection __Array_collection = {
 	.currentValue = Array_currentValue,
 	.currentKey = Array_currentKey,
@@ -146,15 +150,18 @@ static ICollection __Array_collection = {
 	.reset = Array_reset
 };
 
+/* Initialize arrays */
 static pointer TONIGHT alloc_array(size_t size, size_t lenght){
-	ArrayData *p = Memory.Callback.malloc(sizeof(ArrayData) + size * lenght);
-	if(!p)
+	pointer p = Memory.alloc(size * lenght);
+	ArrayHeader *h = Memory.alloc(sizeof(ArrayHeader));
+	if(!p || !h)
 		throw(MemoryAllocException, strerror(errno));
-	p->length = lenght;
-	p->size = size;
-	p->collection = &__Array_collection;
-	Array_reset(p->data);
-	return p->data;
+	h->length = lenght;
+	h->size = size;
+	setICollection(p, &__Array_collection);
+	setArrayData(p, h);
+	Array_reset(p);
+	return p;
 }
 
 pointer TONIGHT NO_CALL __create_array(size_t size, size_t length, pointer array){
@@ -281,7 +288,6 @@ static INLINE void TONIGHT Array_select_forEach(pointer function){
     Array_forEach(getCurrentObject(), function);
 }
 
-/* ___Array_select___ */
 $_interface(Array, {
 	.length = Array_select_length,
 	.size = Array_select_size,

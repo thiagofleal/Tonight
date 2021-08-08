@@ -1,6 +1,8 @@
 #include <stdlib.h>
 
 #include "../include/tonight.h"
+#include "../include/Tonight/memory.h"
+#include "../include/Tonight/string.h"
 #include "../include/Tonight/exceptions.h"
 
 typedef struct __struct_exception{
@@ -198,6 +200,22 @@ static INLINE pointer TONIGHT ExceptionInfo(Exception exc){
 	return exc->info;
 }
 
+static TONIGHT Exception ExceptionCopy(Exception exc){
+    Exception e = Memory.copy(exc);
+    e->data = InstanceOf.Pointer(exc->data);
+    e->exception = exc->exception;
+    e->info = InstanceOf.Pointer(exc->info);
+    e->message = String.copy(exc->message);
+    return e;
+}
+
+static TONIGHT void ExceptionFree(Exception exc){
+    String.free(exc->message);
+    Memory.free(exc->data);
+    Memory.free(exc->info);
+    Memory.free(exc);
+}
+
 static bool TONIGHT ExceptionIsType(Exception exc, EXCEPTION type){
     EXCEPTION *_e = &exc->exception;
     while(_e){
@@ -217,8 +235,10 @@ const struct ExceptionManager ExceptionManager = {
     .type = ExceptionType,
     .data = ExceptionData,
     .info = ExceptionInfo,
+    .copy = ExceptionCopy,
     .isType = ExceptionIsType,
-    .throwException = ThrowException
+    .throwException = ThrowException,
+    .free = ExceptionFree
 };
 
 static Exception TONIGHT CurrentException_get(void){
@@ -245,6 +265,10 @@ static INLINE pointer TONIGHT CurrentException_ExceptionInfo(void){
 	return except.value->info;
 }
 
+static INLINE Exception TONIGHT CurrentException_ExceptionCopy(void){
+	return ExceptionCopy(except.value);
+}
+
 static INLINE void TONIGHT CurrentException_ThrowAgain(void){
     throw(except.value->exception, except.value->message);
 }
@@ -256,6 +280,7 @@ const struct CurrentException CurrentException = {
     .type = CurrentException_ExceptionType,
     .data = CurrentException_ExceptionData,
     .info = CurrentException_ExceptionInfo,
+    .copy = CurrentException_ExceptionCopy,
     .throwAgain = CurrentException_ThrowAgain
 };
 
@@ -279,6 +304,10 @@ static INLINE pointer TONIGHT Exception_info(void){
     return ExceptionInfo(getCurrentObject());
 }
 
+static INLINE Exception TONIGHT Exception_copy(void){
+    return ExceptionCopy(getCurrentObject());
+}
+
 static INLINE void TONIGHT Exception_throwAgain(void){
     ThrowException(getCurrentObject());
 }
@@ -289,5 +318,6 @@ $_interface(Exception, {
     .type = Exception_type,
     .data = Exception_data,
     .info = Exception_info,
+    .copy = Exception_copy,
     .throwAgain = Exception_throwAgain
 });

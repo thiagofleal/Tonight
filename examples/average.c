@@ -19,20 +19,27 @@ int Main(string ARRAY args)
             {
                 double n1, n2, average;
 
-                $(w $as Writer).text("Input the first value: ");
-                n1 = $(r $as Reader).nextDouble();
-                $(w $as Writer).text("Input the second value: ");
-                n2 = $(r $as Reader).nextDouble();
+                $(w $as Writer)->text("Input the first value: ");
+                n1 = $(r $as Reader)->nextDouble();
+                $(w $as Writer)->text("Input the second value: ");
+                n2 = $(r $as Reader)->nextDouble();
 
                 average = (n1 + n2) / 2.0;
 
-                $(w $as Writer).println("The average between ", $d(n1), " and ", $d(n2), " is ", $d(average), $end);
+                $(w $as Writer)->println("The average between ", $d(n1), " and ", $d(n2), " is ", $d(average), $end);
                 Console.getKey();
+            }
+            catch(InputException)
+            {
+                string s = $(r $as Reader)->nextLine();
+                $(w $as Writer)->println("Impossible to read a double from \"", s, "\"", $end);
+                String.free(s);
+                return Main(args);
             }
             catch(GenericException)
             {
-		$(w $as Writer).printargln(CurrentException.error(), CurrentException.message(), $end);
-		Console.getKey();
+                $(w $as Writer)->printargln(CurrentException.error(), CurrentException.message(), $end);
+                Console.getKey();
             }
         }
     }

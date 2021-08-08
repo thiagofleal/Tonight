@@ -43,8 +43,12 @@ static void TONIGHT Test_assertExceptionMessage(P_void func, EXCEPTION expect, s
     Try{
         func();
     }Catch(GenericException){
-        if(!ExceptionManager.isType(CurrentException.get(), expect)) Throw(AssertException, message);
+        bool test = ExceptionManager.isType(CurrentException.get(), expect);
+        Test_assertMessage(test, message);
+    }Finally{
+        return;
     }
+    Throw(AssertException, message);
 }
 
 static INLINE void TONIGHT Test_assertException(P_void func, EXCEPTION expect){
@@ -55,66 +59,97 @@ static INLINE TestResultItem* array_TestResultItem(size_t length){
     return Array.Generic(sizeof(TestResultItem), length);
 }
 
-static void init_TestResult(TestResult *res, size_t length){
-    res->results = array_TestResultItem(length);
-    res->count.except = 0;
-    res->count.failed = 0;
-    res->count.success = 0;
-    res->count.tests = length;
-    res->statistic.success = 0.0;
-    res->statistic.failed = 0.0;
-    res->statistic.except = 0.0;
+static TestResult res;
+
+struct list_tests {
+    TestResultItem test;
+    struct list_tests *next;
+}*list = NULL, **end_list = &list;
+
+static void list_push(TestResultItem value){
+    *end_list = Memory.alloc(sizeof(struct list_tests));
+    (*end_list)->test = value;
+    (*end_list)->next = NULL;
+    end_list = &(*end_list)->next;
 }
 
-static TestResult TONIGHT Test_run(P_void func){
-    TestResult ret;
-    Check.pointer(func);
-    init_TestResult(&ret, 1);
-    ret.results[0].data = NULL;
-    ret.results[0].except = NULL;
-    ret.results[0].success = true;
+static TestResultItem list_shift(void){
+    TestResultItem item = list->test;
+    struct list_tests *node = list;
+    list = list->next;
+    Memory.free(node);
+    return item;
+}
+
+static void Test_start(void){
+    res.results = NULL;
+    res.count.except = 0;
+    res.count.failed = 0;
+    res.count.success = 0;
+    res.count.tests = 0;
+    res.statistic.success = 0.0;
+    res.statistic.failed = 0.0;
+    res.statistic.except = 0.0;
+}
+
+static void TONIGHT Test_runWith(P_void func, pointer data){
+    bool success = false;
+    pointer except = NULL;
     Try{
-        func();
-        ret.count.success = 1;
-        ret.statistic.success = 1.0;
+        ++ res.count.tests;
+        func(data);
+        ++ res.count.success;
+        success = true;
     }Catch(TestException){
-        ret.count.failed = 1;
-        ret.statistic.failed = 1.0;
+        ++ res.count.failed;
     }Catch(GenericException){
-        ret.count.except = 1;
-        ret.statistic.except = 1.0;
+        ++ res.count.except;
     }Finally{
-        ret.results[0].except = CurrentException.get();
-        ret.results[0].success = false;
+        except = CurrentException.copy();
     }
-    return ret;
+    list_push((TestResultItem){
+        (TestData){
+            .function = func,
+            .argument = data
+        },
+        .success = success,
+        .except = except
+    });
 }
 
-static TestResult TONIGHT Test_runWithArguments(P_void func, pointer args){
-    TestResult ret;
-    size_t length = Array.length(args), i;
-    Check.pointer(func);
-    init_TestResult(&ret, length);
-    for(i = 0; i < length; i++){
-        ret.results[i].data = Array.access(args, i);
-        ret.results[i].except = NULL;
-        ret.results[i].success = true;
-        Try{
-            func(Array.access(args, i));
-            ++ ret.count.success;
-            ret.statistic.success += 1.0 / length;
-        }Catch(TestException){
-            ++ ret.count.failed;
-            ret.statistic.failed += 1.0 / length;
-        }Catch(GenericException){
-            ++ ret.count.except;
-            ret.statistic.except += 1.0 / length;
-        }Finally{
-            ret.results[i].except = CurrentException.get();
-            ret.results[i].success = false;
-        }
+static INLINE void TONIGHT Test_run(P_void func){
+    return Test_runWith(func, NULL);
+}
+
+static void TONIGHT Test_runWithCollection(P_void func, pointer args){
+    pointer arg;
+    foreach(arg $in args){
+        Test_runWith(func, arg);
     }
-    return ret;
+}
+
+static TestResult TONIGHT Test_finalize(void){
+    int i;
+    res.statistic.success = res.count.success / res.count.tests;
+    res.statistic.failed = res.count.failed / res.count.tests;
+    res.statistic.except = res.count.except / res.count.tests;
+    res.results = array_TestResultItem(res.count.tests);
+    foreachkey(i $in res.results){
+        res.results[i] = list_shift();
+    }
+    return res;
+}
+
+static INLINE TestResult TONIGHT Test_getResult(void){
+    return res;
+}
+
+static void TONIGHT Test_freeResult(void){
+    TestResultItem item;
+    foreach(item $in res.results){
+        ExceptionManager.free(item.except);
+    }
+    Array.free(res.results);
 }
 
 const struct __Test Test = {
@@ -128,8 +163,13 @@ const struct __Test Test = {
     .assertNotNullMessage = Test_assertNotNullMessage,
     .assertErrorMessage = Test_assertErrorMessage,
     .assertExceptionMessage = Test_assertExceptionMessage,
+    .start = Test_start,
     .run = Test_run,
-    .runWithArguments = Test_runWithArguments
+    .runWith = Test_runWith,
+    .runWithCollection = Test_runWithCollection,
+    .finalize = Test_finalize,
+    .getResult = Test_getResult,
+    .freeResult = Test_freeResult
 };
 
 static INLINE void TONIGHT Check_pointerMessage(pointer check, string message){

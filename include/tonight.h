@@ -26,10 +26,10 @@
 #	include "tonight.def.h"
 #	include "tonight.OO.h"
 
-    extern void TONIGHT NO_CALL __create_using_context(size_t, pointer);
+    extern bool TONIGHT NO_CALL __create_using_context(size_t, pointer);
     extern bool TONIGHT NO_CALL __function_using(pointer, P_void);
 
-    extern void TONIGHT NO_CALL __create_with_context(pointer);
+    extern bool TONIGHT NO_CALL __create_with_context(pointer);
     extern bool TONIGHT NO_CALL __function_with(void);
 
     extern void TONIGHT NO_CALL __create_this_context(const Class);

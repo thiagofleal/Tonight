@@ -25,9 +25,9 @@
 #   ifdef __Define_Class__
 #       undef __Define_Class__
 #   endif
-#	define __Define_Class__(_Class, _super, _int, _intVal)	INLINE _int ___##_Class##_select___(object obj){\
+#	define __Define_Class__(_Class, _super, _int, _intVal)	INLINE _int* ___##_Class##_select___(object obj){\
                                                                 setCurrentObject(obj);\
-                                                                return *___##_Class##___.implement.__interface;\
+                                                                return ___##_Class##___.implement.__interface;\
                                                             }\
                                                             static void _Class##_ctor(object obj, pointer args){\
                                                                 setCurrentObject(obj);\
@@ -55,6 +55,39 @@
                                                                 }\
                                                             };\
                                                             const Class _Class = (const Class)&___##_Class##___
+
+#   ifdef ___def_base___
+#       undef ___def_base___
+#   endif
+#	define ___def_base___(_Class, _int, _intVal)	INLINE _int* ___##_Class##_select___(object obj){\
+                                                        setCurrentObject(obj);\
+                                                        return ___##_Class##___.implement.__interface;\
+                                                    }\
+                                                    static void _Class##_ctor(object obj, pointer args){\
+                                                        setCurrentObject(obj);\
+                                                        Method(_Class){\
+                                                            __new_##_Class(args);\
+                                                        }\
+                                                    }\
+                                                    static INLINE void _Class##_dtor(object obj){\
+                                                        setCurrentObject(obj);\
+                                                        Method(_Class){\
+                                                            __del_##_Class();\
+                                                        }\
+                                                    }\
+                                                    const struct Interface_##_Class ___##_Class##___ = {\
+                                                        ._ = (const struct str_Class){\
+                                                            .name = #_Class,\
+                                                            .size = sizeof(Class_##_Class),\
+                                                            .ctor = _Class##_ctor,\
+                                                            .dtor = _Class##_dtor\
+                                                        },\
+                                                        .__class__ = (Class)&___##_Class##___,\
+                                                        .implement = (const Class_##_Class){\
+                                                            .__interface = &_intVal\
+                                                        }\
+                                                    };\
+                                                    const Class _Class = (const Class)&___##_Class##___
 #   ifdef ___class___
 #       undef ___class___
 #   endif
@@ -68,8 +101,23 @@
                                                         const Class __class__;\
                                                         const Class_##_Class implement;\
                                                     }___##_Class##___;\
-                                                    extern _int ___##_Class##_select___(object);\
+                                                    extern _int* ___##_Class##_select___(object);\
                                                     extern const Class _Class
+
+#   ifdef ___base___
+#       undef ___base___
+#   endif // ___base___
+#	define ___base___(_Class, _int)		typedef struct{\
+                                            _int *__interface;\
+                                            struct _Class __self;\
+                                        }Class_##_Class;\
+                                        extern const struct Interface_##_Class{\
+                                            const struct str_Class _;\
+                                            const Class __class__;\
+                                            const Class_##_Class implement;\
+                                        }___##_Class##___;\
+                                        extern _int* ___##_Class##_select___(object);\
+                                        extern const Class _Class
 #   ifdef Class
 #       undef Class
 #   endif
@@ -118,7 +166,7 @@
 
 #   define  Method(_class_)             __create_this_context(_class_);while(__function_this())
 #   define  setInterface(_class, _int_) (((Class_##_class*)this->data)->__interface = &_int_)
-#   define  getInterface(_class)        (*((Class_##_class*)this->data)->__interface)
+#   define  getInterface(_class)        (((Class_##_class*)this->data)->__interface)
 
 /*	Constructor and destructor	*/
 
@@ -156,18 +204,6 @@ interface(IObject);
 
 struct Object{};
 
-typedef struct{
-	IObject *__interface;
-	struct Object __self;
-}Class_Object;
-
-extern const struct Interface_Object{
-	const struct str_Class _;
-	const Class __class__;
-	const Class_Object implement;
-}___Object___;
-
-extern IObject ___Object_select___(object);
-extern const Class Object;
+___base___(Object, IObject);
 
 #endif	// ifndef TONIGHT_OO_MACROS
