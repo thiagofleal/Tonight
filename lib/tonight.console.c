@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <wchar.h>
+#include <stdarg.h>
 
 #ifdef WIN32
 #   define IStream __temp_IStream__
@@ -14,7 +16,6 @@
 #	include <dlfcn.h>
 #	include <sys/select.h>
 #	include <sys/ioctl.h>
-#	include <stropts.h>
 #endif
 
 #include "../include/tonight.h"
@@ -110,6 +111,7 @@ static int Console_getKey(void){
         result = 256 + inrec.Event.KeyEvent.wVirtualKeyCode;
     return result;
 #else
+    register int i, c;
     struct termios oldattr, newattr;
     tcgetattr(stdin->_fileno, &oldattr);
     newattr = oldattr;

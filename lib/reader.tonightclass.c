@@ -66,12 +66,9 @@ static IReader Reader_vtble = {
     .nextLine = Reader_nextLine
 };
 
-static void Reader_constructor(pointer args){
-    $va_set(args, {
-        pointer stream;
-    });
+static void Reader_constructor(va_list args){
     construct(superOf(Reader));
-    $$(this $as Reader).stream = $va_get.stream;
+    $$(this $as Reader).stream = va_arg(args, pointer);
     setInterface(Reader, Reader_vtble);
 }
 

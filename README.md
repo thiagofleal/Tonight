@@ -14,7 +14,7 @@ This framework implements the following resources:
   
   * **class**, **interface** and **object**
   * **new** and **delete**
-  * **$(**\<object> **$as** \<class>**).**\<method>**(**\<args>**);**
+  * **$(**\<object> **$as** \<class>**)->**\<method>**(**\<args>**);**
  
  ### Collections
 

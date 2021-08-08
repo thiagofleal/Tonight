@@ -7,6 +7,16 @@
 
 Define_Exception(MapException $as "Map exception" $extends GenericException);
 
+struct map_item {
+    pointer value;
+    string index;
+};
+
+struct map_node {
+    struct map_item item;
+    struct map_node *next;
+};
+
 static pointer iterator(struct map_node *node){
 	struct map_node *i;
 	for(i = node; i->next; i = i->next);
@@ -114,7 +124,7 @@ static pointer Map_get(string index){
     return NULL;
 }
 
-static unsigned int Map_size(void){
+static size_t Map_size(void){
     return $$(this $as Map).size;
 }
 
@@ -205,8 +215,8 @@ static void IMap_unset(string index){
     }
 }
 
-static unsigned int IMap_size(void){
-    unsigned int ret = $Empty(unsigned int);
+static size_t IMap_size(void){
+    size_t ret = $Empty(unsigned int);
     Method(Map){
         ret = getInterface(Map)->size();
     }

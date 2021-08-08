@@ -7,7 +7,9 @@ INLINE IStream* getIStream(pointer obj){
     return Memory.getHeader(obj, (const pointer)&Stream);
 }
 
-INLINE void setIStream(pointer obj, IStream *str){
+void setIStream(pointer obj, IStream *str){
+    IStream* stream = getIStream(obj);
+    if(stream) Memory.removeHeader(obj, (const pointer)&Stream);
     Memory.addHeader(obj, (const pointer)&Stream, str);
 }
 

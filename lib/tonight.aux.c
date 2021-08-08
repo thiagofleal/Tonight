@@ -128,15 +128,15 @@ struct StackThis {
     pointer prev;
 }*stack_this = NULL;
 
-static void classThisError(object obj, pointer args){
-    $va_set(args, { Class obj_class; });
+static void classThisError(object obj, va_list args){
+    Class obj_class = va_arg(args, Class);
     static string error_str = NULL;
     if(error_str) String.free(error_str);
     error_str = String.concat(
         "The class \"",
         (obj->class_pointer ? obj->class_pointer->name : "(undefined)"),
         "\" not extends \"",
-        $va_get.obj_class->name,
+        obj_class->name,
         "\"",
         $end
     );

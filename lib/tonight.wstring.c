@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <wchar.h>
+#include <wctype.h>
+#include <stdarg.h>
 #include <string.h>
 #include <math.h>
 #include "../include/tonight.h"
@@ -19,7 +21,7 @@ static INLINE wstring TONIGHT __concatWideString(wchar_t dest[], wchar_t from[],
 
 static wstring TONIGHT stringToWide(string s){
     wchar_t str[1001];
-	snwprintf(str, ARRAY_LENGTH(str) - 1, L"%hs", s);
+	swprintf(str, ARRAY_LENGTH(str) - 1, L"%hs", s);
 	return toWideString(str);
 }
 
@@ -34,31 +36,31 @@ wstring TONIGHT w_bs(bool var){
 
 wstring TONIGHT w_is(int var){
 	static wchar_t s[15];
-	snwprintf(s, sizeof s, L"%i", var);
+	swprintf(s, sizeof s, L"%i", var);
 	return toWideString(s);
 }
 
 wstring TONIGHT w_fsf(float var, int _decimal){
 	static wchar_t s[100];
-	snwprintf(s, sizeof s, L"%.*f", _decimal, var);
+	swprintf(s, sizeof s, L"%.*f", _decimal, var);
 	return toWideString(s);
 }
 
 wstring TONIGHT w_dsf(double var, int _decimal){
 	static wchar_t s[100];
-	snwprintf(s, sizeof s, L"%.*lf", _decimal, var);
+	swprintf(s, sizeof s, L"%.*lf", _decimal, var);
 	return toWideString(s);
 }
 
 wstring TONIGHT w_ds(double var){
 	static wchar_t s[100];
-	snwprintf(s, sizeof s, L"%.10g", var);
+	swprintf(s, sizeof s, L"%.10g", var);
 	return toWideString(s);
 }
 
 wstring TONIGHT w_ps(pointer var){
 	static wchar_t s[100];
-	snwprintf(s, sizeof s, L"%p", var);
+	swprintf(s, sizeof s, L"%p", var);
 	return toWideString(s);
 }
 
@@ -251,7 +253,7 @@ static wstring TONIGHT WideString_formated(const wstring frmt, ...){
 	static wchar_t s[1001];
 	va_list v;
 	va_start(v, frmt);
-	vswprintf(s, frmt, v);
+	vswprintf(s, sizeof s, frmt, v);
 	va_end(v);
 	return toWideString(s);
 }
@@ -431,7 +433,7 @@ static fixWideString TONIGHT FixWideString_formated(const wstring format, ...){
 	va_list v;
 	fixWideString ret;
 	va_start(v, format);
-	vsnwprintf(ret.Text, sizeof ret, format, v);
+	vswprintf(ret.Text, sizeof ret, format, v);
 	va_end(v);
 	return ret;
 }
@@ -479,7 +481,7 @@ static longFixWideString TONIGHT LongFixWideString_formated(const wstring format
 	va_list v;
 	longFixWideString ret;
 	va_start(v, format);
-	vsnwprintf(ret.Text, sizeof ret, format, v);
+	vswprintf(ret.Text, sizeof ret, format, v);
 	va_end(v);
 	return ret;
 }

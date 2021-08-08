@@ -88,6 +88,7 @@ static void __memory_addHeader(pointer mem, pointer head, pointer value){
 	if(mem){
         MemoryData *md = mem - sizeof(MemoryData);
         md->headers = p_realloc(md->headers, (md->count + 1) * sizeof(mheader_t));
+        if(!md->headers) throw(MemoryAllocException, strerror(errno));
         md->headers[md->count ++] = (mheader_t){head, value};
 	}
 }
@@ -121,11 +122,12 @@ static pointer __memory_getHeader(pointer mem, pointer head){
 	if(mem){
         MemoryData *md = mem - sizeof(MemoryData);
         register size_t i;
-        for(i = 0; i < md->count; i++)
-            if(md->headers[i].type == head)
+        for(i = 0; i < md->count; i++){
+            if(md->headers[i].type == head){
                 return md->headers[i].value;
+            }
+        }
 	}
-	Throw(NotImplementException, "Header not found");
 	return NULL;
 }
 

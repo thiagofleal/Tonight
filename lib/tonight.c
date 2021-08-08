@@ -9,9 +9,14 @@
 
 static string ARRAY __args = NULL;
 
+void freeArg(pointer pArg) {
+    string arg = *(string*)pArg;
+    String.free(arg);
+}
+
 static void onExit(void){
 	if(__args){
-        Array.forEach(__args, free);
+        Array.forEach(__args, freeArg);
 		Array.free(__args);
 		__args = NULL;
 	}
@@ -41,12 +46,9 @@ static int TONIGHT TonightModeDefault(register int argc, string argv[]){
 	P_int func = Main;
 	__Base_TonightMode(argc, argv);
 	try
-		if(func)
-			return func(__args);
-		else
-			return EXIT_FAILURE;
-	catch(GenericException);
-    return EXIT_FAILURE;
+		return func(__args);
+	catch(GenericException)
+        return EXIT_FAILURE;
 }
 
 static int TONIGHT TonightModeLoop(register int argc, string argv[]){

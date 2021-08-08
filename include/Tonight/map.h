@@ -20,16 +20,6 @@
 
     typedef void (* MapItemFreeCallBack)(pointer);
 
-    struct map_item {
-        pointer value;
-        string index;
-    };
-
-    struct map_node {
-        struct map_item item;
-        struct map_node *next;
-    };
-
 	struct Map {
 	    struct map_node *list;
 	    size_t size;
