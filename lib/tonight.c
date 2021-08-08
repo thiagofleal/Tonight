@@ -9,9 +9,14 @@
 
 static string ARRAY __args = NULL;
 
+void freeArg(pointer pArg){
+    string arg = *(string*)pArg;
+    String.free(arg);
+}
+
 static void onExit(void){
 	if(__args){
-        Array.forEach(__args, free);
+        Array.forEach(__args, freeArg);
 		Array.free(__args);
 		__args = NULL;
 	}
