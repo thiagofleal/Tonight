@@ -9,7 +9,7 @@
 
 static string ARRAY __args = NULL;
 
-void freeArg(pointer pArg) {
+void freeArg(pointer pArg){
     string arg = *(string*)pArg;
     String.free(arg);
 }
