@@ -23,9 +23,9 @@ static void onExit(void){
 }
 
 #pragma weak __main__
-extern int __main__();
+extern int __main__(int argc, string *argv);
 #pragma weak Main
-extern int Main(string*);
+extern void Main(string*);
 #pragma weak Setup
 extern void Setup(string*);
 #pragma weak Loop
@@ -43,12 +43,13 @@ static void TONIGHT __Base_TonightMode(register int argc, string argv[]){
 }
 
 static int TONIGHT TonightModeDefault(register int argc, string argv[]){
-	P_int func = Main;
+	P_void func = Main;
 	__Base_TonightMode(argc, argv);
 	try
-		return func(__args);
+		func(__args);
 	catch(GenericException)
         return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
 static int TONIGHT TonightModeLoop(register int argc, string argv[]){
