@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "../include/tonight.h"
 #include "../include/Tonight/memory.h"
@@ -201,7 +202,9 @@ static INLINE pointer TONIGHT ExceptionInfo(Exception exc){
 }
 
 static TONIGHT Exception ExceptionCopy(Exception exc){
-    Exception e = Memory.copy(exc);
+	size_t size = sizeof(struct __struct_exception);
+    Exception e = Memory.alloc(size);
+	memcpy(e, exc, size);
     e->data = InstanceOf.Pointer(exc->data);
     e->exception = exc->exception;
     e->info = InstanceOf.Pointer(exc->info);

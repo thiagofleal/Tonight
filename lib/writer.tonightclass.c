@@ -11,7 +11,7 @@ typedef struct{
 static inline void write_text(pointer stream, ...){
     va_list list;
     va_start(list, stream);
-    Stream.print(stream, "%s%s", list);
+    Stream.print(stream, "%s", list);
     va_end(list);
 }
 
