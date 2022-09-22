@@ -130,9 +130,11 @@ static void TONIGHT Test_runWithCollection(P_void func, pointer args){
 
 static TestResult TONIGHT Test_finalize(void){
     int i;
-    res.statistic.success = res.count.success / res.count.tests;
-    res.statistic.failed = res.count.failed / res.count.tests;
-    res.statistic.except = res.count.except / res.count.tests;
+    if (res.count.tests){
+        res.statistic.success = (double) res.count.success / res.count.tests;
+        res.statistic.failed = (double) res.count.failed / res.count.tests;
+        res.statistic.except = (double) res.count.except / res.count.tests;
+    }else res.statistic.success = res.statistic.failed = res.statistic.except = 0;
     res.results = array_TestResultItem(res.count.tests);
     foreachkey(i $in res.results){
         res.results[i] = list_shift();
