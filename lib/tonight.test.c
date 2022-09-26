@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include "../include/tonight.h"
@@ -7,36 +8,57 @@
 #include "../include/Tonight/string.h"
 #include "../include/Tonight/test.h"
 
+struct TestEchoValue {
+    int value;
+};
+
+static struct TestEchoValue TestConfig_NOTHING = {0};
+static struct TestEchoValue TestConfig_FAILED = {1};
+static struct TestEchoValue TestConfig_ERRORS_AND_EXCEPTIONS = {2};
+static struct TestEchoValue TestConfig_RESULTS = {3};
+static struct TestEchoValue TestConfig_DEBUG = {4};
+
+const struct __TestConfig TestEcho = {
+    .NOTHING = &TestConfig_NOTHING,
+    .FAILED_AND_EXCEPTIONS = &TestConfig_ERRORS_AND_EXCEPTIONS,
+    .FAILED = &TestConfig_FAILED,
+    .RESULTS = &TestConfig_RESULTS,
+    .DEBUG = &TestConfig_DEBUG
+};
+
+static TestEchoValue echoTests = NULL;
+
 static INLINE void TONIGHT Test_assertMessage(bool test, string message){
+    if (echoTests->value >= 4) printf(" > Testing if %s\n", message);
     if(!test) Throw(AssertException, message);
 }
 
 static INLINE void TONIGHT Test_assert(bool test){
-    Test_assertMessage(test, "Assert test failed");
+    Test_assertMessage(test, "assertion is true");
 }
 
 static INLINE void TONIGHT Test_assertNullMessage(pointer test, string message){
-    if(test) Throw(AssertException, message);
+    Test_assertMessage(test == NULL, message);
 }
 
 static INLINE void TONIGHT Test_assertNull(pointer test){
-    Test_assertNullMessage(test, "Null assert test failed");
+    Test_assertNullMessage(test, "value is null");
 }
 
 static INLINE void TONIGHT Test_assertNotNullMessage(pointer test, string message){
-    if(!test) Throw(AssertException, message);
+    Test_assertMessage(test != NULL, message);
 }
 
 static INLINE void TONIGHT Test_assertNotNull(pointer test){
-    Test_assertNotNullMessage(test, "Not null assert test failed");
+    Test_assertNotNullMessage(test, "value is not null");
 }
 
 static INLINE void TONIGHT Test_assertErrorMessage(int error, string message){
-    if(errno != error) Throw(AssertException, message);
+    Test_assertMessage(errno == error, message);
 }
 
 static INLINE void TONIGHT Test_assertError(int error){
-    Test_assertErrorMessage(error, "Error assert test failed");
+    Test_assertErrorMessage(error, "system error is equal error");
 }
 
 static void TONIGHT Test_assertExceptionMessage(P_void func, EXCEPTION expect, string message){
@@ -48,11 +70,11 @@ static void TONIGHT Test_assertExceptionMessage(P_void func, EXCEPTION expect, s
     }Finally{
         return;
     }
-    Throw(AssertException, message);
+    Test_assertMessage(false, message);
 }
 
 static INLINE void TONIGHT Test_assertException(P_void func, EXCEPTION expect){
-    Test_assertExceptionMessage(func, expect, "Exception assert test failed");
+    Test_assertExceptionMessage(func, expect, "function throws exception");
 }
 
 static INLINE TestResultItem* array_TestResultItem(size_t length){
@@ -81,7 +103,8 @@ static TestResultItem list_shift(void){
     return item;
 }
 
-static void Test_start(void){
+static void Test_start(TestEchoValue echo){
+    echoTests = echo;
     res.results = NULL;
     res.count.except = 0;
     res.count.failed = 0;
@@ -92,18 +115,22 @@ static void Test_start(void){
     res.statistic.except = 0.0;
 }
 
-static void TONIGHT Test_runWith(P_void func, pointer data){
+static void TONIGHT Test_runWith(string name, P_void func, pointer data){
     bool success = false;
     pointer except = NULL;
     Try{
+        if (echoTests->value >= 4) printf(" # Test: %s\n", name);
         ++ res.count.tests;
         func(data);
         ++ res.count.success;
+        if (echoTests->value >= 3) printf("[OK] %s passed\n\n", name);
         success = true;
     }Catch(TestException){
         ++ res.count.failed;
+        if (echoTests->value >= 1) printf("[FAILED] %s: \"%s\" assertion failed\n\n", name, CurrentException.message());
     }Catch(GenericException){
         ++ res.count.except;
+        if (echoTests->value >= 2) printf("[EXCEPTION] %s: %s\n\t-> %s\n\n", name, CurrentException.error(), CurrentException.message());
     }Finally{
         except = CurrentException.copy();
     }
@@ -117,14 +144,14 @@ static void TONIGHT Test_runWith(P_void func, pointer data){
     });
 }
 
-static INLINE void TONIGHT Test_run(P_void func){
-    return Test_runWith(func, NULL);
+static INLINE void TONIGHT Test_run(string name, P_void func){
+    return Test_runWith(name, func, NULL);
 }
 
-static void TONIGHT Test_runWithCollection(P_void func, pointer args){
+static void TONIGHT Test_runWithCollection(string name, P_void func, pointer args){
     pointer arg;
     foreach(arg $in args){
-        Test_runWith(func, arg);
+        Test_runWith(name, func, arg);
     }
 }
 

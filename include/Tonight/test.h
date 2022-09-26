@@ -5,6 +5,16 @@
 		extern "C"{
 #	endif
 
+    typedef struct TestEchoValue *TestEchoValue;
+
+    extern const struct __TestConfig {
+        TestEchoValue DEBUG;
+        TestEchoValue RESULTS;
+        TestEchoValue FAILED_AND_EXCEPTIONS;
+        TestEchoValue FAILED;
+        TestEchoValue NOTHING;
+    }TestEcho;
+
     typedef struct TestData {
         P_void function;
         pointer argument;
@@ -42,10 +52,10 @@
         void (* assertNotNullMessage)(pointer, string);
         void (* assertErrorMessage)(int, string);
         void (* assertExceptionMessage)(P_void, EXCEPTION, string);
-        void (* start)(void);
-        void (* run)(P_void);
-        void (* runWith)(P_void, pointer);
-        void (* runWithCollection)(P_void, pointer);
+        void (* start)(TestEchoValue);
+        void (* run)(string, P_void);
+        void (* runWith)(string, P_void, pointer);
+        void (* runWithCollection)(string, P_void, pointer);
         TestResult (* finalize)(void);
         TestResult (* getResult)(void);
         void (* freeResult)(void);

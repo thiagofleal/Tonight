@@ -51,6 +51,7 @@ static INLINE pointer TONIGHT Callback_realloc(pointer mem, size_t size){
 }
 
 static INLINE void TONIGHT Callback_free(pointer mem){
+	if (mem == NULL) Throw(NullArgumentException, "Expected non null argument");
 	p_free(mem);
 }
 
@@ -65,6 +66,7 @@ static pointer TONIGHT __new_memory(size_t q){
 }
 
 static pointer TONIGHT __realloc_memory(pointer mem, size_t q){
+	if (mem == NULL) Throw(NullArgumentException, "Expected non null argument");
 	MemoryData *p = p_realloc(mem - sizeof(MemoryData), sizeof(MemoryData) + q);
 	if(!p)
 		throw(MemoryAllocException, strerror(errno));
@@ -73,6 +75,7 @@ static pointer TONIGHT __realloc_memory(pointer mem, size_t q){
 }
 
 static INLINE size_t TONIGHT __memory_size(pointer mem){
+	if (mem == NULL) Throw(NullArgumentException, "Expected non null argument");
 	return ((MemoryData*)(mem - sizeof(MemoryData)))->size;
 }
 
@@ -97,7 +100,9 @@ static pointer TONIGHT __memory_copy(pointer mem) {
 	register size_t size = __memory_size(mem);
 	register int i;
 	pointer cp = __new_memory(size);
-	MemoryData *d = mem - sizeof(MemoryData);
+	MemoryData *d;
+	if (mem == NULL) Throw(NullArgumentException, "Expected non null argument");
+	d = mem - sizeof(MemoryData);
 	memcpy(cp, mem, size);
 	for(i = 0; i < d->count; i++)
         __memory_addHeader(cp, d->headers[i].type, d->headers[i].value);
